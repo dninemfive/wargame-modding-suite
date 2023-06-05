@@ -287,4 +287,8 @@
     <EmbeddedResource Remove="ZoneEditor\ZoneEditor.resx" />
     <Page Remove="View\Ndfbin\Viewer\DamageTableView.xaml" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Ionic.Zlib" Version="1.9.1.5" />
+    <PackageReference Include="IronPython" Version="3.4.0" />
+  </ItemGroup>
 </Project>
