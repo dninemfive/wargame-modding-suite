@@ -1,33 +1,27 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Data;
-using System.Windows.Input;
-using moddingSuite.ViewModel.Base;
+﻿using System.Collections.ObjectModel;
 
-namespace moddingSuite.Model.Ndfbin.ChangeManager
+namespace moddingSuite.Model.Ndfbin.ChangeManager;
+
+public class NdfChangeManager
 {
-    public class NdfChangeManager
+    private readonly ObservableCollection<ChangeEntryBase> _changes = new();
+
+    public NdfChangeManager()
     {
-        private readonly ObservableCollection<ChangeEntryBase> _changes = new ObservableCollection<ChangeEntryBase>();
+    }
 
-        public NdfChangeManager()
-        {
-        }
+    public ObservableCollection<ChangeEntryBase> Changes
+    {
+        get { return _changes; }
+    }
 
-        public ObservableCollection<ChangeEntryBase> Changes
-        {
-            get { return _changes; }
-        }
+    public bool HasChanges
+    {
+        get { return Changes.Count > 0; }
+    }
 
-        public bool HasChanges
-        {
-            get { return Changes.Count > 0; }
-        }
-
-        public void AddChange(ChangeEntryBase change)
-        {
-            Changes.Add(change);
-        }
+    public void AddChange(ChangeEntryBase change)
+    {
+        Changes.Add(change);
     }
 }

@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace moddingSuite.View.Edata
+namespace moddingSuite.View.Edata;
+
+/// <summary>
+/// Interaction logic for EdataFileView.xaml
+/// </summary>
+public partial class EdataFileView : UserControl
 {
-    /// <summary>
-    /// Interaction logic for EdataFileView.xaml
-    /// </summary>
-    public partial class EdataFileView : UserControl
+    public EdataFileView()
     {
-        public EdataFileView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

@@ -1,27 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
-namespace moddingSuite.View.Ndfbin.Viewer
+namespace moddingSuite.View.Ndfbin.Viewer;
+
+/// <summary>
+/// Interaction logic for ObjectCopyResultView.xaml
+/// </summary>
+public partial class ObjectCopyResultView : Window
 {
-    /// <summary>
-    /// Interaction logic for ObjectCopyResultView.xaml
-    /// </summary>
-    public partial class ObjectCopyResultView : Window
+    public ObjectCopyResultView()
     {
-        public ObjectCopyResultView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

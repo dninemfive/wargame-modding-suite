@@ -1,15 +1,14 @@
 ﻿using System.Windows;
 
-namespace moddingSuite.View.Common
+namespace moddingSuite.View.Common;
+
+/// <summary>
+/// Interaction logic for movie_playback.xaml
+/// </summary>
+public partial class MoviePlaybackView : Window
 {
-    /// <summary>
-    /// Interaction logic for movie_playback.xaml
-    /// </summary>
-    public partial class MoviePlaybackView : Window
+    public MoviePlaybackView()
     {
-        public MoviePlaybackView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

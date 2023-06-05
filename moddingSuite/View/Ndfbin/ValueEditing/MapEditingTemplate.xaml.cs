@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace moddingSuite.View.Ndfbin.ValueEditing
+namespace moddingSuite.View.Ndfbin.ValueEditing;
+
+/// <summary>
+/// Interaction logic for MapEditingTemplate.xaml
+/// </summary>
+public partial class MapEditingTemplate : UserControl
 {
-    /// <summary>
-    /// Interaction logic for MapEditingTemplate.xaml
-    /// </summary>
-    public partial class MapEditingTemplate : UserControl
+    public MapEditingTemplate()
     {
-        public MapEditingTemplate()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

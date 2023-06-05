@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace moddingSuite.View.Ndfbin.ValueEditing
+namespace moddingSuite.View.Ndfbin.ValueEditing;
+
+/// <summary>
+/// Interaction logic for TransTableReferenceEditingTemplate.xaml
+/// </summary>
+public partial class TransTableReferenceEditingTemplate : UserControl
 {
-    /// <summary>
-    /// Interaction logic for TransTableReferenceEditingTemplate.xaml
-    /// </summary>
-    public partial class TransTableReferenceEditingTemplate : UserControl
+    public TransTableReferenceEditingTemplate()
     {
-        public TransTableReferenceEditingTemplate()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

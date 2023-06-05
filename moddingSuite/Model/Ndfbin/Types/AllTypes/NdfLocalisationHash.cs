@@ -1,38 +1,37 @@
-﻿using System;
-using moddingSuite.Util;
+﻿using moddingSuite.Util;
+using System;
 
-namespace moddingSuite.Model.Ndfbin.Types.AllTypes
+namespace moddingSuite.Model.Ndfbin.Types.AllTypes;
+
+public class NdfLocalisationHash : NdfFlatValueWrapper
 {
-    public class NdfLocalisationHash : NdfFlatValueWrapper
+    public NdfLocalisationHash(byte[] value)
+        : base(NdfType.LocalisationHash, value)
     {
-        public NdfLocalisationHash(byte[] value)
-            : base(NdfType.LocalisationHash, value)
-        {
-        }
+    }
 
-        public new byte[] Value
+    public new byte[] Value
+    {
+        get { return (byte[])base.Value; }
+        set
         {
-            get { return (byte[]) base.Value; }
-            set
-            {
-                base.Value = value;
-                OnPropertyChanged(() => Value);
-            }
+            base.Value = value;
+            OnPropertyChanged(() => Value);
         }
+    }
 
-        public override byte[] GetBytes()
-        {
-            return Value;
-        }
+    public override byte[] GetBytes()
+    {
+        return Value;
+    }
 
-        public override string ToString()
-        {
-            return Utils.ByteArrayToBigEndianHexByteString(Value);
-        }
+    public override string ToString()
+    {
+        return Utils.ByteArrayToBigEndianHexByteString(Value);
+    }
 
-        public override byte[] GetNdfText()
-        {
-            throw new NotImplementedException();
-        }
+    public override byte[] GetNdfText()
+    {
+        throw new NotImplementedException();
     }
 }

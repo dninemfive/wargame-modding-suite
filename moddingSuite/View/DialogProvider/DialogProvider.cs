@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using moddingSuite.View.Common;
+﻿using moddingSuite.View.Common;
 using moddingSuite.View.Edata;
 using moddingSuite.View.Mesh;
 using moddingSuite.View.Ndfbin;
@@ -18,83 +14,85 @@ using moddingSuite.ViewModel.Scenario;
 using moddingSuite.ViewModel.Trad;
 using moddingSuite.ViewModel.UnhandledException;
 using moddingSuite.ViewModel.VersionManager;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 
-namespace moddingSuite.View.DialogProvider
+namespace moddingSuite.View.DialogProvider;
+
+public static class DialogProvider
 {
-    public static class DialogProvider
+    private static IList<ViewInstance> _registeredViews = new List<ViewInstance>();
+
+    private static IList<IViewMap> _maps = new List<IViewMap>();
+
+    static DialogProvider()
     {
-        private static IList<ViewInstance> _registeredViews = new List<ViewInstance>();
+        Maps.Add(new ViewMap<EdataManagerView, EdataManagerViewModel>());
 
-        private static IList<IViewMap> _maps = new List<IViewMap>();
+        Maps.Add(new ViewMap<NdfbinView, NdfEditorMainViewModel>());
+        Maps.Add(new ViewMap<MeshView, MeshEditorViewModel>());
+        Maps.Add(new ViewMap<ScenarioView, ScenarioEditorViewModel>());
 
-        static DialogProvider()
+        Maps.Add(new ViewMap<InstanceWindowView, NdfClassViewModel>());
+        Maps.Add(new ViewMap<ListEditorWindow, ListEditorViewModel>());
+        //Maps.Add(new ViewMap<DamageTableView,DamageTableViewModel>());
+
+        Maps.Add(new ViewMap<TradFileView, TradFileViewModel>());
+
+        Maps.Add(new ViewMap<AboutView, AboutViewModel>());
+
+        Maps.Add(new ViewMap<ReferenceSearchResultView, ReferenceSearchResultViewModel>());
+        Maps.Add(new ViewMap<ObjectCopyResultView, ObjectCopyResultViewModel>());
+
+        Maps.Add(new ViewMap<VersionManagerView, VersionManagerViewModel>());
+
+        Maps.Add(new ViewMap<UnhandledExceptionView, UnhandledExceptionViewModel>());
+        Maps.Add(new ViewMap<ArmourDamageTableWindowView, ArmourDamageViewModel>());
+    }
+
+    public static IList<ViewInstance> RegisteredViews
+    {
+        get { return _registeredViews; }
+        set { _registeredViews = value; }
+    }
+
+    public static IList<IViewMap> Maps
+    {
+        get { return _maps; }
+        set { _maps = value; }
+    }
+
+    public static void ProvideView(ViewModelBase vm, ViewModelBase parentVm = null)
+    {
+        IViewMap map = Maps.SingleOrDefault(x => x.ViewModelType == vm.GetType());
+
+        if (map == null)
+            return;
+
+
+        if (Activator.CreateInstance(map.ViewType) is not Window viewInstance)
+            throw new InvalidOperationException($"Can not create an instance of {map.ViewType}");
+
+
+        if (parentVm != null)
         {
-            Maps.Add(new ViewMap<EdataManagerView, EdataManagerViewModel>());
+            ViewInstance parent = RegisteredViews.SingleOrDefault(x => x.ViewModel == parentVm);
 
-            Maps.Add(new ViewMap<NdfbinView, NdfEditorMainViewModel>());
-            Maps.Add(new ViewMap<MeshView, MeshEditorViewModel>());
-            Maps.Add(new ViewMap<ScenarioView, ScenarioEditorViewModel>());
-
-            Maps.Add(new ViewMap<InstanceWindowView, NdfClassViewModel>());
-            Maps.Add(new ViewMap<ListEditorWindow, ListEditorViewModel>());
-            //Maps.Add(new ViewMap<DamageTableView,DamageTableViewModel>());
-
-            Maps.Add(new ViewMap<TradFileView, TradFileViewModel>());
-
-            Maps.Add(new ViewMap<AboutView, AboutViewModel>());
-
-            Maps.Add(new ViewMap<ReferenceSearchResultView, ReferenceSearchResultViewModel>());
-            Maps.Add(new ViewMap<ObjectCopyResultView, ObjectCopyResultViewModel>());
-
-            Maps.Add(new ViewMap<VersionManagerView, VersionManagerViewModel>());
-
-            Maps.Add(new ViewMap<UnhandledExceptionView, UnhandledExceptionViewModel>());
-            Maps.Add(new ViewMap<ArmourDamageTableWindowView, ArmourDamageViewModel>());
-        }
-
-        public static IList<ViewInstance> RegisteredViews
-        {
-            get { return _registeredViews; }
-            set { _registeredViews = value; }
-        }
-
-        public static IList<IViewMap> Maps
-        {
-            get { return _maps; }
-            set { _maps = value; }
-        }
-
-        public static void ProvideView(ViewModelBase vm, ViewModelBase parentVm = null)
-        {
-            IViewMap map = Maps.SingleOrDefault(x => x.ViewModelType == vm.GetType());
-
-            if (map == null)
-                return;
-
-            var viewInstance = Activator.CreateInstance(map.ViewType) as Window;
-
-            if (viewInstance == null)
-                throw new InvalidOperationException($"Can not create an instance of {map.ViewType}");
-
-
-            if (parentVm != null)
+            if (parent != null)
             {
-                ViewInstance parent = RegisteredViews.SingleOrDefault(x => x.ViewModel == parentVm);
+                Window parentView = parent.View;
 
-                if (parent != null)
-                {
-                    Window parentView = parent.View;
-
-                    if (Application.Current.Windows.OfType<Window>().Any(x => Equals(x, parentView)))
-                        viewInstance.Owner = parentView;
-                }
+                if (Application.Current.Windows.OfType<Window>().Any(x => Equals(x, parentView)))
+                    viewInstance.Owner = parentView;
             }
-
-            viewInstance.DataContext = vm;
-
-            RegisteredViews.Add(new ViewInstance(viewInstance, vm));
-
-            viewInstance.Show();
         }
+
+        viewInstance.DataContext = vm;
+
+        RegisteredViews.Add(new ViewInstance(viewInstance, vm));
+
+        viewInstance.Show();
     }
 }

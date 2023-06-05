@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace moddingSuite.View.Ndfbin.ValueEditing
+namespace moddingSuite.View.Ndfbin.ValueEditing;
+
+/// <summary>
+/// Interaction logic for ObjectReferenceEditingTemplate.xaml
+/// </summary>
+public partial class ObjectReferenceEditingTemplate : UserControl
 {
-    /// <summary>
-    /// Interaction logic for ObjectReferenceEditingTemplate.xaml
-    /// </summary>
-    public partial class ObjectReferenceEditingTemplate : UserControl
+    public ObjectReferenceEditingTemplate()
     {
-        public ObjectReferenceEditingTemplate()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace moddingSuite.View.Ndfbin.ValueEditing
+namespace moddingSuite.View.Ndfbin.ValueEditing;
+
+/// <summary>
+/// Interaction logic for BooleanEditingTemplate.xaml
+/// </summary>
+public partial class BooleanEditingTemplate : UserControl
 {
-    /// <summary>
-    /// Interaction logic for BooleanEditingTemplate.xaml
-    /// </summary>
-    public partial class BooleanEditingTemplate : UserControl
+    public BooleanEditingTemplate()
     {
-        public BooleanEditingTemplate()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace moddingSuite.Model.Scenario
+namespace moddingSuite.Model.Scenario;
+
+public class AreaFile
 {
-    public class AreaFile
-    {
-        private List<AreaColletion>  _areaManagers = new List<AreaColletion>();
+    private List<AreaColletion>  _areaManagers = new();
 
-        public List<AreaColletion> AreaManagers
-        {
-            get { return _areaManagers; }
-            set { _areaManagers = value; }
-        }
+    public List<AreaColletion> AreaManagers
+    {
+        get { return _areaManagers; }
+        set { _areaManagers = value; }
     }
 }

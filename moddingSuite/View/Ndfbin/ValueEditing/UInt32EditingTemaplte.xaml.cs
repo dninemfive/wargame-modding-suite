@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace moddingSuite.View.Ndfbin.ValueEditing
+namespace moddingSuite.View.Ndfbin.ValueEditing;
+
+/// <summary>
+/// Interaction logic for UInt32EditingTemaplte.xaml
+/// </summary>
+public partial class UInt32EditingTemaplte : UserControl
 {
-    /// <summary>
-    /// Interaction logic for UInt32EditingTemaplte.xaml
-    /// </summary>
-    public partial class UInt32EditingTemaplte : UserControl
+    public UInt32EditingTemaplte()
     {
-        public UInt32EditingTemaplte()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

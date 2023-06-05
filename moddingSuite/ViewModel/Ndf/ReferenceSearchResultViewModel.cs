@@ -1,47 +1,44 @@
-﻿using System.Collections.Generic;
+﻿using moddingSuite.Model.Ndfbin;
+using moddingSuite.View.DialogProvider;
+using moddingSuite.ViewModel.Base;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using moddingSuite.Model.Ndfbin;
-using moddingSuite.View.DialogProvider;
-using moddingSuite.ViewModel.Base;
 
-namespace moddingSuite.ViewModel.Ndf
+namespace moddingSuite.ViewModel.Ndf;
+
+public class ReferenceSearchResultViewModel : ViewModelBase
 {
-    public class ReferenceSearchResultViewModel : ViewModelBase
+    public ObservableCollection<NdfPropertyValue> Results { get; set; }
+
+    public ICommand DetailsCommand { get; set; }
+
+    public NdfEditorMainViewModel Editor { get; set; }
+
+    public ReferenceSearchResultViewModel(List<NdfPropertyValue> results, NdfEditorMainViewModel editor)
     {
-        public ObservableCollection<NdfPropertyValue> Results { get; set; }
+        Results = new ObservableCollection<NdfPropertyValue>(results);
 
-        public ICommand DetailsCommand { get; set; }
+        Editor = editor;
 
-        public NdfEditorMainViewModel Editor { get; set; }
+        DetailsCommand = new ActionCommand(DetailsExecute);
+    }
 
-        public ReferenceSearchResultViewModel(List<NdfPropertyValue> results, NdfEditorMainViewModel editor)
-        {
-            Results = new ObservableCollection<NdfPropertyValue>(results);
+    private void DetailsExecute(object obj)
+    {
+        if (obj is not NdfPropertyValue propVal)
+            return;
 
-            Editor = editor;
+        NdfClassViewModel vm = new(propVal.Instance.Class, this);
 
-            DetailsCommand = new ActionCommand(DetailsExecute);
-        }
+        NdfObjectViewModel inst = vm.Instances.SingleOrDefault(x => x.Id == propVal.Instance.Id);
 
-        private void DetailsExecute(object obj)
-        {
-            var propVal = obj as NdfPropertyValue;
+        if (inst == null)
+            return;
 
-            if (propVal == null)
-                return;
+        vm.InstancesCollectionView.MoveCurrentTo(inst);
 
-            var vm = new NdfClassViewModel(propVal.Instance.Class, this);
-
-            NdfObjectViewModel inst = vm.Instances.SingleOrDefault(x => x.Id == propVal.Instance.Id);
-
-            if (inst == null)
-                return;
-
-            vm.InstancesCollectionView.MoveCurrentTo(inst);
-
-            DialogProvider.ProvideView(vm, Editor);
-        }
+        DialogProvider.ProvideView(vm, Editor);
     }
 }

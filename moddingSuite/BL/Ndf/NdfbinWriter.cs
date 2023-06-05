@@ -1,261 +1,260 @@
-﻿using System;
+﻿using moddingSuite.BL.Compressing;
+using moddingSuite.Model.Ndfbin;
+using moddingSuite.Model.Ndfbin.Types;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using moddingSuite.BL.Compressing;
-using moddingSuite.Model.Ndfbin;
-using moddingSuite.Model.Ndfbin.Types;
 
-namespace moddingSuite.BL.Ndf
+namespace moddingSuite.BL.Ndf;
+
+public class NdfbinWriter : INdfWriter
 {
-    public class NdfbinWriter : INdfWriter
+    public const uint EugenMagic = 809981253;
+    public const uint NdfBinMagic = 1178881603;
+    public const ulong NdfbinHeaderSize = 40;
+
+    /// <summary>
+    /// Writes a the bytecode of a Ndf file into outStream.
+    /// </summary>
+    /// <param name="outStream">The Stream in wich the data has to be written in.</param>
+    /// <param name="ndf">The ndf file which has to be compiled.</param>
+    /// <param name="compressed">Sets wether the bytecode has to be compressed or not.</param>
+    public void Write(Stream outStream, NdfBinary ndf, bool compressed)
     {
-        public const uint EugenMagic = 809981253;
-        public const uint NdfBinMagic = 1178881603;
-        public const ulong NdfbinHeaderSize = 40;
+        uint compressedFlag = compressed ? 128 : 0u;
 
-        /// <summary>
-        /// Writes a the bytecode of a Ndf file into outStream.
-        /// </summary>
-        /// <param name="outStream">The Stream in wich the data has to be written in.</param>
-        /// <param name="ndf">The ndf file which has to be compiled.</param>
-        /// <param name="compressed">Sets wether the bytecode has to be compressed or not.</param>
-        public void Write(Stream outStream, NdfBinary ndf, bool compressed)
+        outStream.Write(BitConverter.GetBytes(EugenMagic), 0, 4);
+        outStream.Write(BitConverter.GetBytes((uint)0), 0, 4);
+        outStream.Write(BitConverter.GetBytes(NdfBinMagic), 0, 4);
+        outStream.Write(BitConverter.GetBytes(compressedFlag), 0, 4);
+
+        byte[] data = GetCompiledContent(ndf);
+
+        outStream.Write(BitConverter.GetBytes(ndf.Footer.Offset), 0, 8);
+        outStream.Write(BitConverter.GetBytes(NdfbinHeaderSize), 0, 8);
+        outStream.Write(BitConverter.GetBytes(NdfbinHeaderSize + (ulong)data.Length), 0, 8);
+
+        if (compressed)
         {
-            uint compressedFlag = compressed ? 128 : 0u;
+            outStream.Write(BitConverter.GetBytes(data.Length), 0, 4);
+            //Compressor.Comp(data, outStream);
 
-            outStream.Write(BitConverter.GetBytes(EugenMagic), 0, 4);
-            outStream.Write(BitConverter.GetBytes((uint)0), 0, 4);
-            outStream.Write(BitConverter.GetBytes(NdfBinMagic), 0, 4);
-            outStream.Write(BitConverter.GetBytes(compressedFlag), 0, 4);
+            byte[] da = Compressor.Comp(data);
 
-            var data = GetCompiledContent(ndf);
-
-            outStream.Write(BitConverter.GetBytes(ndf.Footer.Offset), 0, 8);
-            outStream.Write(BitConverter.GetBytes(NdfbinHeaderSize), 0, 8);
-            outStream.Write(BitConverter.GetBytes(NdfbinHeaderSize + (ulong)data.Length), 0, 8);
-
-            if (compressed)
-            {
-                outStream.Write(BitConverter.GetBytes(data.Length), 0, 4);
-                //Compressor.Comp(data, outStream);
-
-                var da = Compressor.Comp(data);
-
-                outStream.Write(da,0,da.Length);
-            }
-            else
-                outStream.Write(data, 0, data.Length);
+            outStream.Write(da, 0, da.Length);
         }
+        else
+            outStream.Write(data, 0, data.Length);
+    }
 
-        public byte[] Write(NdfBinary ndf, bool compressed)
+    public byte[] Write(NdfBinary ndf, bool compressed)
+    {
+        using (MemoryStream ms = new())
         {
-            using (var ms = new MemoryStream())
-            {
-                Write(ms, ndf, compressed);
+            Write(ms, ndf, compressed);
 
-                return ms.ToArray();
-            }
+            return ms.ToArray();
         }
+    }
 
-        protected byte[] GetCompiledContent(NdfBinary ndf)
+    protected byte[] GetCompiledContent(NdfBinary ndf)
+    {
+        NdfFooter footer = new();
+
+        const long headerSize = (long)NdfbinHeaderSize;
+
+        using (MemoryStream contentStream = new())
         {
-            var footer = new NdfFooter();
+            byte[] buffer = RecompileObj(ndf);
+            footer.AddEntry("OBJE", contentStream.Position + headerSize, buffer.Length);
+            contentStream.Write(buffer, 0, buffer.Length);
 
-            const long headerSize = (long)NdfbinHeaderSize;
+            buffer = RecompileTopo(ndf);
+            footer.AddEntry("TOPO", contentStream.Position + headerSize, buffer.Length);
+            contentStream.Write(buffer, 0, buffer.Length);
 
-            using (var contentStream = new MemoryStream())
-            {
-                byte[] buffer = RecompileObj(ndf);
-                footer.AddEntry("OBJE", contentStream.Position + headerSize, buffer.Length);
-                contentStream.Write(buffer, 0, buffer.Length);
+            buffer = RecompileChnk(ndf);
+            footer.AddEntry("CHNK", contentStream.Position + headerSize, buffer.Length);
+            contentStream.Write(buffer, 0, buffer.Length);
 
-                buffer = RecompileTopo(ndf);
-                footer.AddEntry("TOPO", contentStream.Position + headerSize, buffer.Length);
-                contentStream.Write(buffer, 0, buffer.Length);
+            buffer = RecompileClas(ndf);
+            footer.AddEntry("CLAS", contentStream.Position + headerSize, buffer.Length);
+            contentStream.Write(buffer, 0, buffer.Length);
 
-                buffer = RecompileChnk(ndf);
-                footer.AddEntry("CHNK", contentStream.Position + headerSize, buffer.Length);
-                contentStream.Write(buffer, 0, buffer.Length);
+            buffer = RecompileProp(ndf);
+            footer.AddEntry("PROP", contentStream.Position + headerSize, buffer.Length);
+            contentStream.Write(buffer, 0, buffer.Length);
 
-                buffer = RecompileClas(ndf);
-                footer.AddEntry("CLAS", contentStream.Position + headerSize, buffer.Length);
-                contentStream.Write(buffer, 0, buffer.Length);
+            buffer = RecompileStrTable(ndf.Strings);
+            footer.AddEntry("STRG", contentStream.Position + headerSize, buffer.Length);
+            contentStream.Write(buffer, 0, buffer.Length);
 
-                buffer = RecompileProp(ndf);
-                footer.AddEntry("PROP", contentStream.Position + headerSize, buffer.Length);
-                contentStream.Write(buffer, 0, buffer.Length);
+            buffer = RecompileStrTable(ndf.Trans);
+            footer.AddEntry("TRAN", contentStream.Position + headerSize, buffer.Length);
+            contentStream.Write(buffer, 0, buffer.Length);
 
-                buffer = RecompileStrTable(ndf.Strings);
-                footer.AddEntry("STRG", contentStream.Position + headerSize, buffer.Length);
-                contentStream.Write(buffer, 0, buffer.Length);
+            buffer = RecompileUIntList(ndf.Import);
+            footer.AddEntry("IMPR", contentStream.Position + headerSize, buffer.Length);
+            contentStream.Write(buffer, 0, buffer.Length);
 
-                buffer = RecompileStrTable(ndf.Trans);
-                footer.AddEntry("TRAN", contentStream.Position + headerSize, buffer.Length);
-                contentStream.Write(buffer, 0, buffer.Length);
+            buffer = RecompileUIntList(ndf.Export);
+            footer.AddEntry("EXPR", contentStream.Position + headerSize, buffer.Length);
+            contentStream.Write(buffer, 0, buffer.Length);
 
-                buffer = RecompileUIntList(ndf.Import);
-                footer.AddEntry("IMPR", contentStream.Position + headerSize, buffer.Length);
-                contentStream.Write(buffer, 0, buffer.Length);
+            buffer = footer.GetBytes();
 
-                buffer = RecompileUIntList(ndf.Export);
-                footer.AddEntry("EXPR", contentStream.Position + headerSize, buffer.Length);
-                contentStream.Write(buffer, 0, buffer.Length);
+            footer.Offset = (ulong)contentStream.Position + NdfbinHeaderSize;
+            contentStream.Write(buffer, 0, buffer.Length);
 
-                buffer = footer.GetBytes();
+            ndf.Footer = footer;
 
-                footer.Offset = (ulong)contentStream.Position + NdfbinHeaderSize;
-                contentStream.Write(buffer, 0, buffer.Length);
-
-                ndf.Footer = footer;
-
-                return contentStream.ToArray();
-            }
+            return contentStream.ToArray();
         }
+    }
 
-        protected byte[] RecompileObj(NdfBinary ndf)
+    protected byte[] RecompileObj(NdfBinary ndf)
+    {
+        List<byte> objectPart = new();
+
+        byte[] objSep = { 0xAB, 0xAB, 0xAB, 0xAB };
+
+        foreach (NdfObject instance in ndf.Instances)
         {
-            var objectPart = new List<byte>();
+            objectPart.AddRange(BitConverter.GetBytes(instance.Class.Id));
 
-            byte[] objSep = { 0xAB, 0xAB, 0xAB, 0xAB };
-
-            foreach (NdfObject instance in ndf.Instances)
+            foreach (NdfPropertyValue propertyValue in instance.PropertyValues)
             {
-                objectPart.AddRange(BitConverter.GetBytes(instance.Class.Id));
+                if (propertyValue.Type == NdfType.Unset)
+                    continue;
 
-                foreach (NdfPropertyValue propertyValue in instance.PropertyValues)
-                {
-                    if (propertyValue.Type == NdfType.Unset)
-                        continue;
+                byte[] valueBytes = propertyValue.Value.GetBytes();
 
-                    byte[] valueBytes = propertyValue.Value.GetBytes();
+                if (propertyValue.Value.Type == NdfType.Unset)
+                    continue;
 
-                    if (propertyValue.Value.Type == NdfType.Unset)
-                        continue;
+                objectPart.AddRange(BitConverter.GetBytes(propertyValue.Property.Id));
 
-                    objectPart.AddRange(BitConverter.GetBytes(propertyValue.Property.Id));
+                if (propertyValue.Value.Type is NdfType.ObjectReference or
+                    NdfType.TransTableReference)
+                    objectPart.AddRange(BitConverter.GetBytes((uint)NdfType.Reference));
 
-                    if (propertyValue.Value.Type == NdfType.ObjectReference ||
-                        propertyValue.Value.Type == NdfType.TransTableReference)
-                        objectPart.AddRange(BitConverter.GetBytes((uint)NdfType.Reference));
-
-                    objectPart.AddRange(BitConverter.GetBytes((uint)propertyValue.Value.Type));
-                    objectPart.AddRange(valueBytes);
-                }
-
-                objectPart.AddRange(objSep);
+                objectPart.AddRange(BitConverter.GetBytes((uint)propertyValue.Value.Type));
+                objectPart.AddRange(valueBytes);
             }
 
-            return objectPart.ToArray();
+            objectPart.AddRange(objSep);
         }
 
-        protected byte[] RecompileTopo(NdfBinary ndf)
+        return objectPart.ToArray();
+    }
+
+    protected byte[] RecompileTopo(NdfBinary ndf)
+    {
+        using (MemoryStream ms = new())
         {
-            using (var ms = new MemoryStream())
+            List<NdfObject> topInsts = ndf.Instances.Where(x => x.IsTopObject).ToList();
+
+
+            //var writeInsts = new HashSet<NdfObject>();
+
+            //foreach (NdfObject inst in topInsts)
+            //{
+            //    if (writeInsts.Contains(inst))
+            //        continue;
+
+            //    writeInsts.Add(inst);
+
+            //    int nextItemId = topInsts.IndexOf(inst) + 1;
+
+            //    if (topInsts.Count > nextItemId && topInsts[nextItemId].Class != inst.Class)
+            //    {
+            //        IEnumerable<NdfObject> othersOfSameClass =
+            //            topInsts.GetRange(nextItemId, topInsts.Count - nextItemId).Where(
+            //                x => x.Class == inst.Class && !writeInsts.Contains(x));
+
+            //        foreach (NdfObject o in othersOfSameClass)
+            //            writeInsts.Add(o);
+            //    }
+            //}
+
+            IOrderedEnumerable<NdfObject> test = topInsts.OrderBy(x => x.Class.Id);
+
+            foreach (NdfObject instance in test)
             {
-                List<NdfObject> topInsts = ndf.Instances.Where(x => x.IsTopObject).ToList();
-
-
-                //var writeInsts = new HashSet<NdfObject>();
-
-                //foreach (NdfObject inst in topInsts)
-                //{
-                //    if (writeInsts.Contains(inst))
-                //        continue;
-
-                //    writeInsts.Add(inst);
-
-                //    int nextItemId = topInsts.IndexOf(inst) + 1;
-
-                //    if (topInsts.Count > nextItemId && topInsts[nextItemId].Class != inst.Class)
-                //    {
-                //        IEnumerable<NdfObject> othersOfSameClass =
-                //            topInsts.GetRange(nextItemId, topInsts.Count - nextItemId).Where(
-                //                x => x.Class == inst.Class && !writeInsts.Contains(x));
-
-                //        foreach (NdfObject o in othersOfSameClass)
-                //            writeInsts.Add(o);
-                //    }
-                //}
-
-                var test = topInsts.OrderBy(x => x.Class.Id);
-
-                foreach (NdfObject instance in test)
-                {
-                    byte[] buffer = BitConverter.GetBytes(instance.Id);
-                    ms.Write(buffer, 0, buffer.Length);
-                }
-
-                return ms.ToArray();
-            }
-        }
-
-        protected byte[] RecompileChnk(NdfBinary ndf)
-        {
-            var chnk = new List<byte>();
-
-            chnk.AddRange(BitConverter.GetBytes((uint)0));
-            chnk.AddRange(BitConverter.GetBytes(ndf.Instances.Count));
-
-            return chnk.ToArray();
-        }
-
-        protected byte[] RecompileClas(NdfBinary ndf)
-        {
-            var clasData = new List<byte>();
-
-            foreach (var clas in ndf.Classes.OrderBy(x => x.Id))
-            {
-                var nameData = Encoding.GetEncoding("ISO-8859-1").GetBytes(clas.Name);
-                clasData.AddRange(BitConverter.GetBytes(nameData.Length));
-                clasData.AddRange(nameData);
+                byte[] buffer = BitConverter.GetBytes(instance.Id);
+                ms.Write(buffer, 0, buffer.Length);
             }
 
-            return clasData.ToArray();
+            return ms.ToArray();
         }
+    }
 
-        protected byte[] RecompileProp(NdfBinary ndf)
+    protected byte[] RecompileChnk(NdfBinary ndf)
+    {
+        List<byte> chnk = new();
+
+        chnk.AddRange(BitConverter.GetBytes((uint)0));
+        chnk.AddRange(BitConverter.GetBytes(ndf.Instances.Count));
+
+        return chnk.ToArray();
+    }
+
+    protected byte[] RecompileClas(NdfBinary ndf)
+    {
+        List<byte> clasData = new();
+
+        foreach (NdfClass clas in ndf.Classes.OrderBy(x => x.Id))
         {
-            var propData = new List<byte>();
-
-            var props = new List<NdfProperty>();
-
-            foreach (var clas in ndf.Classes)
-                props.AddRange(clas.Properties);
-
-            foreach (var prop in props.OrderBy(x => x.Id))
-            {
-                var nameData = Encoding.GetEncoding("ISO-8859-1").GetBytes(prop.Name);
-                propData.AddRange(BitConverter.GetBytes(nameData.Length));
-                propData.AddRange(nameData);
-                propData.AddRange(BitConverter.GetBytes(prop.Class.Id));
-            }
-
-            return propData.ToArray();
+            byte[] nameData = Encoding.GetEncoding("ISO-8859-1").GetBytes(clas.Name);
+            clasData.AddRange(BitConverter.GetBytes(nameData.Length));
+            clasData.AddRange(nameData);
         }
 
-        protected byte[] RecompileStrTable(IEnumerable<NdfStringReference> table)
+        return clasData.ToArray();
+    }
+
+    protected byte[] RecompileProp(NdfBinary ndf)
+    {
+        List<byte> propData = new();
+
+        List<NdfProperty> props = new();
+
+        foreach (NdfClass clas in ndf.Classes)
+            props.AddRange(clas.Properties);
+
+        foreach (NdfProperty prop in props.OrderBy(x => x.Id))
         {
-            var strBlock = new List<byte>();
-
-            foreach (NdfStringReference stringReference in table)
-            {
-                strBlock.AddRange(BitConverter.GetBytes(stringReference.Value.Length));
-                strBlock.AddRange(Encoding.GetEncoding("ISO-8859-1").GetBytes(stringReference.Value));
-            }
-
-            return strBlock.ToArray();
+            byte[] nameData = Encoding.GetEncoding("ISO-8859-1").GetBytes(prop.Name);
+            propData.AddRange(BitConverter.GetBytes(nameData.Length));
+            propData.AddRange(nameData);
+            propData.AddRange(BitConverter.GetBytes(prop.Class.Id));
         }
 
-        protected byte[] RecompileUIntList(IEnumerable<uint>  lst)
+        return propData.ToArray();
+    }
+
+    protected byte[] RecompileStrTable(IEnumerable<NdfStringReference> table)
+    {
+        List<byte> strBlock = new();
+
+        foreach (NdfStringReference stringReference in table)
         {
-            var data = new List<byte>();
-
-            foreach (var u in lst)
-                data.AddRange(BitConverter.GetBytes(u));
-
-            return data.ToArray();
+            strBlock.AddRange(BitConverter.GetBytes(stringReference.Value.Length));
+            strBlock.AddRange(Encoding.GetEncoding("ISO-8859-1").GetBytes(stringReference.Value));
         }
+
+        return strBlock.ToArray();
+    }
+
+    protected byte[] RecompileUIntList(IEnumerable<uint> lst)
+    {
+        List<byte> data = new();
+
+        foreach (uint u in lst)
+            data.AddRange(BitConverter.GetBytes(u));
+
+        return data.ToArray();
     }
 }

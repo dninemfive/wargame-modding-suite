@@ -1,10 +1,9 @@
-﻿namespace moddingSuite.Model.Ndfbin.Types.AllTypes
+﻿namespace moddingSuite.Model.Ndfbin.Types.AllTypes;
+
+public class NdfFileNameString : NdfString
 {
-    public class NdfFileNameString : NdfString
+    public NdfFileNameString(NdfStringReference value) : base(value)
     {
-        public NdfFileNameString(NdfStringReference value) : base(value)
-        {
-            Type = NdfType.TableStringFile;
-        }
+        Type = NdfType.TableStringFile;
     }
 }

@@ -1,41 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace moddingSuite.Model.Ndfbin.ChangeManager;
 
-namespace moddingSuite.Model.Ndfbin.ChangeManager
+public class ObjectReferenceChangeEntry : ChangeEntryBase
 {
-    public class ObjectReferenceChangeEntry : ChangeEntryBase
+    private uint _classId;
+    private uint _instanceId;
+
+    public ObjectReferenceChangeEntry(NdfPropertyValue affectedPropertyValue, uint classId, uint instanceId)
+        : base(affectedPropertyValue)
     {
-        private uint _classId;
-        private uint _instanceId;
+        ClassId = classId;
+        InstanceId = instanceId;
+    }
 
-        public ObjectReferenceChangeEntry(NdfPropertyValue affectedPropertyValue, uint classId, uint instanceId)
-            : base(affectedPropertyValue)
+    public uint ClassId
+    {
+        get { return _classId; }
+        set
         {
-            ClassId = classId;
-            InstanceId = instanceId;
+            _classId = value;
+            OnPropertyChanged("ClassId");
         }
+    }
 
-        public uint ClassId
+    public uint InstanceId
+    {
+        get { return _instanceId; }
+        set
         {
-            get { return _classId; }
-            set
-            {
-                _classId = value;
-                OnPropertyChanged("ClassId");
-            }
-        }
-
-        public uint InstanceId
-        {
-            get { return _instanceId; }
-            set
-            {
-                _instanceId = value;
-                OnPropertyChanged("InstanceId");
-            }
+            _instanceId = value;
+            OnPropertyChanged("InstanceId");
         }
     }
 }

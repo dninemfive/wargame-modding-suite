@@ -1,10 +1,9 @@
-﻿namespace moddingSuite.ViewModel.Filter
+﻿namespace moddingSuite.ViewModel.Filter;
+
+public enum FilterDiscriminator
 {
-    public enum FilterDiscriminator
-    {
-        Equals,
-        Smaller,
-        Greater,
-        Contains
-    }
+    Equals,
+    Smaller,
+    Greater,
+    Contains
 }

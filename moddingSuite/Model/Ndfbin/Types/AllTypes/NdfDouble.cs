@@ -1,39 +1,37 @@
-﻿using System;
-using moddingSuite.BL;
-using moddingSuite.BL.Ndf;
+﻿using moddingSuite.BL.Ndf;
+using System;
 
-namespace moddingSuite.Model.Ndfbin.Types.AllTypes
+namespace moddingSuite.Model.Ndfbin.Types.AllTypes;
+
+public class NdfDouble : NdfFlatValueWrapper
 {
-    public class NdfDouble : NdfFlatValueWrapper
+    public NdfDouble(double value)
+        : base(NdfType.Float64, value)
     {
-        public NdfDouble(double value)
-            : base(NdfType.Float64, value)
-        {
-        }
+    }
 
-        public new double Value
+    public new double Value
+    {
+        get { return (double)base.Value; }
+        set
         {
-            get { return (double)base.Value; }
-            set
-            {
-                base.Value = value;
-                OnPropertyChanged("Value");
-            }
+            base.Value = value;
+            OnPropertyChanged("Value");
         }
+    }
 
-        public override byte[] GetBytes()
-        {
-            return BitConverter.GetBytes(Convert.ToDouble(Value));
-        }
+    public override byte[] GetBytes()
+    {
+        return BitConverter.GetBytes(Convert.ToDouble(Value));
+    }
 
-        public override string ToString()
-        {
-            return string.Format("{0:0.###################################}", Value);
-        }
+    public override string ToString()
+    {
+        return string.Format("{0:0.###################################}", Value);
+    }
 
-        public override byte[] GetNdfText()
-        {
-            return NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
-        }
+    public override byte[] GetNdfText()
+    {
+        return NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
     }
 }

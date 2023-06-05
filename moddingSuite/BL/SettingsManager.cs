@@ -1,77 +1,76 @@
-﻿using System;
+﻿using moddingSuite.Model.Settings;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Xml.Serialization;
-using moddingSuite.Model.Settings;
 
-namespace moddingSuite.BL
+namespace moddingSuite.BL;
+
+public static class SettingsManager
 {
-    public static class SettingsManager
+    public static readonly string SettingsPath =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "edataFileManager", "settings.xml");
+
+    //private static Settings LastLoadedSettings { get; set; }
+
+    public static Settings Load()
     {
-        public static readonly string SettingsPath =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "edataFileManager", "settings.xml");
+        Settings settings = new();
 
-        //private static Settings LastLoadedSettings { get; set; }
-
-        public static Settings Load()
+        if (!File.Exists(SettingsPath))
         {
-            var settings = new Settings();
-
-            if (!File.Exists(SettingsPath))
-            {
-                return settings;
-            }
-
-            var serializer = new XmlSerializer(typeof (Settings));
-            using (var fs = new FileStream(SettingsPath, FileMode.Open))
-            {
-                try
-                {
-                    settings = serializer.Deserialize(fs) as Settings;
-                    settings.InitialSettings = false;
-                }
-                catch (InvalidOperationException ex)
-                {
-                    Trace.TraceError($"Error while loading Settings: {ex}");
-                }
-            }
-
             return settings;
         }
 
-        public static bool Save(Settings settingsToSave)
+        XmlSerializer serializer = new(typeof (Settings));
+        using (FileStream fs = new(SettingsPath, FileMode.Open))
         {
-            if (settingsToSave == null)
-                return false;
-
-            string dir = Path.GetDirectoryName(SettingsPath);
-
-            if (dir != null && !Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
             try
             {
-                using (FileStream fs = File.Create(SettingsPath))
-                {
-                    var serializer = new XmlSerializer(typeof (Settings));
-
-                    serializer.Serialize(fs, settingsToSave);
-
-                    fs.Flush();
-                }
+                settings = serializer.Deserialize(fs) as Settings;
+                settings.InitialSettings = false;
             }
-            catch (UnauthorizedAccessException uaex)
+            catch (InvalidOperationException ex)
             {
-                Trace.TraceError("Error while saving settings: {0}", uaex);
-                return false;
+                Trace.TraceError($"Error while loading Settings: {ex}");
             }
-            catch (IOException ioex)
-            {
-                Trace.TraceError("Error while saving settings: {0}", ioex);
-                return false;
-            }
-
-            return true;
         }
+
+        return settings;
+    }
+
+    public static bool Save(Settings settingsToSave)
+    {
+        if (settingsToSave == null)
+            return false;
+
+        string dir = Path.GetDirectoryName(SettingsPath);
+
+        if (dir != null && !Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
+
+        try
+        {
+            using (FileStream fs = File.Create(SettingsPath))
+            {
+                XmlSerializer serializer = new(typeof (Settings));
+
+                serializer.Serialize(fs, settingsToSave);
+
+                fs.Flush();
+            }
+        }
+        catch (UnauthorizedAccessException uaex)
+        {
+            Trace.TraceError("Error while saving settings: {0}", uaex);
+            return false;
+        }
+        catch (IOException ioex)
+        {
+            Trace.TraceError("Error while saving settings: {0}", ioex);
+            return false;
+        }
+
+        return true;
     }
 }

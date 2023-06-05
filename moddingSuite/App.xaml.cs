@@ -1,90 +1,91 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Threading;
-using moddingSuite.BL;
+﻿using moddingSuite.BL;
 using moddingSuite.View;
 using moddingSuite.View.DialogProvider;
 using moddingSuite.View.Edata;
 using moddingSuite.ViewModel.Edata;
 using moddingSuite.ViewModel.UnhandledException;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Threading;
 
-namespace moddingSuite
+namespace moddingSuite;
+
+/// <summary>
+///     Interaction logic for App.xaml
+/// </summary>
+public partial class App : Application
 {
-    /// <summary>
-    ///     Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    public App()
     {
-        public App()
+        DispatcherUnhandledException += App_DispatcherUnhandledException;
+
+        string path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+
+        if (path != null)
         {
-            DispatcherUnhandledException += App_DispatcherUnhandledException;
+            string file = Path.Combine(path, $"logging_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ff")}.dat");
 
-            var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-
-            if (path != null)
-            {
-                var file = Path.Combine(path, $"logging_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ff")}.dat");
-
-                Trace.Listeners.Add(new TextWriterTraceListener(file));
-                Trace.AutoFlush = true;
-            }
+            Trace.Listeners.Add(new TextWriterTraceListener(file));
+            Trace.AutoFlush = true;
         }
+    }
 
-        protected override void OnStartup(StartupEventArgs e)
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        base.OnStartup(e);
+
+        bool startApplication = false;
+
+        Model.Settings.Settings settings = SettingsManager.Load();
+        EdataManagerView mgr = new();
+
+
+        if (settings.InitialSettings)
         {
-            base.OnStartup(e);
-
-            var startApplication = false;
-
-            var settings = SettingsManager.Load();
-            var mgr = new EdataManagerView();
-
-
-            if (settings.InitialSettings)
+            SettingsView settingsView = new()
             {
-                var settingsView = new SettingsView();
-                settingsView.DataContext = settings;
+                DataContext = settings
+            };
 
-                var result = settingsView.ShowDialog();
-                if (result.GetValueOrDefault(false))
-                {
-                    if (Directory.Exists(settings.SavePath) && Directory.Exists(settings.WargamePath))
-                        settings.InitialSettings = false;
-
-                    SettingsManager.Save(settings);
-                    startApplication = true;
-                }
-            }
-            else
+            bool? result = settingsView.ShowDialog();
+            if (result.GetValueOrDefault(false))
             {
+                if (Directory.Exists(settings.SavePath) && Directory.Exists(settings.WargamePath))
+                    settings.InitialSettings = false;
+
+                SettingsManager.Save(settings);
                 startApplication = true;
             }
-
-            if (startApplication)
-            {
-                var mainVm = new EdataManagerViewModel();
-                mgr.DataContext = mainVm;
-                mgr.Show();
-            }
+        }
+        else
+        {
+            startApplication = true;
         }
 
-        private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        if (startApplication)
         {
-            e.Handled = true;
+            EdataManagerViewModel mainVm = new();
+            mgr.DataContext = mainVm;
+            mgr.Show();
+        }
+    }
 
-            var vm = new UnhandledExceptionViewModel(e.Exception);
-            DialogProvider.ProvideView(vm);
+    private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        e.Handled = true;
 
-            var excep = e.Exception;
+        UnhandledExceptionViewModel vm = new(e.Exception);
+        DialogProvider.ProvideView(vm);
 
-            while (excep != null)
-            {
-                Trace.TraceError("Unhandeled exception occoured: {0}", e.Exception);
-                excep = excep.InnerException;
-            }
+        Exception excep = e.Exception;
+
+        while (excep != null)
+        {
+            Trace.TraceError("Unhandeled exception occoured: {0}", e.Exception);
+            excep = excep.InnerException;
         }
     }
 }

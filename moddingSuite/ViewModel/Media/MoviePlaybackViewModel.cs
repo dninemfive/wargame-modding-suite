@@ -1,24 +1,23 @@
 ﻿using moddingSuite.ViewModel.Base;
 
-namespace moddingSuite.ViewModel.Media
+namespace moddingSuite.ViewModel.Media;
+
+public class MoviePlaybackViewModel : ViewModelBase
 {
-    public class MoviePlaybackViewModel : ViewModelBase
+    private string _file;
+
+    public MoviePlaybackViewModel(string file)
     {
-        private string _file;
+        _file = file;
+    }
 
-        public MoviePlaybackViewModel(string file)
+    public string File
+    {
+        get { return _file; }
+        set
         {
-            _file = file;
-        }
-
-        public string File
-        {
-            get { return _file; }
-            set
-            {
-                _file = value;
-                OnPropertyChanged(() => File);
-            }
+            _file = value;
+            OnPropertyChanged(() => File);
         }
     }
 }

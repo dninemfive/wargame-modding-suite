@@ -145,113 +145,113 @@ public class DDS
     /// <returns></returns>
     public static int GetBitsPerPixel(PixelFormats format) => format switch
     {
-        PixelFormats.R32G32B32A32_TYPELESS or 
-        PixelFormats.R32G32B32A32_FLOAT or 
-        PixelFormats.R32G32B32A32_UINT or 
-        PixelFormats.R32G32B32A32_SINT 
+        PixelFormats.R32G32B32A32_TYPELESS or
+        PixelFormats.R32G32B32A32_FLOAT or
+        PixelFormats.R32G32B32A32_UINT or
+        PixelFormats.R32G32B32A32_SINT
             => 128,
-        PixelFormats.R32G32B32_TYPELESS or 
-        PixelFormats.R32G32B32_FLOAT or 
-        PixelFormats.R32G32B32_UINT or 
-        PixelFormats.R32G32B32_SINT 
+        PixelFormats.R32G32B32_TYPELESS or
+        PixelFormats.R32G32B32_FLOAT or
+        PixelFormats.R32G32B32_UINT or
+        PixelFormats.R32G32B32_SINT
             => 96,
-        PixelFormats.R16G16B16A16_TYPELESS or 
-        PixelFormats.R16G16B16A16_FLOAT or 
-        PixelFormats.R16G16B16A16_UNORM or 
-        PixelFormats.R16G16B16A16_UINT or 
-        PixelFormats.R16G16B16A16_SNORM or 
-        PixelFormats.R16G16B16A16_SINT or 
-        PixelFormats.R32G32_TYPELESS or 
-        PixelFormats.R32G32_FLOAT or 
-        PixelFormats.R32G32_UINT or 
-        PixelFormats.R32G32_SINT or 
-        PixelFormats.R32G8X24_TYPELESS or 
-        PixelFormats.D32_FLOAT_S8X24_UINT or 
-        PixelFormats.R32_FLOAT_X8X24_TYPELESS or 
-        PixelFormats.X32_TYPELESS_G8X24_UINT 
+        PixelFormats.R16G16B16A16_TYPELESS or
+        PixelFormats.R16G16B16A16_FLOAT or
+        PixelFormats.R16G16B16A16_UNORM or
+        PixelFormats.R16G16B16A16_UINT or
+        PixelFormats.R16G16B16A16_SNORM or
+        PixelFormats.R16G16B16A16_SINT or
+        PixelFormats.R32G32_TYPELESS or
+        PixelFormats.R32G32_FLOAT or
+        PixelFormats.R32G32_UINT or
+        PixelFormats.R32G32_SINT or
+        PixelFormats.R32G8X24_TYPELESS or
+        PixelFormats.D32_FLOAT_S8X24_UINT or
+        PixelFormats.R32_FLOAT_X8X24_TYPELESS or
+        PixelFormats.X32_TYPELESS_G8X24_UINT
             => 64,
-        PixelFormats.R10G10B10A2_TYPELESS or 
-        PixelFormats.R10G10B10A2_UNORM or 
-        PixelFormats.R10G10B10A2_UINT or 
-        PixelFormats.R11G11B10_FLOAT or 
-        PixelFormats.R8G8B8A8_TYPELESS or 
-        PixelFormats.R8G8B8A8_UNORM or 
-        PixelFormats.R8G8B8A8_UNORM_SRGB or 
-        PixelFormats.R8G8B8A8_UINT or 
-        PixelFormats.R8G8B8A8_SNORM or 
-        PixelFormats.R8G8B8A8_SINT or 
-        PixelFormats.R16G16_TYPELESS or 
-        PixelFormats.R16G16_FLOAT or 
-        PixelFormats.R16G16_UNORM or 
-        PixelFormats.R16G16_UINT or 
-        PixelFormats.R16G16_SNORM or 
-        PixelFormats.R16G16_SINT or 
-        PixelFormats.R32_TYPELESS or 
-        PixelFormats.D32_FLOAT or 
-        PixelFormats.R32_FLOAT or 
-        PixelFormats.R32_UINT or 
-        PixelFormats.R32_SINT or 
-        PixelFormats.R24G8_TYPELESS or 
-        PixelFormats.D24_UNORM_S8_UINT or 
-        PixelFormats.R24_UNORM_X8_TYPELESS or 
-        PixelFormats.X24_TYPELESS_G8_UINT or 
-        PixelFormats.R9G9B9E5_SHAREDEXP or 
-        PixelFormats.R8G8_B8G8_UNORM or 
-        PixelFormats.G8R8_G8B8_UNORM or 
-        PixelFormats.B8G8R8A8_UNORM or 
-        PixelFormats.B8G8R8X8_UNORM or 
-        PixelFormats.R10G10B10_XR_BIAS_A2_UNORM or 
-        PixelFormats.B8G8R8A8_TYPELESS or 
-        PixelFormats.B8G8R8A8_UNORM_SRGB or 
-        PixelFormats.B8G8R8X8_TYPELESS or 
-        PixelFormats.B8G8R8X8_UNORM_SRGB 
+        PixelFormats.R10G10B10A2_TYPELESS or
+        PixelFormats.R10G10B10A2_UNORM or
+        PixelFormats.R10G10B10A2_UINT or
+        PixelFormats.R11G11B10_FLOAT or
+        PixelFormats.R8G8B8A8_TYPELESS or
+        PixelFormats.R8G8B8A8_UNORM or
+        PixelFormats.R8G8B8A8_UNORM_SRGB or
+        PixelFormats.R8G8B8A8_UINT or
+        PixelFormats.R8G8B8A8_SNORM or
+        PixelFormats.R8G8B8A8_SINT or
+        PixelFormats.R16G16_TYPELESS or
+        PixelFormats.R16G16_FLOAT or
+        PixelFormats.R16G16_UNORM or
+        PixelFormats.R16G16_UINT or
+        PixelFormats.R16G16_SNORM or
+        PixelFormats.R16G16_SINT or
+        PixelFormats.R32_TYPELESS or
+        PixelFormats.D32_FLOAT or
+        PixelFormats.R32_FLOAT or
+        PixelFormats.R32_UINT or
+        PixelFormats.R32_SINT or
+        PixelFormats.R24G8_TYPELESS or
+        PixelFormats.D24_UNORM_S8_UINT or
+        PixelFormats.R24_UNORM_X8_TYPELESS or
+        PixelFormats.X24_TYPELESS_G8_UINT or
+        PixelFormats.R9G9B9E5_SHAREDEXP or
+        PixelFormats.R8G8_B8G8_UNORM or
+        PixelFormats.G8R8_G8B8_UNORM or
+        PixelFormats.B8G8R8A8_UNORM or
+        PixelFormats.B8G8R8X8_UNORM or
+        PixelFormats.R10G10B10_XR_BIAS_A2_UNORM or
+        PixelFormats.B8G8R8A8_TYPELESS or
+        PixelFormats.B8G8R8A8_UNORM_SRGB or
+        PixelFormats.B8G8R8X8_TYPELESS or
+        PixelFormats.B8G8R8X8_UNORM_SRGB
             => 32,
-        PixelFormats.R8G8_TYPELESS or 
-        PixelFormats.R8G8_UNORM or 
-        PixelFormats.R8G8_UINT or 
-        PixelFormats.R8G8_SNORM or 
-        PixelFormats.R8G8_SINT or 
-        PixelFormats.R16_TYPELESS or 
-        PixelFormats.R16_FLOAT or 
-        PixelFormats.D16_UNORM or 
-        PixelFormats.R16_UNORM or 
-        PixelFormats.R16_UINT or 
-        PixelFormats.R16_SNORM or 
-        PixelFormats.R16_SINT or 
-        PixelFormats.B5G6R5_UNORM or 
-        PixelFormats.B5G5R5A1_UNORM or 
-        PixelFormats.B4G4R4A4_UNORM 
+        PixelFormats.R8G8_TYPELESS or
+        PixelFormats.R8G8_UNORM or
+        PixelFormats.R8G8_UINT or
+        PixelFormats.R8G8_SNORM or
+        PixelFormats.R8G8_SINT or
+        PixelFormats.R16_TYPELESS or
+        PixelFormats.R16_FLOAT or
+        PixelFormats.D16_UNORM or
+        PixelFormats.R16_UNORM or
+        PixelFormats.R16_UINT or
+        PixelFormats.R16_SNORM or
+        PixelFormats.R16_SINT or
+        PixelFormats.B5G6R5_UNORM or
+        PixelFormats.B5G5R5A1_UNORM or
+        PixelFormats.B4G4R4A4_UNORM
             => 16,
-        PixelFormats.R8_TYPELESS or 
-        PixelFormats.R8_UNORM or 
-        PixelFormats.R8_UINT or 
-        PixelFormats.R8_SNORM or 
-        PixelFormats.R8_SINT or 
-        PixelFormats.A8_UNORM 
+        PixelFormats.R8_TYPELESS or
+        PixelFormats.R8_UNORM or
+        PixelFormats.R8_UINT or
+        PixelFormats.R8_SNORM or
+        PixelFormats.R8_SINT or
+        PixelFormats.A8_UNORM
             => 8,
         PixelFormats.R1_UNORM => 1,
-        PixelFormats.BC1_TYPELESS or 
-        PixelFormats.BC1_UNORM or 
-        PixelFormats.BC1_UNORM_SRGB or 
-        PixelFormats.BC4_TYPELESS or 
-        PixelFormats.BC4_UNORM or 
-        PixelFormats.BC4_SNORM 
+        PixelFormats.BC1_TYPELESS or
+        PixelFormats.BC1_UNORM or
+        PixelFormats.BC1_UNORM_SRGB or
+        PixelFormats.BC4_TYPELESS or
+        PixelFormats.BC4_UNORM or
+        PixelFormats.BC4_SNORM
             => 4,
-        PixelFormats.BC2_TYPELESS or 
-        PixelFormats.BC2_UNORM or 
-        PixelFormats.BC2_UNORM_SRGB or 
-        PixelFormats.BC3_TYPELESS or 
-        PixelFormats.BC3_UNORM or 
-        PixelFormats.BC3_UNORM_SRGB or 
-        PixelFormats.BC5_TYPELESS or 
-        PixelFormats.BC5_UNORM or 
-        PixelFormats.BC5_SNORM or 
-        PixelFormats.BC6H_TYPELESS or 
-        PixelFormats.BC6H_UF16 or 
-        PixelFormats.BC6H_SF16 or 
-        PixelFormats.BC7_TYPELESS or 
-        PixelFormats.BC7_UNORM or 
-        PixelFormats.BC7_UNORM_SRGB 
+        PixelFormats.BC2_TYPELESS or
+        PixelFormats.BC2_UNORM or
+        PixelFormats.BC2_UNORM_SRGB or
+        PixelFormats.BC3_TYPELESS or
+        PixelFormats.BC3_UNORM or
+        PixelFormats.BC3_UNORM_SRGB or
+        PixelFormats.BC5_TYPELESS or
+        PixelFormats.BC5_UNORM or
+        PixelFormats.BC5_SNORM or
+        PixelFormats.BC6H_TYPELESS or
+        PixelFormats.BC6H_UF16 or
+        PixelFormats.BC6H_SF16 or
+        PixelFormats.BC7_TYPELESS or
+        PixelFormats.BC7_UNORM or
+        PixelFormats.BC7_UNORM_SRGB
             => 8,
         _ => 0,
     };
@@ -268,16 +268,16 @@ public class DDS
                            or PixelFormats.BC1_UNORM_SRGB
                            or PixelFormats.BC4_TYPELESS
                            or PixelFormats.BC4_UNORM
-                           or PixelFormats.BC4_SNORM) 
+                           or PixelFormats.BC4_SNORM)
                            ? 8 : 16;
-            widthCount = Math.Max(1, (width + 3)/4);
-            heightCount = Math.Max(1, (height + 3)/4);
+            widthCount = Math.Max(1, (width + 3) / 4);
+            heightCount = Math.Max(1, (height + 3) / 4);
             rowPitch = widthCount * bpb;
             slicePitch = rowPitch * heightCount;
         }
         else if (IsPacked(fmt))
         {
-            rowPitch = ((width + 1) >> 1)*4;
+            rowPitch = ((width + 1) >> 1) * 4;
             slicePitch = rowPitch * height;
         }
         else
@@ -296,13 +296,13 @@ public class DDS
             {
                 // Special computation for some incorrectly created DDS files based on
                 // legacy DirectDraw assumptions about pitch alignment
-                rowPitch = ((width*bpp + 31)/32)*sizeof (int);
-                slicePitch = rowPitch*height;
+                rowPitch = ((width * bpp + 31) / 32) * sizeof(int);
+                slicePitch = rowPitch * height;
             }
             else
             {
-                rowPitch = (width*bpp + 7)/8;
-                slicePitch = rowPitch*height;
+                rowPitch = (width * bpp + 7) / 8;
+                slicePitch = rowPitch * height;
             }
         }
     }
@@ -311,27 +311,27 @@ public class DDS
     {
         return format switch
         {
-            PixelFormats.BC1_TYPELESS or 
-            PixelFormats.BC1_UNORM or 
-            PixelFormats.BC1_UNORM_SRGB or 
-            PixelFormats.BC2_TYPELESS or 
-            PixelFormats.BC2_UNORM or 
-            PixelFormats.BC2_UNORM_SRGB or 
-            PixelFormats.BC3_TYPELESS or 
-            PixelFormats.BC3_UNORM or 
-            PixelFormats.BC3_UNORM_SRGB or 
-            PixelFormats.BC4_TYPELESS or 
-            PixelFormats.BC4_UNORM or 
-            PixelFormats.BC4_SNORM or 
-            PixelFormats.BC5_TYPELESS or 
-            PixelFormats.BC5_UNORM or 
-            PixelFormats.BC5_SNORM or 
-            PixelFormats.BC6H_TYPELESS or 
-            PixelFormats.BC6H_UF16 or 
-            PixelFormats.BC6H_SF16 or 
-            PixelFormats.BC7_TYPELESS or 
-            PixelFormats.BC7_UNORM or 
-            PixelFormats.BC7_UNORM_SRGB 
+            PixelFormats.BC1_TYPELESS or
+            PixelFormats.BC1_UNORM or
+            PixelFormats.BC1_UNORM_SRGB or
+            PixelFormats.BC2_TYPELESS or
+            PixelFormats.BC2_UNORM or
+            PixelFormats.BC2_UNORM_SRGB or
+            PixelFormats.BC3_TYPELESS or
+            PixelFormats.BC3_UNORM or
+            PixelFormats.BC3_UNORM_SRGB or
+            PixelFormats.BC4_TYPELESS or
+            PixelFormats.BC4_UNORM or
+            PixelFormats.BC4_SNORM or
+            PixelFormats.BC5_TYPELESS or
+            PixelFormats.BC5_UNORM or
+            PixelFormats.BC5_SNORM or
+            PixelFormats.BC6H_TYPELESS or
+            PixelFormats.BC6H_UF16 or
+            PixelFormats.BC6H_SF16 or
+            PixelFormats.BC7_TYPELESS or
+            PixelFormats.BC7_UNORM or
+            PixelFormats.BC7_UNORM_SRGB
                 => true,
             _ => false,
         };
@@ -403,7 +403,7 @@ public class DDS
                 ddpf = PixelFormat.X8R8G8B8;
                 break; // DXGI 1.1
 
-                // Legacy D3DX formats using D3DFMT enum value as FourCC
+            // Legacy D3DX formats using D3DFMT enum value as FourCC
             case PixelFormats.R32G32B32A32_FLOAT:
                 ddpf.Size = 32;
                 ddpf.Flags = PixelFormatFlags.FourCC;
@@ -548,69 +548,69 @@ public class DDS
         public static readonly PixelFormat DXT2 = new(PixelFormatFlags.FourCC,
                                                       new FourCC('D', 'X', 'T', '2'), 0, 0, 0, 0, 0);
 
-        public static readonly PixelFormat DXT3 = new PixelFormat(PixelFormatFlags.FourCC,
+        public static readonly PixelFormat DXT3 = new(PixelFormatFlags.FourCC,
                                                                   new FourCC('D', 'X', 'T', '3'), 0, 0, 0, 0, 0);
 
-        public static readonly PixelFormat DXT4 = new PixelFormat(PixelFormatFlags.FourCC,
+        public static readonly PixelFormat DXT4 = new(PixelFormatFlags.FourCC,
                                                                   new FourCC('D', 'X', 'T', '4'), 0, 0, 0, 0, 0);
 
-        public static readonly PixelFormat DXT5 = new PixelFormat(PixelFormatFlags.FourCC,
+        public static readonly PixelFormat DXT5 = new(PixelFormatFlags.FourCC,
                                                                   new FourCC('D', 'X', 'T', '5'), 0, 0, 0, 0, 0);
 
-        public static readonly PixelFormat BC4_UNorm = new PixelFormat(PixelFormatFlags.FourCC,
+        public static readonly PixelFormat BC4_UNorm = new(PixelFormatFlags.FourCC,
                                                                        new FourCC('B', 'C', '4', 'U'), 0, 0, 0, 0, 0);
 
-        public static readonly PixelFormat BC4_SNorm = new PixelFormat(PixelFormatFlags.FourCC,
+        public static readonly PixelFormat BC4_SNorm = new(PixelFormatFlags.FourCC,
                                                                        new FourCC('B', 'C', '4', 'S'), 0, 0, 0, 0, 0);
 
-        public static readonly PixelFormat BC5_UNorm = new PixelFormat(PixelFormatFlags.FourCC,
+        public static readonly PixelFormat BC5_UNorm = new(PixelFormatFlags.FourCC,
                                                                        new FourCC('B', 'C', '5', 'U'), 0, 0, 0, 0, 0);
 
-        public static readonly PixelFormat BC5_SNorm = new PixelFormat(PixelFormatFlags.FourCC,
+        public static readonly PixelFormat BC5_SNorm = new(PixelFormatFlags.FourCC,
                                                                        new FourCC('B', 'C', '5', 'S'), 0, 0, 0, 0, 0);
 
-        public static readonly PixelFormat R8G8_B8G8 = new PixelFormat(PixelFormatFlags.FourCC,
+        public static readonly PixelFormat R8G8_B8G8 = new(PixelFormatFlags.FourCC,
                                                                        new FourCC('R', 'G', 'B', 'G'), 0, 0, 0, 0, 0);
 
-        public static readonly PixelFormat G8R8_G8B8 = new PixelFormat(PixelFormatFlags.FourCC,
+        public static readonly PixelFormat G8R8_G8B8 = new(PixelFormatFlags.FourCC,
                                                                        new FourCC('G', 'R', 'G', 'B'), 0, 0, 0, 0, 0);
 
-        public static readonly PixelFormat A8R8G8B8 = new PixelFormat(PixelFormatFlags.Rgba, 0, 32, 0x00ff0000,
+        public static readonly PixelFormat A8R8G8B8 = new(PixelFormatFlags.Rgba, 0, 32, 0x00ff0000,
                                                                       0x0000ff00, 0x000000ff, 0xff000000);
 
-        public static readonly PixelFormat X8R8G8B8 = new PixelFormat(PixelFormatFlags.Rgb, 0, 32, 0x00ff0000,
+        public static readonly PixelFormat X8R8G8B8 = new(PixelFormatFlags.Rgb, 0, 32, 0x00ff0000,
                                                                       0x0000ff00, 0x000000ff, 0x00000000);
 
-        public static readonly PixelFormat A8B8G8R8 = new PixelFormat(PixelFormatFlags.Rgba, 0, 32, 0x000000ff,
+        public static readonly PixelFormat A8B8G8R8 = new(PixelFormatFlags.Rgba, 0, 32, 0x000000ff,
                                                                       0x0000ff00, 0x00ff0000, 0xff000000);
 
-        public static readonly PixelFormat X8B8G8R8 = new PixelFormat(PixelFormatFlags.Rgb, 0, 32, 0x000000ff,
+        public static readonly PixelFormat X8B8G8R8 = new(PixelFormatFlags.Rgb, 0, 32, 0x000000ff,
                                                                       0x0000ff00, 0x00ff0000, 0x00000000);
 
-        public static readonly PixelFormat G16R16 = new PixelFormat(PixelFormatFlags.Rgb, 0, 32, 0x0000ffff,
+        public static readonly PixelFormat G16R16 = new(PixelFormatFlags.Rgb, 0, 32, 0x0000ffff,
                                                                     0xffff0000, 0x00000000, 0x00000000);
 
-        public static readonly PixelFormat R5G6B5 = new PixelFormat(PixelFormatFlags.Rgb, 0, 16, 0x0000f800,
+        public static readonly PixelFormat R5G6B5 = new(PixelFormatFlags.Rgb, 0, 16, 0x0000f800,
                                                                     0x000007e0, 0x0000001f, 0x00000000);
 
-        public static readonly PixelFormat A1R5G5B5 = new PixelFormat(PixelFormatFlags.Rgba, 0, 16, 0x00007c00,
+        public static readonly PixelFormat A1R5G5B5 = new(PixelFormatFlags.Rgba, 0, 16, 0x00007c00,
                                                                       0x000003e0, 0x0000001f, 0x00008000);
 
-        public static readonly PixelFormat A4R4G4B4 = new PixelFormat(PixelFormatFlags.Rgba, 0, 16, 0x00000f00,
+        public static readonly PixelFormat A4R4G4B4 = new(PixelFormatFlags.Rgba, 0, 16, 0x00000f00,
                                                                       0x000000f0, 0x0000000f, 0x0000f000);
 
-        public static readonly PixelFormat R8G8B8 = new PixelFormat(PixelFormatFlags.Rgb, 0, 24, 0x00ff0000,
+        public static readonly PixelFormat R8G8B8 = new(PixelFormatFlags.Rgb, 0, 24, 0x00ff0000,
                                                                     0x0000ff00, 0x000000ff, 0x00000000);
 
-        public static readonly PixelFormat L8 = new PixelFormat(PixelFormatFlags.Luminance, 0, 8, 0xff, 0x00, 0x00,
+        public static readonly PixelFormat L8 = new(PixelFormatFlags.Luminance, 0, 8, 0xff, 0x00, 0x00,
                                                                 0x00);
 
-        public static readonly PixelFormat L16 = new PixelFormat(PixelFormatFlags.Luminance, 0, 16, 0xffff, 0x0000,
+        public static readonly PixelFormat L16 = new(PixelFormatFlags.Luminance, 0, 16, 0xffff, 0x0000,
                                                                  0x0000, 0x0000);
 
-        public static readonly PixelFormat A8L8 = new PixelFormat(PixelFormatFlags.LuminanceAlpha, 0, 16, 0x00ff,
+        public static readonly PixelFormat A8L8 = new(PixelFormatFlags.LuminanceAlpha, 0, 16, 0x00ff,
                                                                   0x0000, 0x0000, 0xff00);
 
-        public static readonly PixelFormat A8 = new PixelFormat(PixelFormatFlags.Alpha, 0, 8, 0x00, 0x00, 0x00, 0xff);
+        public static readonly PixelFormat A8 = new(PixelFormatFlags.Alpha, 0, 8, 0x00, 0x00, 0x00, 0xff);
     }
 }

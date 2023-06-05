@@ -1,7 +1,6 @@
-﻿namespace moddingSuite.Model.Ndfbin
+﻿namespace moddingSuite.Model.Ndfbin;
+
+public interface INdfScriptSerializable
 {
-    public interface INdfScriptSerializable
-    {
-        byte[] GetNdfText();
-    }
+    byte[] GetNdfText();
 }

@@ -1,141 +1,139 @@
-﻿using System;
+﻿using moddingSuite.BL.Ndf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using moddingSuite.BL;
-using moddingSuite.BL.Ndf;
 
-namespace moddingSuite.Model.Ndfbin.Types.AllTypes
+namespace moddingSuite.Model.Ndfbin.Types.AllTypes;
+
+public class NdfMap : NdfFlatValueWrapper
 {
-    public class NdfMap : NdfFlatValueWrapper
+    private readonly List<NdfType> _typeSelection = new();
+    private MapValueHolder _key;
+
+    private NdfType _keyType = NdfType.Unset;
+    private NdfType _valueType = NdfType.Unset;
+
+    public NdfMap(MapValueHolder key, MapValueHolder value, NdfBinary mgr)
+        : base(NdfType.Map, value)
     {
-        private readonly List<NdfType> _typeSelection = new List<NdfType>();
-        private MapValueHolder _key;
+        Key = key;
+        Manager = mgr;
 
-        private NdfType _keyType = NdfType.Unset;
-        private NdfType _valueType = NdfType.Unset;
+        _typeSelection.AddRange(NdfTypeManager.GetTypeSelection());
+    }
 
-        public NdfMap(MapValueHolder key, MapValueHolder value, NdfBinary mgr)
-            : base(NdfType.Map, value)
+    public NdfBinary Manager { get; protected set; }
+
+    public NdfType KeyType
+    {
+        get { return _keyType; }
+        set
         {
-            Key = key;
-            Manager = mgr;
-
-            _typeSelection.AddRange(NdfTypeManager.GetTypeSelection());
+            _keyType = value;
+            GetValueForType(true);
+            OnPropertyChanged(() => KeyType);
         }
+    }
 
-        public NdfBinary Manager { get; protected set; }
-
-        public NdfType KeyType
+    public NdfType ValueType
+    {
+        get { return _valueType; }
+        set
         {
-            get { return _keyType; }
-            set
-            {
-                _keyType = value;
-                GetValueForType(true);
-                OnPropertyChanged(() => KeyType);
-            }
+            _valueType = value;
+            GetValueForType(false);
+            OnPropertyChanged(() => ValueType);
         }
+    }
 
-        public NdfType ValueType
+    public List<NdfType> TypeSelection
+    {
+        get { return _typeSelection; }
+    }
+
+    public bool IsKeyNull
+    {
+        get { return Key.Value == null; }
+    }
+
+    public bool IsValueNull
+    {
+        get { return ((MapValueHolder)Value).Value == null; }
+    }
+
+    public MapValueHolder Key
+    {
+        get { return _key; }
+        set
         {
-            get { return _valueType; }
-            set
-            {
-                _valueType = value;
-                GetValueForType(false);
-                OnPropertyChanged(() => ValueType);
-            }
+            _key = value;
+            OnPropertyChanged("Key");
         }
+    }
 
-        public List<NdfType> TypeSelection
-        {
-            get { return _typeSelection; }
-        }
+    private void GetValueForType(bool keyOrValue)
+    {
+        if (keyOrValue)
+            Key =
+                new MapValueHolder(
+                    NdfTypeManager.GetValue(new byte[NdfTypeManager.SizeofType(KeyType)], KeyType, Manager), Manager);
+        else
+            Value =
+                new MapValueHolder(
+                    NdfTypeManager.GetValue(new byte[NdfTypeManager.SizeofType(ValueType)], ValueType, Manager), Manager);
 
-        public bool IsKeyNull
-        {
-            get { return Key.Value == null; }
-        }
+        OnPropertyChanged("IsKeyNull");
+        OnPropertyChanged("IsValueNull");
+    }
 
-        public bool IsValueNull
-        {
-            get { return ((MapValueHolder) Value).Value == null; }
-        }
+    public override byte[] GetBytes()
+    {
 
-        public MapValueHolder Key
-        {
-            get { return _key; }
-            set
-            {
-                _key = value;
-                OnPropertyChanged("Key");
-            }
-        }
+        if (Key.Value == null || ((MapValueHolder)Value).Value == null)
+            return new byte[0];
 
-        private void GetValueForType(bool keyOrValue)
-        {
-            if (keyOrValue)
-                Key =
-                    new MapValueHolder(
-                        NdfTypeManager.GetValue(new byte[NdfTypeManager.SizeofType(KeyType)], KeyType, Manager), Manager);
-            else
-                Value =
-                    new MapValueHolder(
-                        NdfTypeManager.GetValue(new byte[NdfTypeManager.SizeofType(ValueType)], ValueType, Manager), Manager);
+        List<byte> mapdata = new();
 
-            OnPropertyChanged("IsKeyNull");
-            OnPropertyChanged("IsValueNull");
-        }
+        List<byte> key = Key.Value.GetBytes().ToList();
+        List<byte> value = ((MapValueHolder) Value).Value.GetBytes().ToList();
 
-        public override byte[] GetBytes()
-        {
+        if (Key.Value.Type is NdfType.ObjectReference or NdfType.TransTableReference)
+            mapdata.AddRange(BitConverter.GetBytes((uint)NdfType.Reference));
 
-            if (Key.Value == null || ((MapValueHolder) Value).Value == null)
-                return new byte[0];
+        mapdata.AddRange(BitConverter.GetBytes((uint)Key.Value.Type));
+        mapdata.AddRange(key);
 
-            var mapdata = new List<byte>();
+        if (((MapValueHolder)Value).Value.Type is NdfType.ObjectReference or
+            NdfType.TransTableReference)
+            mapdata.AddRange(BitConverter.GetBytes((uint)NdfType.Reference));
 
-            List<byte> key = Key.Value.GetBytes().ToList();
-            List<byte> value = ((MapValueHolder) Value).Value.GetBytes().ToList();
+        mapdata.AddRange(BitConverter.GetBytes((uint)((MapValueHolder)Value).Value.Type));
+        mapdata.AddRange(value);
 
-            if (Key.Value.Type == NdfType.ObjectReference || Key.Value.Type == NdfType.TransTableReference)
-                mapdata.AddRange(BitConverter.GetBytes((uint) NdfType.Reference));
+        return mapdata.ToArray();
+    }
 
-            mapdata.AddRange(BitConverter.GetBytes((uint) Key.Value.Type));
-            mapdata.AddRange(key);
+    public override byte[] GetNdfText()
+    {
+        Encoding end = NdfTextWriter.NdfTextEncoding;
+        List<byte> data = new();
 
-            if (((MapValueHolder) Value).Value.Type == NdfType.ObjectReference ||
-                ((MapValueHolder) Value).Value.Type == NdfType.TransTableReference)
-                mapdata.AddRange(BitConverter.GetBytes((uint) NdfType.Reference));
-
-            mapdata.AddRange(BitConverter.GetBytes((uint) ((MapValueHolder) Value).Value.Type));
-            mapdata.AddRange(value);
-
-            return mapdata.ToArray();
-        }
-
-        public override byte[] GetNdfText()
-        {
-            Encoding end = NdfTextWriter.NdfTextEncoding;
-            var data = new List<byte>();
-
-            data.AddRange(end.GetBytes("(\n"));
+        data.AddRange(end.GetBytes("(\n"));
 
 
-            data.AddRange((Key).Value.GetNdfText());
+        data.AddRange((Key).Value.GetNdfText());
 
-            data.AddRange(end.GetBytes(",\n"));
+        data.AddRange(end.GetBytes(",\n"));
 
 
-            data.AddRange(end.GetBytes(")\n"));
+        data.AddRange(end.GetBytes(")\n"));
 
-            return data.ToArray();
-        }
+        return data.ToArray();
+    }
 
-        public override string ToString()
-        {
-            return string.Format("Map: {0} : {1}", Key.Value, ((MapValueHolder) Value).Value);
-        }
+    public override string ToString()
+    {
+        return string.Format("Map: {0} : {1}", Key.Value, ((MapValueHolder)Value).Value);
     }
 }

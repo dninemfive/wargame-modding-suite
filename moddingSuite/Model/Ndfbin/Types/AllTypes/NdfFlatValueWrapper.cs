@@ -1,30 +1,27 @@
-﻿using System.Diagnostics;
+﻿namespace moddingSuite.Model.Ndfbin.Types.AllTypes;
 
-namespace moddingSuite.Model.Ndfbin.Types.AllTypes
+public abstract class NdfFlatValueWrapper : NdfValueWrapper
 {
-    public abstract class NdfFlatValueWrapper : NdfValueWrapper
+    private object _value;
+
+    protected NdfFlatValueWrapper(NdfType type, object value)
+        : base(type)
     {
-        private object _value;
+        Value = value;
+    }
 
-        protected NdfFlatValueWrapper(NdfType type, object value)
-            : base(type)
+    public object Value
+    {
+        get { return _value; }
+        set
         {
-            Value = value;
+            _value = value;
+            OnPropertyChanged("Value");
         }
+    }
 
-        public object Value
-        {
-            get { return _value; }
-            set
-            {
-                _value = value;
-                OnPropertyChanged("Value");
-            }
-        }
-
-        public override string ToString()
-        {
-            return Value.ToString();
-        }
+    public override string ToString()
+    {
+        return Value.ToString();
     }
 }

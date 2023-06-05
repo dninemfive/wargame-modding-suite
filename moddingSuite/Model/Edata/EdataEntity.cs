@@ -1,42 +1,41 @@
-﻿using System.Globalization;
-using moddingSuite.ViewModel.Base;
+﻿using moddingSuite.ViewModel.Base;
+using System.Globalization;
 
-namespace moddingSuite.Model.Edata
+namespace moddingSuite.Model.Edata;
+
+public abstract class EdataEntity : ViewModelBase
 {
-    public abstract class EdataEntity : ViewModelBase
+    private int _fileEntrySize;
+    private string _name;
+
+    public EdataEntity(string name)
     {
-        private int _fileEntrySize;
-        private string _name;
+        Name = name;
+    }
 
-        public EdataEntity(string name)
+
+    public string Name
+    {
+        get { return _name; }
+        set
         {
-            Name = name;
+            _name = value;
+            OnPropertyChanged("Name");
         }
+    }
 
-
-        public string Name
+    public int FileEntrySize
+    {
+        get { return _fileEntrySize; }
+        set
         {
-            get { return _name; }
-            set
-            {
-                _name = value;
-                OnPropertyChanged("Name");
-            }
+            _fileEntrySize = value;
+            OnPropertyChanged("FileEntrySize");
         }
+    }
 
-        public int FileEntrySize
-        {
-            get { return _fileEntrySize; }
-            set
-            {
-                _fileEntrySize = value;
-                OnPropertyChanged("FileEntrySize");
-            }
-        }
-
-        public override string ToString()
-        {
-            return Name.ToString(CultureInfo.CurrentCulture);
-        }
+    public override string ToString()
+    {
+        return Name.ToString(CultureInfo.CurrentCulture);
     }
 }

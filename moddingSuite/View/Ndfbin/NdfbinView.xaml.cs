@@ -1,15 +1,14 @@
 ﻿using System.Windows;
 
-namespace moddingSuite.View.Ndfbin
+namespace moddingSuite.View.Ndfbin;
+
+/// <summary>
+/// Interaction logic for NdfDetailView.xaml
+/// </summary>
+public partial class NdfbinView : Window
 {
-    /// <summary>
-    /// Interaction logic for NdfDetailView.xaml
-    /// </summary>
-    public partial class NdfbinView : Window
+    public NdfbinView()
     {
-        public NdfbinView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

@@ -1,8 +1,7 @@
 ﻿using moddingSuite.ViewModel.Base;
 
-namespace moddingSuite.ViewModel.About
+namespace moddingSuite.ViewModel.About;
+
+public class AboutViewModel : ViewModelBase
 {
-    public class AboutViewModel : ViewModelBase
-    {
-    }
 }

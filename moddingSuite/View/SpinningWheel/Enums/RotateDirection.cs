@@ -1,13 +1,6 @@
-﻿namespace moddingSuite.View.Enums
+﻿namespace moddingSuite.View.Enums;
+public enum RotateDirection
 {
-   using System;
-   using System.Collections.Generic;
-   using System.Linq;
-   using System.Text;
-
-   public enum RotateDirection
-   {
-      CW = 0,
-      CCW = 1
-   }
+    CW = 0,
+    CCW = 1
 }

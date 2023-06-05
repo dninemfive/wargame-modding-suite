@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using moddingSuite.Model.Ndfbin;
+﻿using moddingSuite.Model.Ndfbin;
 
-namespace moddingSuite.BL.Ndf
+namespace moddingSuite.BL.Ndf;
+
+public interface INdfReader
 {
-    public interface INdfReader
-    {
-        NdfBinary Read(byte[] data);
+    NdfBinary Read(byte[] data);
 
-    }
 }

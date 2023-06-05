@@ -1,27 +1,26 @@
 ﻿using System;
 using System.Drawing;
 
-namespace moddingSuite.Model.Ndfbin.Types.AllTypes
+namespace moddingSuite.Model.Ndfbin.Types.AllTypes;
+
+public class NdfColor32 : NdfFlatValueWrapper
 {
-    public class NdfColor32 : NdfFlatValueWrapper
+    public NdfColor32(Color value)
+        : base(NdfType.Color32, value)
     {
-        public NdfColor32(Color value)
-            : base(NdfType.Color32, value)
-        {
-        }
+    }
 
-        public override byte[] GetBytes()
-        {
-            var col = (Color) Value;
+    public override byte[] GetBytes()
+    {
+        Color col = (Color) Value;
 
-            var colorArray = new[] { col.R, col.G, col.B, col.A};
+        byte[] colorArray = new[] { col.R, col.G, col.B, col.A};
 
-            return colorArray;
-        }
+        return colorArray;
+    }
 
-        public override byte[] GetNdfText()
-        {
-            throw new NotImplementedException();
-        }
+    public override byte[] GetNdfText()
+    {
+        throw new NotImplementedException();
     }
 }

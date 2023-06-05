@@ -1,68 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using moddingSuite.ViewModel.Base;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using moddingSuite.ViewModel.Base;
 
-namespace moddingSuite.ViewModel.Edata
+namespace moddingSuite.ViewModel.Edata;
+
+public class DirectoryViewModel : FileSystemItemViewModel
 {
-    public class DirectoryViewModel : FileSystemItemViewModel
+    private ObservableCollection<FileSystemItemViewModel> _items = new();
+    private  DirectoryInfo _directoryInfo;
+
+    public DirectoryViewModel(DirectoryInfo info)
     {
-        private ObservableCollection<FileSystemItemViewModel> _items = new ObservableCollection<FileSystemItemViewModel>();
-        private  DirectoryInfo _directoryInfo;
+        _directoryInfo = info;
+        OpenInFileExplorerCommand = new ActionCommand(OpenInFileExplorerExecute);
+    }
 
-        public DirectoryViewModel(DirectoryInfo info)
+    private void OpenInFileExplorerExecute(object obj)
+    {
+        Process.Start(this.Info.FullName);
+    }
+
+    public ObservableCollection<FileSystemItemViewModel> Items
+    {
+        get
         {
-            _directoryInfo = info;
-            OpenInFileExplorerCommand = new ActionCommand(OpenInFileExplorerExecute);
+            return _items;
         }
-
-        private void OpenInFileExplorerExecute(object obj)
+        set
         {
-            Process.Start(this.Info.FullName);
+            _items = value;
+            OnPropertyChanged();
         }
+    }
 
-        public ObservableCollection<FileSystemItemViewModel> Items
+    public DirectoryInfo Info
+    {
+        get
         {
-            get
-            {
-                return _items;
-            }
-            set
-            {
-                _items = value;
-                OnPropertyChanged();
-            }
+            return _directoryInfo;
         }
-
-        public DirectoryInfo Info
+        set
         {
-            get
-            {
-                return _directoryInfo;
-            }
-            set
-            {
-                _directoryInfo = value;
-            }
+            _directoryInfo = value;
         }
+    }
 
-        public ICommand OpenInFileExplorerCommand
-        {
-            get; set;
-        }
+    public ICommand OpenInFileExplorerCommand
+    {
+        get; set;
+    }
 
-        public override string Name
+    public override string Name
+    {
+        get
         {
-            get
-            {
-                return Info.Name;
-            }
+            return Info.Name;
         }
     }
 }

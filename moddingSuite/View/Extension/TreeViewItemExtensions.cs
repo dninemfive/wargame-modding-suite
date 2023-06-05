@@ -1,33 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace moddingSuite.View.Extension
-{
-    public static class TreeViewItemExtensions
-    {
-        public static int GetDepth(this TreeViewItem item)
-        {
-            TreeViewItem parent;
-            while ((parent = GetParent(item)) != null)
-            {
-                return GetDepth(parent) + 1;
-            }
-            return 0;
-        }
+namespace moddingSuite.View.Extension;
 
-        private static TreeViewItem GetParent(TreeViewItem item)
+public static class TreeViewItemExtensions
+{
+    public static int GetDepth(this TreeViewItem item)
+    {
+        TreeViewItem parent;
+        while ((parent = GetParent(item)) != null)
         {
-            var parent = VisualTreeHelper.GetParent(item);
-            while (!(parent is TreeViewItem || parent is TreeView))
-            {
-                parent = VisualTreeHelper.GetParent(parent);
-            }
-            return parent as TreeViewItem;
+            return GetDepth(parent) + 1;
         }
+        return 0;
+    }
+
+    private static TreeViewItem GetParent(TreeViewItem item)
+    {
+        System.Windows.DependencyObject parent = VisualTreeHelper.GetParent(item);
+        while (parent is not (TreeViewItem or TreeView))
+        {
+            parent = VisualTreeHelper.GetParent(parent);
+        }
+        return parent as TreeViewItem;
     }
 }

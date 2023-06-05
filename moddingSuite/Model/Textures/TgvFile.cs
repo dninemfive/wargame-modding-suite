@@ -1,153 +1,150 @@
-﻿using System.Collections.Generic;
-using System.Windows.Media;
-using moddingSuite.BL.DDS;
-using moddingSuite.ViewModel.Base;
+﻿using moddingSuite.ViewModel.Base;
+using System.Collections.Generic;
 using PixelFormats = moddingSuite.BL.DDS.PixelFormats;
 
-namespace moddingSuite.Model.Textures
+namespace moddingSuite.Model.Textures;
+
+public class TgvFile : ViewModelBase
 {
-    public class TgvFile : ViewModelBase
+    private PixelFormats _format;
+    private uint _height;
+    private uint _imageHeight;
+    private uint _imageWidth;
+    private bool _isCompressed;
+
+    private ushort _mipMapCount;
+
+    private List<uint> _offsets = new();
+    private string _pixelFormatStr;
+    private List<uint> _sizes = new();
+    private byte[] _sourceChecksum;
+    private uint _version;
+    private uint _width;
+
+    private readonly List<TgvMipMap> _mipMaps = new();
+
+    public uint Version
     {
-        private PixelFormats _format;
-        private uint _height;
-        private uint _imageHeight;
-        private uint _imageWidth;
-        private bool _isCompressed;
-
-        private ushort _mipMapCount;
-
-        private List<uint> _offsets = new List<uint>();
-        private string _pixelFormatStr;
-        private List<uint> _sizes = new List<uint>();
-        private byte[] _sourceChecksum;
-        private uint _version;
-        private uint _width;
-
-        private readonly List<TgvMipMap> _mipMaps = new List<TgvMipMap>();
-
-        public uint Version
+        get { return _version; }
+        set
         {
-            get { return _version; }
-            set
-            {
-                _version = value;
-                OnPropertyChanged("Version");
-            }
+            _version = value;
+            OnPropertyChanged("Version");
         }
+    }
 
-        public bool IsCompressed
+    public bool IsCompressed
+    {
+        get { return _isCompressed; }
+        set
         {
-            get { return _isCompressed; }
-            set
-            {
-                _isCompressed = value;
-                OnPropertyChanged("IsCompressed");
-            }
+            _isCompressed = value;
+            OnPropertyChanged("IsCompressed");
         }
+    }
 
-        public uint Width
+    public uint Width
+    {
+        get { return _width; }
+        set
         {
-            get { return _width; }
-            set
-            {
-                _width = value;
-                OnPropertyChanged("Width");
-            }
+            _width = value;
+            OnPropertyChanged("Width");
         }
+    }
 
-        public uint Height
+    public uint Height
+    {
+        get { return _height; }
+        set
         {
-            get { return _height; }
-            set
-            {
-                _height = value;
-                OnPropertyChanged("Height");
-            }
+            _height = value;
+            OnPropertyChanged("Height");
         }
+    }
 
-        public uint ImageWidth
+    public uint ImageWidth
+    {
+        get { return _imageWidth; }
+        set
         {
-            get { return _imageWidth; }
-            set
-            {
-                _imageWidth = value;
-                OnPropertyChanged("ImageWidth");
-            }
+            _imageWidth = value;
+            OnPropertyChanged("ImageWidth");
         }
+    }
 
-        public uint ImageHeight
+    public uint ImageHeight
+    {
+        get { return _imageHeight; }
+        set
         {
-            get { return _imageHeight; }
-            set
-            {
-                _imageHeight = value;
-                OnPropertyChanged("ImageHeight");
-            }
+            _imageHeight = value;
+            OnPropertyChanged("ImageHeight");
         }
+    }
 
-        public ushort MipMapCount
+    public ushort MipMapCount
+    {
+        get { return _mipMapCount; }
+        set
         {
-            get { return _mipMapCount; }
-            set
-            {
-                _mipMapCount = value;
-                OnPropertyChanged("MipMapCount");
-            }
+            _mipMapCount = value;
+            OnPropertyChanged("MipMapCount");
         }
+    }
 
-        public PixelFormats Format
+    public PixelFormats Format
+    {
+        get { return _format; }
+        set
         {
-            get { return _format; }
-            set
-            {
-                _format = value;
-                OnPropertyChanged("Format");
-            }
+            _format = value;
+            OnPropertyChanged("Format");
         }
+    }
 
-        public byte[] SourceChecksum
+    public byte[] SourceChecksum
+    {
+        get { return _sourceChecksum; }
+        set
         {
-            get { return _sourceChecksum; }
-            set
-            {
-                _sourceChecksum = value;
-                OnPropertyChanged("SourceChecksum");
-            }
+            _sourceChecksum = value;
+            OnPropertyChanged("SourceChecksum");
         }
+    }
 
-        public List<uint> Offsets
+    public List<uint> Offsets
+    {
+        get { return _offsets; }
+        set
         {
-            get { return _offsets; }
-            set
-            {
-                _offsets = value;
-                OnPropertyChanged("Offsets");
-            }
+            _offsets = value;
+            OnPropertyChanged("Offsets");
         }
+    }
 
-        public List<uint> Sizes
+    public List<uint> Sizes
+    {
+        get { return _sizes; }
+        set
         {
-            get { return _sizes; }
-            set
-            {
-                _sizes = value;
-                OnPropertyChanged("Sizes");
-            }
+            _sizes = value;
+            OnPropertyChanged("Sizes");
         }
+    }
 
-        public string PixelFormatStr
+    public string PixelFormatStr
+    {
+        get { return _pixelFormatStr; }
+        set
         {
-            get { return _pixelFormatStr; }
-            set
-            {
-                _pixelFormatStr = value;
-                OnPropertyChanged("PixelFormatStr");
-            }
+            _pixelFormatStr = value;
+            OnPropertyChanged("PixelFormatStr");
         }
+    }
 
-        public List<TgvMipMap> MipMaps
-        {
-            get { return _mipMaps; }
-        }
+    public List<TgvMipMap> MipMaps
+    {
+        get { return _mipMaps; }
     }
 }

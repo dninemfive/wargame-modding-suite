@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace moddingSuite.View.Ndfbin.ValueEditing
+namespace moddingSuite.View.Ndfbin.ValueEditing;
+
+/// <summary>
+/// Interaction logic for LocaleHashEditingTemplate.xaml
+/// </summary>
+public partial class LocaleHashEditingTemplate : UserControl
 {
-    /// <summary>
-    /// Interaction logic for LocaleHashEditingTemplate.xaml
-    /// </summary>
-    public partial class LocaleHashEditingTemplate : UserControl
+    public LocaleHashEditingTemplate()
     {
-        public LocaleHashEditingTemplate()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

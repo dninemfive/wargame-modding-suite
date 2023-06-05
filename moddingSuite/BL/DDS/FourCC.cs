@@ -21,170 +21,170 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace moddingSuite.BL.DDS
+namespace moddingSuite.BL.DDS;
+
+/// <summary>
+/// A FourCC descriptor.
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Size = 4)]
+public struct FourCC : IEquatable<FourCC>
 {
     /// <summary>
-    /// A FourCC descriptor.
+    /// Empty FourCC.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Size = 4)]
-    public struct FourCC : IEquatable<FourCC>
+    public static readonly FourCC Empty = new(0);
+
+    private uint value;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FourCC" /> struct.
+    /// </summary>
+    /// <param name="fourCC">The fourCC value as a string .</param>
+    public FourCC(string fourCC)
     {
-        /// <summary>
-        /// Empty FourCC.
-        /// </summary>
-        public static readonly FourCC Empty = new FourCC(0);
+        if (fourCC.Length != 4)
+            throw new ArgumentException(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Invalid length for FourCC(\"{0}\". Must be be 4 characters long ", fourCC), "fourCC");
+        this.value = ((uint)fourCC[3]) << 24 | ((uint)fourCC[2]) << 16 | ((uint)fourCC[1]) << 8 | ((uint)fourCC[0]);
+    }
 
-        private uint value;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FourCC" /> struct.
+    /// </summary>
+    /// <param name="byte1">The byte1.</param>
+    /// <param name="byte2">The byte2.</param>
+    /// <param name="byte3">The byte3.</param>
+    /// <param name="byte4">The byte4.</param>
+    public FourCC(char byte1, char byte2, char byte3, char byte4)
+    {
+        this.value = ((uint)byte4) << 24 | ((uint)byte3) << 16 | ((uint)byte2) << 8 | ((uint)byte1);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FourCC" /> struct.
-        /// </summary>
-        /// <param name="fourCC">The fourCC value as a string .</param>
-        public FourCC(string fourCC)
-        {
-            if (fourCC.Length != 4)
-                throw new ArgumentException(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Invalid length for FourCC(\"{0}\". Must be be 4 characters long ", fourCC), "fourCC");
-            this.value = ((uint)fourCC[3]) << 24 | ((uint)fourCC[2]) << 16 | ((uint)fourCC[1]) << 8 | ((uint)fourCC[0]);
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FourCC" /> struct.
+    /// </summary>
+    /// <param name="fourCC">The fourCC value as an uint.</param>
+    public FourCC(uint fourCC)
+    {
+        this.value = fourCC;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FourCC" /> struct.
-        /// </summary>
-        /// <param name="byte1">The byte1.</param>
-        /// <param name="byte2">The byte2.</param>
-        /// <param name="byte3">The byte3.</param>
-        /// <param name="byte4">The byte4.</param>
-        public FourCC(char byte1, char byte2, char byte3, char byte4)
-        {
-            this.value = ((uint)byte4) << 24 | ((uint)byte3) << 16 | ((uint)byte2) << 8 | ((uint)byte1);
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FourCC" /> struct.
+    /// </summary>
+    /// <param name="fourCC">The fourCC value as an int.</param>
+    public FourCC(int fourCC)
+    {
+        this.value = unchecked((uint)fourCC);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FourCC" /> struct.
-        /// </summary>
-        /// <param name="fourCC">The fourCC value as an uint.</param>
-        public FourCC(uint fourCC)
-        {
-            this.value = fourCC;
-        }
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="FourCC"/> to <see cref="System.Int32"/>.
+    /// </summary>
+    /// <param name="d">The d.</param>
+    /// <returns>
+    /// The result of the conversion.
+    /// </returns>
+    public static implicit operator uint(FourCC d)
+    {
+        return d.value;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FourCC" /> struct.
-        /// </summary>
-        /// <param name="fourCC">The fourCC value as an int.</param>
-        public FourCC(int fourCC)
-        {
-            this.value = unchecked((uint)fourCC);
-        }
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="FourCC"/> to <see cref="System.Int32"/>.
+    /// </summary>
+    /// <param name="d">The d.</param>
+    /// <returns>
+    /// The result of the conversion.
+    /// </returns>
+    public static implicit operator int(FourCC d)
+    {
+        return unchecked((int)d.value);
+    }
 
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="FourCC"/> to <see cref="System.Int32"/>.
-        /// </summary>
-        /// <param name="d">The d.</param>
-        /// <returns>
-        /// The result of the conversion.
-        /// </returns>
-        public static implicit operator uint(FourCC d)
-        {
-            return d.value;
-        }
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="System.Int32"/> to <see cref="FourCC"/>.
+    /// </summary>
+    /// <param name="d">The d.</param>
+    /// <returns>
+    /// The result of the conversion.
+    /// </returns>
+    public static implicit operator FourCC(uint d)
+    {
+        return new FourCC(d);
+    }
 
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="FourCC"/> to <see cref="System.Int32"/>.
-        /// </summary>
-        /// <param name="d">The d.</param>
-        /// <returns>
-        /// The result of the conversion.
-        /// </returns>
-        public static implicit operator int(FourCC d)
-        {
-            return unchecked((int)d.value);
-        }
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="System.Int32"/> to <see cref="FourCC"/>.
+    /// </summary>
+    /// <param name="d">The d.</param>
+    /// <returns>
+    /// The result of the conversion.
+    /// </returns>
+    public static implicit operator FourCC(int d)
+    {
+        return new FourCC(d);
+    }
 
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Int32"/> to <see cref="FourCC"/>.
-        /// </summary>
-        /// <param name="d">The d.</param>
-        /// <returns>
-        /// The result of the conversion.
-        /// </returns>
-        public static implicit operator FourCC(uint d)
-        {
-            return new FourCC(d);
-        }
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="FourCC"/> to <see cref="System.String"/>.
+    /// </summary>
+    /// <param name="d">The d.</param>
+    /// <returns>
+    /// The result of the conversion.
+    /// </returns>
+    public static implicit operator string(FourCC d)
+    {
+        return d.ToString();
+    }
 
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Int32"/> to <see cref="FourCC"/>.
-        /// </summary>
-        /// <param name="d">The d.</param>
-        /// <returns>
-        /// The result of the conversion.
-        /// </returns>
-        public static implicit operator FourCC(int d)
-        {
-            return new FourCC(d);
-        }
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="FourCC"/>.
+    /// </summary>
+    /// <param name="d">The d.</param>
+    /// <returns>
+    /// The result of the conversion.
+    /// </returns>
+    public static implicit operator FourCC(string d)
+    {
+        return new FourCC(d);
+    }
 
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="FourCC"/> to <see cref="System.String"/>.
-        /// </summary>
-        /// <param name="d">The d.</param>
-        /// <returns>
-        /// The result of the conversion.
-        /// </returns>
-        public static implicit operator string(FourCC d)
-        {
-            return d.ToString();
-        }
+    public override string ToString()
+    {
+        return string.Format("{0}", new string(new[]
+                              {
+                                  (char) (value & 0xFF),
+                                  (char) ((value >> 8) & 0xFF),
+                                  (char) ((value >> 16) & 0xFF),
+                                  (char) ((value >> 24) & 0xFF),
+                              }));
+    }
 
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="FourCC"/>.
-        /// </summary>
-        /// <param name="d">The d.</param>
-        /// <returns>
-        /// The result of the conversion.
-        /// </returns>
-        public static implicit operator FourCC(string d)
-        {
-            return new FourCC(d);
-        }
+    public bool Equals(FourCC other)
+    {
+        return value == other.value;
+    }
 
-        public override string ToString()
-        {
-            return string.Format("{0}", new string(new[]
-                                  {
-                                      (char) (value & 0xFF),
-                                      (char) ((value >> 8) & 0xFF),
-                                      (char) ((value >> 16) & 0xFF),
-                                      (char) ((value >> 24) & 0xFF),
-                                  }));
-        }
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        return obj is FourCC && Equals((FourCC)obj);
+    }
 
-        public bool Equals(FourCC other)
-        {
-            return value == other.value;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is FourCC && Equals((FourCC) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (int) value;
-        }
+    public override int GetHashCode()
+    {
+        return (int)value;
+    }
 
 
-        public static bool operator ==(FourCC left, FourCC right)
-        {
-            return left.Equals(right);
-        }
+    public static bool operator ==(FourCC left, FourCC right)
+    {
+        return left.Equals(right);
+    }
 
-        public static bool operator !=(FourCC left, FourCC right)
-        {
-            return !left.Equals(right);
-        }
+    public static bool operator !=(FourCC left, FourCC right)
+    {
+        return !left.Equals(right);
     }
 }

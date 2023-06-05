@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace moddingSuite.View.Ndfbin.ValueEditing
+namespace moddingSuite.View.Ndfbin.ValueEditing;
+
+/// <summary>
+/// Interaction logic for StringTableEditingTemplate.xaml
+/// </summary>
+public partial class StringTableEditingTemplate : UserControl
 {
-    /// <summary>
-    /// Interaction logic for StringTableEditingTemplate.xaml
-    /// </summary>
-    public partial class StringTableEditingTemplate : UserControl
+    public StringTableEditingTemplate()
     {
-        public StringTableEditingTemplate()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

@@ -1,6 +1,5 @@
-﻿namespace moddingSuite.Model.Ndfbin
+﻿namespace moddingSuite.Model.Ndfbin;
+
+public class NdfTranReference : NdfStringReference
 {
-    public class NdfTranReference : NdfStringReference
-    {
-    }
 }

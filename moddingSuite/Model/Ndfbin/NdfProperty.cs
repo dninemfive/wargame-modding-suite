@@ -1,52 +1,51 @@
-﻿using System.Globalization;
-using moddingSuite.ViewModel.Base;
+﻿using moddingSuite.ViewModel.Base;
+using System.Globalization;
 
-namespace moddingSuite.Model.Ndfbin
+namespace moddingSuite.Model.Ndfbin;
+
+public class NdfProperty : ViewModelBase
 {
-    public class NdfProperty : ViewModelBase
+    private int _id;
+    private string _name;
+    private NdfClass _class;
+
+    public int Id
     {
-        private int _id;
-        private string _name;
-        private NdfClass _class;
-
-        public int Id
+        get { return _id; }
+        set
         {
-            get { return _id; }
-            set
-            {
-                _id = value;
-                OnPropertyChanged(() => Id);
-            }
+            _id = value;
+            OnPropertyChanged(() => Id);
         }
+    }
 
-        public string Name
+    public string Name
+    {
+        get { return _name; }
+        set
         {
-            get { return _name; }
-            set
-            {
-                _name = value;
-                OnPropertyChanged(() => Name);
-            }
+            _name = value;
+            OnPropertyChanged(() => Name);
         }
+    }
 
-        public NdfClass Class
+    public NdfClass Class
+    {
+        get { return _class; }
+        set
         {
-            get { return _class; }
-            set
-            {
-                _class = value;
-                OnPropertyChanged(() => Class);
-            }
+            _class = value;
+            OnPropertyChanged(() => Class);
         }
+    }
 
-        public NdfProperty(int id)
-        {
-            Id = id;
-        }
+    public NdfProperty(int id)
+    {
+        Id = id;
+    }
 
-        public override string ToString()
-        {
-            return Name.ToString(CultureInfo.InvariantCulture);
-        }
+    public override string ToString()
+    {
+        return Name.ToString(CultureInfo.InvariantCulture);
     }
 }

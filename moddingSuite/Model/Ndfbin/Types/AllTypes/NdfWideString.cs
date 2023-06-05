@@ -2,32 +2,31 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace moddingSuite.Model.Ndfbin.Types.AllTypes
+namespace moddingSuite.Model.Ndfbin.Types.AllTypes;
+
+public class NdfWideString : NdfFlatValueWrapper
 {
-    public class NdfWideString : NdfFlatValueWrapper
+    public NdfWideString(string value)
+        : base(NdfType.WideString, value)
     {
-        public NdfWideString(string value)
-            : base(NdfType.WideString, value)
-        {
-        }
+    }
 
-        public override byte[] GetBytes()
-        {
-            var data = new List<byte>();
+    public override byte[] GetBytes()
+    {
+        List<byte> data = new();
 
-            var val = (string) Value;
+        string val = (string) Value;
 
-            byte[] valBytes = Encoding.Unicode.GetBytes(val);
+        byte[] valBytes = Encoding.Unicode.GetBytes(val);
 
-            data.AddRange(BitConverter.GetBytes(valBytes.Length));
-            data.AddRange(valBytes);
+        data.AddRange(BitConverter.GetBytes(valBytes.Length));
+        data.AddRange(valBytes);
 
-            return data.ToArray();
-        }
+        return data.ToArray();
+    }
 
-        public override byte[] GetNdfText()
-        {
-            throw new NotImplementedException();
-        }
+    public override byte[] GetNdfText()
+    {
+        throw new NotImplementedException();
     }
 }

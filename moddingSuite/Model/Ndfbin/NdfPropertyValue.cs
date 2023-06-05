@@ -1,213 +1,203 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Windows.Controls;
-using System.Windows.Input;
-using moddingSuite.Model.Ndfbin.ChangeManager;
+﻿using moddingSuite.Model.Ndfbin.ChangeManager;
 using moddingSuite.Model.Ndfbin.Types;
 using moddingSuite.Model.Ndfbin.Types.AllTypes;
 using moddingSuite.Util;
 using moddingSuite.View.DialogProvider;
 using moddingSuite.ViewModel.Base;
 using moddingSuite.ViewModel.Ndf;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows.Controls;
+using System.Windows.Input;
 
-namespace moddingSuite.Model.Ndfbin
+namespace moddingSuite.Model.Ndfbin;
+
+public class NdfPropertyValue : ViewModelBase, IValueHolder, IEditableObject
 {
-    public class NdfPropertyValue : ViewModelBase, IValueHolder, IEditableObject
+    private NdfObject _instance;
+    private NdfProperty _property;
+    private NdfValueWrapper _value;
+
+    public NdfPropertyValue(NdfObject instance)
     {
-        private NdfObject _instance;
-        private NdfProperty _property;
-        private NdfValueWrapper _value;
+        _instance = instance;
 
-        public NdfPropertyValue(NdfObject instance)
+        DetailsCommand = new ActionCommand(DetailsCommandExecute);
+    }
+
+    public NdfType Type
+    {
+        get
         {
-            _instance = instance;
+            if (Value == null)
+                return NdfType.Unset;
 
-            DetailsCommand = new ActionCommand(DetailsCommandExecute);
+            return Value.Type;
         }
+    }
 
-        public NdfType Type
+    public NdfProperty Property
+    {
+        get { return _property; }
+        set
         {
-            get
-            {
-                if (Value == null)
-                    return NdfType.Unset;
-
-                return Value.Type;
-            }
+            _property = value;
+            OnPropertyChanged("Property");
         }
+    }
 
-        public NdfProperty Property
+    public NdfObject Instance
+    {
+        get { return _instance; }
+        set
         {
-            get { return _property; }
-            set
-            {
-                _property = value;
-                OnPropertyChanged("Property");
-            }
+            _instance = value;
+            OnPropertyChanged("Instance");
         }
+    }
 
-        public NdfObject Instance
+    #region IValueHolder Members
+
+    public NdfValueWrapper Value
+    {
+        get { return _value; }
+        set
         {
-            get { return _instance; }
-            set
-            {
-                _instance = value;
-                OnPropertyChanged("Instance");
-            }
+            _value = value;
+            _value.ParentProperty = this;
+            OnPropertyChanged("Value");
         }
+    }
 
-        #region IValueHolder Members
+    public NdfBinary Manager
+    {
+        get { return Property.Class.Manager; }
+    }
 
-        public NdfValueWrapper Value
+    #endregion
+
+    public ICommand DetailsCommand { get; set; }
+
+    public void DetailsCommandExecute(object obj)
+    {
+        if (obj is not IEnumerable<DataGridCellInfo> item)
+            return;
+
+        IValueHolder prop = item.First().Item as IValueHolder;
+
+        FollowDetails(prop);
+    }
+
+    private void FollowDetails(IValueHolder prop)
+    {
+        if (prop == null || prop.Value == null)
+            return;
+
+        switch (prop.Value.Type)
         {
-            get { return _value; }
-            set
-            {
-                _value = value;
-                _value.ParentProperty = this;
-                OnPropertyChanged("Value");
-            }
-        }
+            case NdfType.MapList:
+            case NdfType.List:
+                FollowList(prop);
+                break;
+            case NdfType.ObjectReference:
+                FollowObjectReference(prop);
+                break;
+            case NdfType.Map:
+                if (prop.Value is NdfMap map)
+                {
+                    FollowDetails(map.Key);
+                    FollowDetails(map.Value as IValueHolder);
+                }
 
-        public NdfBinary Manager
-        {
-            get { return Property.Class.Manager; }
-        }
-
-        #endregion
-
-        public ICommand DetailsCommand { get; set; }
-
-        public void DetailsCommandExecute(object obj)
-        {
-            var item = obj as IEnumerable<DataGridCellInfo>;
-
-            if (item == null)
+                break;
+            default:
                 return;
-
-            var prop = item.First().Item as IValueHolder;
-
-            FollowDetails(prop);
         }
+    }
 
-        private void FollowDetails(IValueHolder prop)
+    private void FollowObjectReference(IValueHolder prop)
+    {
+        if (prop.Value is not NdfObjectReference refe)
+            return;
+
+        NdfClassViewModel vm = new(refe.Class, null);
+
+        NdfObjectViewModel inst = vm.Instances.SingleOrDefault(x => x.Id == refe.InstanceId);
+
+        if (inst == null)
+            return;
+
+        vm.InstancesCollectionView.MoveCurrentTo(inst);
+
+        DialogProvider.ProvideView(vm);
+    }
+
+    private void FollowList(IValueHolder prop)
+    {
+        if (prop.Value is not NdfCollection refe)
+            return;
+
+
+        ListEditorViewModel editor = new(refe, Manager);
+        DialogProvider.ProvideView(editor);
+
+
+    }
+
+
+    private byte[] _oldVal;
+    private bool _dirty;
+
+    public void BeginEdit()
+    {
+        if (_dirty)
+            return;
+
+        _oldVal = Value.GetBytes();
+
+        _dirty = true;
+    }
+
+    public void CancelEdit()
+    {
+        _dirty = false;
+    }
+
+    public void EndEdit()
+    {
+        if (!_dirty)
+            return;
+
+        byte[] newVal = Value.GetBytes();
+
+        if (newVal != null && _oldVal != null && Utils.ByteArrayCompare(newVal, _oldVal))
+            return;
+
+        ChangeEntryBase change = null;
+
+        switch (Value.Type)
         {
-            if (prop == null || prop.Value == null)
-                return;
+            case NdfType.Map:
+                NdfMap map = Value as NdfMap;
+                change = new MapChangeEntry(this, map.Key, map.Value as MapValueHolder);
 
-            switch (prop.Value.Type)
-            {
-                case NdfType.MapList:
-                case NdfType.List:
-                    FollowList(prop);
-                    break;
-                case NdfType.ObjectReference:
-                    FollowObjectReference(prop);
-                    break;
-                case NdfType.Map:
-                    var map = prop.Value as NdfMap;
+                break;
 
-                    if (map != null)
-                    {
-                        FollowDetails(map.Key);
-                        FollowDetails(map.Value as IValueHolder);
-                    }
+            case NdfType.ObjectReference:
+                NdfObjectReference refe = Value as NdfObjectReference;
+                change = new ObjectReferenceChangeEntry(this, refe.Class.Id, refe.InstanceId);
 
-                    break;
-                default:
-                    return;
-            }
+                break;
+
+            default:
+                change = new FlatChangeEntry(this, Value);
+
+                break;
         }
 
-        private void FollowObjectReference(IValueHolder prop)
-        {
-            var refe = prop.Value as NdfObjectReference;
+        Manager.ChangeManager.AddChange(change);
 
-            if (refe == null)
-                return;
-
-            var vm = new NdfClassViewModel(refe.Class, null);
-
-            NdfObjectViewModel inst = vm.Instances.SingleOrDefault(x => x.Id == refe.InstanceId);
-
-            if (inst == null)
-                return;
-
-            vm.InstancesCollectionView.MoveCurrentTo(inst);
-
-            DialogProvider.ProvideView(vm);
-        }
-
-        private void FollowList(IValueHolder prop)
-        {
-            var refe = prop.Value as NdfCollection;
-
-            if (refe == null)
-                return;
-
-            
-            var editor = new ListEditorViewModel(refe, Manager);
-            DialogProvider.ProvideView(editor);
-            
-            
-        }
-
-
-        private byte[] _oldVal;
-        private bool _dirty;
-
-        public void BeginEdit()
-        {
-            if (_dirty)
-                return;
-
-            _oldVal = Value.GetBytes();
-
-            _dirty = true;
-        }
-
-        public void CancelEdit()
-        {
-            _dirty = false;
-        }
-
-        public void EndEdit()
-        {
-            if (!_dirty)
-                return;
-
-            var newVal = Value.GetBytes();
-
-            if (newVal != null && _oldVal != null && Utils.ByteArrayCompare(newVal, _oldVal))
-                return;
-
-            ChangeEntryBase change = null;
-
-            switch (Value.Type)
-            {
-                case NdfType.Map:
-                    var map = Value as NdfMap;
-                    change = new MapChangeEntry(this, map.Key, map.Value as MapValueHolder);
-
-                    break;
-
-                case NdfType.ObjectReference:
-                    var refe = Value as NdfObjectReference;
-                    change = new ObjectReferenceChangeEntry(this, refe.Class.Id, refe.InstanceId);
-
-                    break;
-
-                default:
-                    change = new FlatChangeEntry(this, Value);
-
-                    break;
-            }
-
-            Manager.ChangeManager.AddChange(change);
-
-            _dirty = false;
-        }
+        _dirty = false;
     }
 }

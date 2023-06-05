@@ -1,5 +1,5 @@
-﻿using System.IO;
-using Ionic.Zlib;
+﻿using Ionic.Zlib;
+using System.IO;
 
 namespace moddingSuite.BL.Compressing;
 public static class Compressor

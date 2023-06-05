@@ -1,41 +1,40 @@
 ﻿using moddingSuite.ViewModel.Base;
 
-namespace moddingSuite.Model.Ndfbin
+namespace moddingSuite.Model.Ndfbin;
+
+public class NdfFooterEntry : ViewModelBase
 {
-    public class NdfFooterEntry : ViewModelBase
+    private string _name;
+    private long _offset;
+    private long _size;
+
+    public string Name
     {
-        private string _name;
-        private long _offset;
-        private long _size;
-
-        public string Name
+        get { return _name; }
+        set
         {
-            get { return _name; }
-            set
-            {
-                _name = value;
-                OnPropertyChanged(() => Name);
-            }
+            _name = value;
+            OnPropertyChanged(() => Name);
         }
+    }
 
-        public long Offset
+    public long Offset
+    {
+        get { return _offset; }
+        set
         {
-            get { return _offset; }
-            set
-            {
-                _offset = value;
-                OnPropertyChanged(() => Offset);
-            }
+            _offset = value;
+            OnPropertyChanged(() => Offset);
         }
+    }
 
-        public long Size
+    public long Size
+    {
+        get { return _size; }
+        set
         {
-            get { return _size; }
-            set
-            {
-                _size = value;
-                OnPropertyChanged(() => Size);
-            }
+            _size = value;
+            OnPropertyChanged(() => Size);
         }
     }
 }

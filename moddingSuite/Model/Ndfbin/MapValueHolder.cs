@@ -1,12 +1,11 @@
 ﻿using moddingSuite.Model.Ndfbin.Types.AllTypes;
 
-namespace moddingSuite.Model.Ndfbin
+namespace moddingSuite.Model.Ndfbin;
+
+public class MapValueHolder : CollectionItemValueHolder
 {
-    public class MapValueHolder : CollectionItemValueHolder
+    public MapValueHolder(NdfValueWrapper value, NdfBinary manager)
+        : base(value, manager)
     {
-        public MapValueHolder(NdfValueWrapper value, NdfBinary manager)
-            : base(value, manager)
-        {
-        }
     }
 }

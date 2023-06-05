@@ -1,144 +1,144 @@
-﻿using System;
+﻿using moddingSuite.Model.Settings;
+using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using moddingSuite.BL;
-using moddingSuite.Model.Settings;
 
-namespace moddingSuite.ViewModel.Edata
+namespace moddingSuite.ViewModel.Edata;
+
+public class WorkspaceViewModel : FileSystemOverviewViewModelBase
 {
-    public class WorkspaceViewModel : FileSystemOverviewViewModelBase
+    private readonly FileSystemWatcher _fileSystemWatcher;
+
+    public WorkspaceViewModel(Settings settings)
     {
-        private readonly FileSystemWatcher _fileSystemWatcher;
+        RootPath = settings.SavePath;
 
-        public WorkspaceViewModel(Settings settings)
+        if (!Directory.Exists(RootPath))
+            return;
+
+        Root.Add(ParseRoot());
+
+        _fileSystemWatcher = new FileSystemWatcher(RootPath)
         {
-            RootPath = settings.SavePath;
+            EnableRaisingEvents = true,
+            IncludeSubdirectories = true
+        };
 
-            if (!Directory.Exists(RootPath))
-                return;
+        _fileSystemWatcher.Created += FileSystemChanged;
+        _fileSystemWatcher.Changed += FileSystemChanged;
+        _fileSystemWatcher.Renamed += FileSystemChanged;
+        _fileSystemWatcher.Deleted += FileSystemChanged;
+    }
 
-            Root.Add(ParseRoot());
 
-            _fileSystemWatcher = new FileSystemWatcher(RootPath);
-            _fileSystemWatcher.EnableRaisingEvents = true;
-            _fileSystemWatcher.IncludeSubdirectories = true;
+    private void FileSystemChanged(object sender, FileSystemEventArgs e)
+    {
+        try
+        {
+            SyncronizeChange(e);
+        }
+        catch (Exception)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Root.Clear();
+                Root.Add(ParseRoot());
+            });
+        }
+    }
 
-            _fileSystemWatcher.Created += FileSystemChanged;
-            _fileSystemWatcher.Changed += FileSystemChanged;
-            _fileSystemWatcher.Renamed += FileSystemChanged;
-            _fileSystemWatcher.Deleted += FileSystemChanged;
+    private void SyncronizeChange(FileSystemEventArgs e)
+    {
+        FileAttributes attr = File.GetAttributes(e.FullPath);
+        string changedDirName;
+        FileSystemItemViewModel newVm;
+
+        if (attr.HasFlag(FileAttributes.Directory))
+        {
+            DirectoryInfo info = new(e.FullPath);
+            newVm = new DirectoryViewModel(info);
+
+            changedDirName = info.Parent.FullName;
+        }
+        else
+        {
+            FileInfo info = new(e.FullPath);
+            newVm = new FileViewModel(info);
+
+            changedDirName = info.DirectoryName;
         }
 
+        DirectoryViewModel changedDir = GetChangedDirVm(new DirectoryInfo(changedDirName));
 
-        private void FileSystemChanged(object sender, FileSystemEventArgs e)
+        switch (e.ChangeType)
         {
-            try
-            {
-                SyncronizeChange(e);
-            }
-            catch (Exception)
-            {
-                Application.Current.Dispatcher.Invoke(() =>
+            case WatcherChangeTypes.Changed:
+            case WatcherChangeTypes.Created:
+                if (!changedDir.Items.Any(x => x.Name.Equals(newVm.Name)))
                 {
-                    Root.Clear();
-                    Root.Add(ParseRoot());
-                });
-            }
+                    Application.Current.Dispatcher.Invoke(() => changedDir.Items.Add(newVm));
+                }
+                break;
+            case WatcherChangeTypes.Deleted:
+                Application.Current.Dispatcher.Invoke(
+                    () => changedDir.Items.Remove(changedDir.Items.Single(x => x.Name.Equals(newVm.Name))));
+                break;
+            case WatcherChangeTypes.Renamed:
+                RenamedEventArgs renEa = e as RenamedEventArgs;
+                string oldName = renEa.OldName.Split('\\').Last();
+
+                FileSystemItemViewModel changedItem = changedDir.Items.Single(x => x.Name.Equals(oldName));
+
+                if (changedItem is DirectoryViewModel)
+                    (changedItem as DirectoryViewModel).Info = new DirectoryInfo(renEa.FullPath);
+                else
+                    (changedItem as FileViewModel).Info = new FileInfo(renEa.FullPath);
+
+                changedItem.Invalidate();
+                break;
+        }
+    }
+
+    protected DirectoryViewModel GetChangedDirVm(DirectoryInfo info)
+    {
+        DirectoryViewModel changedDir = null;
+
+        foreach (DirectoryViewModel r in Root)
+        {
+            CheckRecursive(r, info, out changedDir);
         }
 
-        private void SyncronizeChange(FileSystemEventArgs e)
+        return changedDir;
+    }
+
+    protected bool CheckRecursive(DirectoryViewModel dir, DirectoryInfo searchedDir, out DirectoryViewModel find)
+    {
+        if (dir.Info.FullName.Equals(searchedDir.FullName))
         {
-            var attr = File.GetAttributes(e.FullPath);
-            string changedDirName;
-            FileSystemItemViewModel newVm;
-
-            if (attr.HasFlag(FileAttributes.Directory))
-            {
-                var info = new DirectoryInfo(e.FullPath);
-                newVm = new DirectoryViewModel(info);
-
-                changedDirName = info.Parent.FullName;
-            }
-            else
-            {
-                var info = new FileInfo(e.FullPath);
-                newVm = new FileViewModel(info);
-
-                changedDirName = info.DirectoryName;
-            }
-
-            var changedDir = GetChangedDirVm(new DirectoryInfo(changedDirName));
-
-            switch (e.ChangeType)
-            {
-                case WatcherChangeTypes.Changed:
-                case WatcherChangeTypes.Created:
-                    if (!changedDir.Items.Any(x => x.Name.Equals(newVm.Name)))
-                    {
-                        Application.Current.Dispatcher.Invoke(() => changedDir.Items.Add(newVm));
-                    }
-                    break;
-                case WatcherChangeTypes.Deleted:
-                    Application.Current.Dispatcher.Invoke(
-                        () => changedDir.Items.Remove(changedDir.Items.Single(x => x.Name.Equals(newVm.Name))));
-                    break;
-                case WatcherChangeTypes.Renamed:
-                    var renEa = e as RenamedEventArgs;
-                    var oldName = renEa.OldName.Split('\\').Last();
-
-                    var changedItem = changedDir.Items.Single(x => x.Name.Equals(oldName));
-
-                    if (changedItem is DirectoryViewModel)
-                        (changedItem as DirectoryViewModel).Info = new DirectoryInfo(renEa.FullPath);
-                    else
-                        (changedItem as FileViewModel).Info = new FileInfo(renEa.FullPath);
-
-                    changedItem.Invalidate();
-                    break;
-            }
+            find = dir;
+            return true;
         }
 
-        protected DirectoryViewModel GetChangedDirVm(DirectoryInfo info)
+        foreach (DirectoryViewModel item in dir.Items.OfType<DirectoryViewModel>())
         {
-            DirectoryViewModel changedDir = null;
-
-            foreach (var r in Root)
+            if (item.Info.FullName.Equals(searchedDir.FullName))
             {
-                CheckRecursive(r, info, out changedDir);
-            }
-
-            return changedDir;
-        }
-
-        protected bool CheckRecursive(DirectoryViewModel dir, DirectoryInfo searchedDir, out DirectoryViewModel find)
-        {
-            if (dir.Info.FullName.Equals(searchedDir.FullName))
-            {
-                find = dir;
+                find = item;
                 return true;
             }
 
-            foreach (var item in dir.Items.OfType<DirectoryViewModel>())
+            DirectoryViewModel possibleFind;
+
+            if (CheckRecursive(item, searchedDir, out possibleFind))
             {
-                if (item.Info.FullName.Equals(searchedDir.FullName))
-                {
-                    find = item;
-                    return true;
-                }
-
-                DirectoryViewModel possibleFind;
-
-                if (CheckRecursive(item, searchedDir, out possibleFind))
-                {
-                    find = possibleFind;
-                    return true;
-                }
+                find = possibleFind;
+                return true;
             }
-
-            find = null;
-
-            return false;
         }
+
+        find = null;
+
+        return false;
     }
 }
