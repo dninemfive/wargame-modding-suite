@@ -9,15 +9,9 @@ public class LocalisationHashValueConverter : IValueConverter
 {
     #region IValueConverter Members
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        return Utils.ByteArrayToBigEndianHexByteString((byte[])value);
-    }
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => Utils.ByteArrayToBigEndianHexByteString((byte[])value);
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        return Utils.StringToByteArrayFastest(value.ToString());
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => Utils.StringToByteArrayFastest(value.ToString());
 
     #endregion
 }

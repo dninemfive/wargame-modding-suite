@@ -10,7 +10,7 @@ public class NdfStringReference : ViewModelBase
 
     public int Id
     {
-        get { return _id; }
+        get => _id;
         set
         {
             _id = value;
@@ -20,7 +20,7 @@ public class NdfStringReference : ViewModelBase
 
     public string Value
     {
-        get { return _value; }
+        get => _value;
         set
         {
             _value = value;
@@ -28,8 +28,5 @@ public class NdfStringReference : ViewModelBase
         }
     }
 
-    public override string ToString()
-    {
-        return Value.ToString(CultureInfo.InvariantCulture);
-    }
+    public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
 }

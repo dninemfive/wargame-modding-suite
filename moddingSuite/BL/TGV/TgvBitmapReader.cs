@@ -48,6 +48,7 @@ public class TgvBitmapReader
         uint bh = (h + 3) / 4;
 
         for (uint by = 0; by < bh; by++)
+        {
             for (uint bx = 0; bx < bw; bx++)
             {
                 ColorBlock block = new();
@@ -56,22 +57,23 @@ public class TgvBitmapReader
                 ReadBlock(block, ms);
 
                 // Write color block.
-                for (uint y = 0; y < Math.Min(4, h - 4 * by); y++)
-                    for (uint x = 0; x < Math.Min(4, w - 4 * bx); x++)
-                        ret.Data[(4 * by + y) * ret.Width + (4 * bx + x)] = block.Color(x, y);
+                for (uint y = 0; y < Math.Min(4, h - (4 * by)); y++)
+                {
+                    for (uint x = 0; x < Math.Min(4, w - (4 * bx)); x++)
+                        ret.Data[(((4 * by) + y) * ret.Width) + (4 * bx) + x] = block.Color(x, y);
+                }
             }
-
+        }
     }
 
     private static void ReadBlock(ColorBlock rgba, Stream ms)
     {
         byte[] blockBuffer = new byte[Marshal.SizeOf(typeof(BlockDXT5))];
 
-        ms.Read(blockBuffer, 0, blockBuffer.Length);
+        _ = ms.Read(blockBuffer, 0, blockBuffer.Length);
 
         BlockDXT5 blockdxt5 = Utils.ByteArrayToStructure<BlockDXT5>(blockBuffer);
 
         blockdxt5.decodeBlock(ref rgba);
     }
-
 }

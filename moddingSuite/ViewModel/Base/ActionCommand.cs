@@ -11,26 +11,17 @@ public class ActionCommand : ICommand
 
     public ActionCommand(Action<object> execute, Func<bool> canExecute = null)
     {
-        if (execute == null)
-            throw new ArgumentNullException("execute");
-        _executeHandler = execute;
+        _executeHandler = execute ?? throw new ArgumentNullException("execute");
         _canExecuteHandler = canExecute;
     }
 
     public event EventHandler CanExecuteChanged
     {
-        add { CommandManager.RequerySuggested += value; }
-        remove { CommandManager.RequerySuggested -= value; }
+        add => CommandManager.RequerySuggested += value;
+        remove => CommandManager.RequerySuggested -= value;
     }
-    public void Execute(object parameter)
-    {
-        _executeHandler(parameter);
-    }
+    public void Execute(object parameter) => _executeHandler(parameter);
 
     [DebuggerStepThrough]
-    public bool CanExecute(object parameter)
-    {
-        return _canExecuteHandler == null || _canExecuteHandler();
-
-    }
+    public bool CanExecute(object parameter) => _canExecuteHandler == null || _canExecuteHandler();
 }

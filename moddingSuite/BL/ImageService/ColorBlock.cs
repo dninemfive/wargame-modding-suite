@@ -4,42 +4,25 @@ namespace moddingSuite.BL.ImageService;
 
 public class ColorBlock
 {
-    private Color32[] _data;
-
     public Color32[] Data
     {
-        get { return _data; }
+        get;
         //set { _data = value; }
     }
 
-    static uint colorLuminance(Color32 c)
-    {
-        return (uint)(c.r + c.g + c.b);
-    }
+    private static uint colorLuminance(Color32 c) => (uint)(c.r + c.g + c.b);
 
     // Get the euclidean distance between the given colors.
-    static uint colorDistance(Color32 c0, Color32 c1)
-    {
-        return (uint)((c0.r - c1.r) * (c0.r - c1.r) + (c0.g - c1.g) * (c0.g - c1.g) + (c0.b - c1.b) * (c0.b - c1.b));
-    }
+    private static uint colorDistance(Color32 c0, Color32 c1) => (uint)(((c0.r - c1.r) * (c0.r - c1.r)) + ((c0.g - c1.g) * (c0.g - c1.g)) + ((c0.b - c1.b) * (c0.b - c1.b)));
 
-    public Color32 Color(uint i)
-    {
-        return Data[(int)i];
-    }
+    public Color32 Color(uint i) => Data[(int)i];
 
-    public Color32 Color(uint x, uint y)
-    {
-        if (!(x < 4 && y < 4))
-            throw new InvalidOperationException("Colorblock is only 4 * 4");
-
-        return Data[y * 4 + x];
-    }
+    public Color32 Color(uint x, uint y) => !(x < 4 && y < 4) ? throw new InvalidOperationException("Colorblock is only 4 * 4") : Data[(y * 4) + x];
 
     /// Default constructor.
     public ColorBlock()
     {
-        _data = new Color32[4 * 4];
+        Data = new Color32[4 * 4];
     }
 
     /// Init the color block from an array of colors.
@@ -69,7 +52,7 @@ public class ColorBlock
         init(img, x, y);
     }
 
-    void init(RawImage img, uint x, uint y)
+    private void init(RawImage img, uint x, uint y)
     {
         if (img == null)
             throw new ArgumentNullException("img");
@@ -92,17 +75,17 @@ public class ColorBlock
         for (uint i = 0; i < 4; i++)
         {
             //const int by = i % bh;
-            uint by = remainder[(bh - 1) * 4 + i];
+            uint by = remainder[((bh - 1) * 4) + i];
             for (uint e = 0; e < 4; e++)
             {
                 //const int bx = e % bw;
-                uint bx = remainder[(bw - 1) * 4 + e];
-                Data[i * 4 + e] = img.Pixel(x + bx, y + by);
+                uint bx = remainder[((bw - 1) * 4) + e];
+                Data[(i * 4) + e] = img.Pixel(x + bx, y + by);
             }
         }
     }
 
-    void swizzleDXT5n()
+    private void swizzleDXT5n()
     {
         for (int i = 0; i < 16; i++)
         {
@@ -111,7 +94,7 @@ public class ColorBlock
         }
     }
 
-    void splatX()
+    private void splatX()
     {
         for (int i = 0; i < 16; i++)
         {
@@ -120,7 +103,7 @@ public class ColorBlock
         }
     }
 
-    void splatY()
+    private void splatY()
     {
         for (int i = 0; i < 16; i++)
         {
@@ -130,7 +113,7 @@ public class ColorBlock
     }
 
     /// Returns true if the block has a single color.
-    bool isSingleColor()
+    private bool isSingleColor()
     {
         Color32 mask = new(0xFF, 0xFF, 0xFF, 0x00);
         uint u = Data[0].u & mask.u;
@@ -147,7 +130,7 @@ public class ColorBlock
     }
 
     /// Count number of unique colors in this color block.
-    uint countUniqueColors()
+    private uint countUniqueColors()
     {
         uint count = 0;
 
@@ -173,7 +156,7 @@ public class ColorBlock
     }
 
     /// Get average color of the block.
-    Color32 averageColor()
+    private Color32 averageColor()
     {
         uint r, g, b, a;
         r = g = b = a = 0;
@@ -190,7 +173,7 @@ public class ColorBlock
     }
 
     /// Return true if the block is not fully opaque.
-    bool hasAlpha()
+    private bool hasAlpha()
     {
         for (uint i = 0; i < 16; i++)
         {
@@ -201,7 +184,7 @@ public class ColorBlock
     }
 
     /// Get diameter color range.
-    void diameterRange(ref Color32 start, ref Color32 end)
+    private void diameterRange(ref Color32 start, ref Color32 end)
     {
         //if (start == null)
         //    throw new ArgumentNullException("start");
@@ -231,15 +214,17 @@ public class ColorBlock
     }
 
     /// Get luminance color range.
-    void luminanceRange(Color32 start, Color32 end)
+    private void luminanceRange(Color32 start, Color32 end)
     {
         if (start == null)
             throw new ArgumentNullException("start");
         if (end == null)
             throw new ArgumentNullException("end");
 
-        Color32 minColor = new();
-        Color32 maxColor = new();
+        _ = new
+        Color32();
+
+        _ = new Color32();
         uint minLuminance, maxLuminance;
 
         maxLuminance = minLuminance = colorLuminance(Data[0]);
@@ -251,21 +236,18 @@ public class ColorBlock
             if (luminance > maxLuminance)
             {
                 maxLuminance = luminance;
-                maxColor = Data[i];
+                _ = Data[i];
             }
             else if (luminance < minLuminance)
             {
                 minLuminance = luminance;
-                minColor = Data[i];
+                _ = Data[i];
             }
         }
-
-        start = minColor;
-        end = maxColor;
     }
 
     /// Get color range based on the bounding box. 
-    void boundsRange(Color32 start, Color32 end)
+    private void boundsRange(Color32 start, Color32 end)
     {
         if (start == null)
             throw new ArgumentNullException("start");
@@ -307,12 +289,10 @@ public class ColorBlock
         maxColor.g = (byte)((maxColor.g >= inset.g) ? maxColor.g - inset.g : 0);
         maxColor.b = (byte)((maxColor.b >= inset.b) ? maxColor.b - inset.b : 0);
 
-        start = minColor;
-        end = maxColor;
     }
 
     /// Get color range based on the bounding box. 
-    void boundsRangeAlpha(Color32 start, Color32 end)
+    private void boundsRangeAlpha(Color32 start, Color32 end)
     {
         if (start == null)
             throw new ArgumentNullException("start");
@@ -361,10 +341,7 @@ public class ColorBlock
         maxColor.b = (byte)((maxColor.b >= inset.b) ? maxColor.b - inset.b : 0);
         maxColor.a = (byte)((maxColor.a >= inset.a) ? maxColor.a - inset.a : 0);
 
-        start = minColor;
-        end = maxColor;
     }
-
 
     //        /// Sort colors by abosolute value in their 16 bit representation.
     //        void sortColorsByAbsoluteValue()
@@ -388,7 +365,6 @@ public class ColorBlock
     //                Utils.Swap(Data[a], Data[max]);
     //            }
     //        }
-
 
     //        /// Find extreme colors in the given axis.
     //        void computeRange(Vector3::Arg axis, Color32 start, Color32 end) 
@@ -423,7 +399,6 @@ public class ColorBlock
     //    *end = Data[maxi];
     //}
 
-
     //        /// Sort colors in the given axis.
     //        void sortColors(Vector3 axis)
     //{
@@ -446,7 +421,6 @@ public class ColorBlock
     //         Utils.Swap( Data[a], Data[min] );
     //    }
     //}
-
 
     //        /// Get the volume of the color block.
     //        float volume() 

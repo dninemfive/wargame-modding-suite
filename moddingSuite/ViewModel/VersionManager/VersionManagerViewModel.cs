@@ -18,7 +18,6 @@ public class VersionManagerViewModel : ViewModelBase
     private ICollectionView _versionCollectionView;
     private int _versionFilter;
     private ObservableCollection<VersionInfoViewModel> _versions = new();
-    private readonly List<int> _versionNumbers = new();
 
     public VersionManagerViewModel(EdataManagerViewModel edataManagerViewModel)
     {
@@ -38,7 +37,7 @@ public class VersionManagerViewModel : ViewModelBase
 
     public EdataManagerViewModel EdataManagerViewModel
     {
-        get { return _edataManagerViewModel; }
+        get => _edataManagerViewModel;
         set
         {
             _edataManagerViewModel = value;
@@ -48,7 +47,7 @@ public class VersionManagerViewModel : ViewModelBase
 
     public ObservableCollection<VersionInfoViewModel> Versions
     {
-        get { return _versions; }
+        get => _versions;
         set
         {
             _versions = value;
@@ -58,7 +57,7 @@ public class VersionManagerViewModel : ViewModelBase
 
     public int VersionFilter
     {
-        get { return _versionFilter; }
+        get => _versionFilter;
         set
         {
             _versionFilter = value;
@@ -67,10 +66,7 @@ public class VersionManagerViewModel : ViewModelBase
         }
     }
 
-    public List<int> VersionNumbers
-    {
-        get { return _versionNumbers; }
-    }
+    public List<int> VersionNumbers { get; } = new();
 
     protected void Initialize()
     {
@@ -94,14 +90,18 @@ public class VersionManagerViewModel : ViewModelBase
         }
 
         foreach (VersionInfoViewModel version in Versions)
+        {
             foreach (DirectoryInfo directory in version.DirectoryInfo.EnumerateDirectories())
             {
                 VersionInfoViewModel v = Versions.SingleOrDefault(x => x.Version == Convert.ToInt32(directory.Name));
 
                 if (v != null)
+                {
                     foreach (FileInfo fl in directory.EnumerateFiles())
                         v.VersionFiles.Add(new VersionFileViewModel(fl));
+                }
             }
+        }
 
         VersionFilter = Versions.OrderByDescending(x => x.Version).First().Version;
     }

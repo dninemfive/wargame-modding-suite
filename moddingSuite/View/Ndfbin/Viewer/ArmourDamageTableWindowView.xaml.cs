@@ -13,7 +13,8 @@ public partial class ArmourDamageTableWindowView : Window
     {
         InitializeComponent();
     }
-    void DataGrid_LoadingRow(object w, DataGridRowEventArgs e)
+
+    private void DataGrid_LoadingRow(object w, DataGridRowEventArgs e)
     {
         System.Collections.ObjectModel.ObservableCollection<string> headers = ((ArmourDamageViewModel)DataContext).RowHeaders;
         if (e.Row.GetIndex() < headers.Count)

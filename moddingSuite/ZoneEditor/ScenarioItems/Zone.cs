@@ -1,6 +1,7 @@
 ﻿using moddingSuite.Model.Ndfbin;
 using moddingSuite.Model.Ndfbin.Types.AllTypes;
 using moddingSuite.Model.Scenario;
+using moddingSuite.Util;
 using moddingSuite.ZoneEditor.Markers;
 using moddingSuite.ZoneEditor.ScenarioItems.PropertyPanels;
 using System;
@@ -8,24 +9,19 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using ZoneEditor;
 namespace moddingSuite.ZoneEditor.ScenarioItems;
 
 public class Zone : ScenarioItem
 {
-    VertexMarker attachPoint;
-    Outline outline;
-
-    Area area;
+    private readonly VertexMarker attachPoint;
+    private readonly Outline outline;
+    private readonly Area area;
     //private string name;
     private Possession _possession;
     private int _value;
     public int value
     {
-        get
-        {
-            return _value;
-        }
+        get => _value;
         set
         {
             _value = value;
@@ -36,10 +32,7 @@ public class Zone : ScenarioItem
 
     public Possession possession
     {
-        get
-        {
-            return _possession;
-        }
+        get => _possession;
         set
         {
             _possession = value;
@@ -48,7 +41,8 @@ public class Zone : ScenarioItem
             editor.Refresh();
         }
     }
-    Editor editor;
+
+    private readonly Editor editor;
     public Zone(Editor e, Point p, int index)
     {
         editor = e;
@@ -68,16 +62,14 @@ public class Zone : ScenarioItem
         editor = e;
         area = a;
         attachPoint = new VertexMarker();
-        attachPoint.setPosition(Geometry.Geometry.convertPoint(a.AttachmentPoint));
+        attachPoint.setPosition(Geometry.convertPoint(a.AttachmentPoint));
         attachPoint.Colour = System.Drawing.Brushes.Green;
-        outline = new Outline(Geometry.Geometry.getOutline(a.Content));
+        outline = new Outline(Geometry.getOutline(a.Content));
         propertypanel = new ZoneProperty(this);
 
         possession = Possession.Neutral;
         Name = string.Format("Zone {0}", a.Id);
         setSelected(false);
-
-
 
     }
     public override void detachFrom(Control c)
@@ -104,26 +96,22 @@ public class Zone : ScenarioItem
         PanAndZoom.Transform(e);
         Font font = new(System.Drawing.FontFamily.GenericSansSerif, 16);
         Point namePos = attachPoint.getPosition();
-        namePos.Offset(-(int)(10 * Name.Length) / 2, -font.Height);
+        namePos.Offset(-(10 * Name.Length) / 2, -font.Height);
         e.Graphics.DrawString(Name, font, System.Drawing.Brushes.White, namePos);
         Point valPos = attachPoint.getPosition();
         string valString=string.Format("{0}",value);
-        valPos.Offset(-(int)(10 * valString.Length) / 2, 0);
+        valPos.Offset(-(10 * valString.Length) / 2, 0);
         e.Graphics.DrawString(valString, font, System.Drawing.Brushes.White, valPos);
     }
-    public List<AreaVertex> getRawOutline()
-    {
-        if (area != null)
-            return area.Content.Vertices.GetRange(area.Content.BorderVertex.StartVertex, area.Content.BorderVertex.VertexCount);
-        else
-            return new List<AreaVertex>();
-    }
+    public List<AreaVertex> getRawOutline() => area != null
+            ? area.Content.Vertices.GetRange(area.Content.BorderVertex.StartVertex, area.Content.BorderVertex.VertexCount)
+            : new List<AreaVertex>();
     public Area getArea()
     {
         Area area = new()
         {
-            AttachmentPoint = Geometry.Geometry.convertPoint(attachPoint.getPosition()),
-            Content = Geometry.Geometry.getFromOutline(outline.getOutline()),
+            AttachmentPoint = Geometry.convertPoint(attachPoint.getPosition()),
+            Content = Geometry.getFromOutline(outline.getOutline()),
             Name = string.Format("zone_{0}", Guid.NewGuid().ToString())
         };
         return area;
@@ -147,7 +135,7 @@ public class Zone : ScenarioItem
         list.Add(ci);
 
         NdfPropertyValue positionProperty=getProperty(designItem,"Position");
-        System.Windows.Media.Media3D.Point3D p = Geometry.Geometry.convertPoint(attachPoint.getPosition());
+        System.Windows.Media.Media3D.Point3D p = Geometry.convertPoint(attachPoint.getPosition());
         positionProperty.Value = new NdfVector(p);
 
         NdfPropertyValue addOnProperty = getProperty(designItem, "AddOn");
@@ -182,9 +170,8 @@ public class Zone : ScenarioItem
             ci = new CollectionItemValueHolder(new NdfObjectReference(designItem.Class, designItem.Id), data);
             list.Add(ci);
 
-
             positionProperty = getProperty(designItem, "Position");
-            p = Geometry.Geometry.convertPoint(attachPoint.getPosition());
+            p = Geometry.convertPoint(attachPoint.getPosition());
             positionProperty.Value = new NdfVector(p);
             NdfPropertyValue rotationProperty = getProperty(designItem, "Rotation");
             rotationProperty.Value = new NdfSingle(0f);

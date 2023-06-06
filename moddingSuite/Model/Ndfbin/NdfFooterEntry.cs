@@ -10,7 +10,7 @@ public class NdfFooterEntry : ViewModelBase
 
     public string Name
     {
-        get { return _name; }
+        get => _name;
         set
         {
             _name = value;
@@ -20,7 +20,7 @@ public class NdfFooterEntry : ViewModelBase
 
     public long Offset
     {
-        get { return _offset; }
+        get => _offset;
         set
         {
             _offset = value;
@@ -30,7 +30,7 @@ public class NdfFooterEntry : ViewModelBase
 
     public long Size
     {
-        get { return _size; }
+        get => _size;
         set
         {
             _size = value;

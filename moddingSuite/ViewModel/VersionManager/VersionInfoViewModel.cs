@@ -11,11 +11,10 @@ public class VersionInfoViewModel : ViewModelBase
     private string _directory;
     private DirectoryInfo _directoryInfo;
     private VersionManagerViewModel _manager;
-    private readonly ObservableCollection<VersionFileViewModel> _versionFiles = new();
 
     public string DirectoryPath
     {
-        get { return _directory; }
+        get => _directory;
         set
         {
             _directory = value;
@@ -25,24 +24,21 @@ public class VersionInfoViewModel : ViewModelBase
 
     public int Version
     {
-        get { return _version; }
+        get => _version;
         set { _version = value; OnPropertyChanged(() => Version); }
     }
 
     public DirectoryInfo DirectoryInfo
     {
-        get { return _directoryInfo; }
+        get => _directoryInfo;
         set { _directoryInfo = value; OnPropertyChanged(() => DirectoryInfo); }
     }
 
-    public ObservableCollection<VersionFileViewModel> VersionFiles
-    {
-        get { return _versionFiles; }
-    }
+    public ObservableCollection<VersionFileViewModel> VersionFiles { get; } = new();
 
     public VersionManagerViewModel Manager
     {
-        get { return _manager; }
+        get => _manager;
         set { _manager = value; OnPropertyChanged(() => Manager); }
     }
 
@@ -61,7 +57,6 @@ public class VersionInfoViewModel : ViewModelBase
 
         foreach (FileInfo file in directoryInfo.EnumerateFiles())
             VersionFiles.Add(new VersionFileViewModel(file));
-
 
     }
 }

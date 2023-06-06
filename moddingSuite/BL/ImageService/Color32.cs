@@ -8,17 +8,9 @@ namespace moddingSuite.BL.ImageService;
 [StructLayout(LayoutKind.Explicit, Size = 4, Pack = 1)]
 public struct Color32
 {
-    public bool Equals(Color32 other)
-    {
-        return b == other.b && g == other.g && r == other.r && a == other.a && u == other.u;
-    }
+    public bool Equals(Color32 other) => b == other.b && g == other.g && r == other.r && a == other.a && u == other.u;
 
-    public override bool Equals(object obj)
-    {
-        if (ReferenceEquals(null, obj))
-            return false;
-        return obj is Color32 && Equals((Color32)obj);
-    }
+    public override bool Equals(object obj) => obj is not null && obj is Color32 && Equals((Color32)obj);
 
     [FieldOffset(0)] public byte b;
     [FieldOffset(1)] public byte g;
@@ -63,15 +55,9 @@ public struct Color32
         u = U;
     }
 
-    public static bool operator ==(Color32 left, Color32 right)
-    {
-        return left.u == right.u;
-    }
+    public static bool operator ==(Color32 left, Color32 right) => left.u == right.u;
 
-    public static bool operator !=(Color32 left, Color32 right)
-    {
-        return left.u != right.u;
-    }
+    public static bool operator !=(Color32 left, Color32 right) => left.u != right.u;
 
     public override int GetHashCode()
     {

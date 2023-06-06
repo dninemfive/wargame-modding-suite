@@ -12,7 +12,7 @@ public abstract class NdfFlatValueWrapper : NdfValueWrapper
 
     public object Value
     {
-        get { return _value; }
+        get => _value;
         set
         {
             _value = value;
@@ -20,8 +20,5 @@ public abstract class NdfFlatValueWrapper : NdfValueWrapper
         }
     }
 
-    public override string ToString()
-    {
-        return Value.ToString();
-    }
+    public override string ToString() => Value.ToString();
 }

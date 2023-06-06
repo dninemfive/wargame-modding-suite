@@ -10,18 +10,9 @@ public class NdfUnkown : NdfFlatValueWrapper
     {
     }
 
-    public override byte[] GetBytes()
-    {
-        throw new InvalidOperationException("Cant serialize ndfunknown.");
-    }
+    public override byte[] GetBytes() => throw new InvalidOperationException("Cant serialize ndfunknown.");
 
-    public override byte[] GetNdfText()
-    {
-        throw new NotImplementedException();
-    }
+    public override byte[] GetNdfText() => throw new NotImplementedException();
 
-    public override string ToString()
-    {
-        return string.Format("{0}", Utils.ByteArrayToBigEndianHexByteString((byte[])Value));
-    }
+    public override string ToString() => string.Format("{0}", Utils.ByteArrayToBigEndianHexByteString((byte[])Value));
 }

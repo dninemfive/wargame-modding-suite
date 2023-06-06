@@ -10,16 +10,7 @@ public class LeftMarginMultiplierConverter : IValueConverter
 {
     public double Length { get; set; }
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is not TreeViewItem item)
-            return new Thickness(0);
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => value is not TreeViewItem item ? new Thickness(0) : (object)new Thickness(Length * item.GetDepth(), 0, 0, 0);
 
-        return new Thickness(Length * item.GetDepth(), 0, 0, 0);
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new System.NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new System.NotImplementedException();
 }

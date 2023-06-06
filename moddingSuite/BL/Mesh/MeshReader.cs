@@ -19,8 +19,8 @@ public class MeshReader
 
     public MeshFile Read(byte[] data)
     {
-        using (MemoryStream ms = new(data))
-            return Read(ms);
+        using MemoryStream ms = new(data);
+        return Read(ms);
     }
 
     public MeshFile Read(Stream s)
@@ -42,8 +42,8 @@ public class MeshReader
     {
         byte[] buffer = new byte[file.SubHeader.MeshMaterial.Size];
 
-        s.Seek(file.SubHeader.MeshMaterial.Offset, SeekOrigin.Begin);
-        s.Read(buffer, 0, buffer.Length);
+        _ = s.Seek(file.SubHeader.MeshMaterial.Offset, SeekOrigin.Begin);
+        _ = s.Read(buffer, 0, buffer.Length);
 
         NdfbinReader ndfReader = new();
 
@@ -56,7 +56,7 @@ public class MeshReader
 
         byte[] buffer = new byte[4];
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         shead.MeshCount = BitConverter.ToUInt32(buffer, 0);
 
         shead.Dictionary = ReadSubHeaderEntryWithCount(ms);
@@ -81,10 +81,10 @@ public class MeshReader
 
         byte[] buffer = new byte[4];
 
-        s.Read(buffer, 0, buffer.Length);
+        _ = s.Read(buffer, 0, buffer.Length);
         entry.Offset = BitConverter.ToUInt32(buffer, 0);
 
-        s.Read(buffer, 0, buffer.Length);
+        _ = s.Read(buffer, 0, buffer.Length);
         entry.Size = BitConverter.ToUInt32(buffer, 0);
 
         return entry;
@@ -101,7 +101,7 @@ public class MeshReader
         };
 
         byte[] buffer = new byte[4];
-        s.Read(buffer, 0, buffer.Length);
+        _ = s.Read(buffer, 0, buffer.Length);
 
         entryWithCount.Count = BitConverter.ToUInt32(buffer, 0);
 
@@ -114,33 +114,33 @@ public class MeshReader
 
         byte[] buffer = new byte[4];
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
 
         if (BitConverter.ToUInt32(buffer, 0) != MeshMagic)
             throw new InvalidDataException("Wrong header magic");
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         head.Platform = BitConverter.ToUInt32(buffer, 0);
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         head.Version = BitConverter.ToUInt32(buffer, 0);
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         head.FileSize = BitConverter.ToUInt32(buffer, 0);
 
         byte[] chkSumBuffer = new byte[16];
 
-        ms.Read(chkSumBuffer, 0, chkSumBuffer.Length);
+        _ = ms.Read(chkSumBuffer, 0, chkSumBuffer.Length);
         head.Checksum = chkSumBuffer;
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         head.HeaderOffset = BitConverter.ToUInt32(buffer, 0);
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         head.HeaderSize = BitConverter.ToUInt32(buffer, 0);
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         head.ContentOffset = BitConverter.ToUInt32(buffer, 0);
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         head.ContentSize = BitConverter.ToUInt32(buffer, 0);
 
         return head;
@@ -152,70 +152,70 @@ public class MeshReader
         List<EdataDir> dirs = new();
         List<long> endings = new();
 
-        s.Seek(f.SubHeader.Dictionary.Offset, SeekOrigin.Begin);
+        _ = s.Seek(f.SubHeader.Dictionary.Offset, SeekOrigin.Begin);
 
         long dirEnd = f.SubHeader.Dictionary.Offset + f.SubHeader.Dictionary.Size;
 
         while (s.Position < dirEnd)
         {
             byte[] buffer = new byte[4];
-            s.Read(buffer, 0, 4);
+            _ = s.Read(buffer, 0, 4);
             int fileGroupId = BitConverter.ToInt32(buffer, 0);
 
             if (fileGroupId == 0)
             {
                 MeshContentFile file = new();
-                s.Read(buffer, 0, 4);
+                _ = s.Read(buffer, 0, 4);
                 file.FileEntrySize = BitConverter.ToUInt32(buffer, 0);
 
                 Point3D minp = new();
-                s.Read(buffer, 0, buffer.Length);
+                _ = s.Read(buffer, 0, buffer.Length);
                 minp.X = BitConverter.ToSingle(buffer, 0);
-                s.Read(buffer, 0, buffer.Length);
+                _ = s.Read(buffer, 0, buffer.Length);
                 minp.Y = BitConverter.ToSingle(buffer, 0);
-                s.Read(buffer, 0, buffer.Length);
+                _ = s.Read(buffer, 0, buffer.Length);
                 minp.Z = BitConverter.ToSingle(buffer, 0);
                 file.MinBoundingBox = minp;
 
                 Point3D maxp = new();
-                s.Read(buffer, 0, buffer.Length);
+                _ = s.Read(buffer, 0, buffer.Length);
                 maxp.X = BitConverter.ToSingle(buffer, 0);
-                s.Read(buffer, 0, buffer.Length);
+                _ = s.Read(buffer, 0, buffer.Length);
                 maxp.Y = BitConverter.ToSingle(buffer, 0);
-                s.Read(buffer, 0, buffer.Length);
+                _ = s.Read(buffer, 0, buffer.Length);
                 maxp.Z = BitConverter.ToSingle(buffer, 0);
                 file.MaxBoundingBox = maxp;
 
-                s.Read(buffer, 0, buffer.Length);
+                _ = s.Read(buffer, 0, buffer.Length);
                 file.Flags = BitConverter.ToUInt32(buffer, 0);
 
                 buffer = new byte[2];
 
-                s.Read(buffer, 0, buffer.Length);
+                _ = s.Read(buffer, 0, buffer.Length);
                 file.MultiMaterialMeshIndex = BitConverter.ToUInt16(buffer, 0);
 
-                s.Read(buffer, 0, buffer.Length);
+                _ = s.Read(buffer, 0, buffer.Length);
                 file.HierarchicalAseModelSkeletonIndex = BitConverter.ToUInt16(buffer, 0);
 
                 file.Name = Utils.ReadString(s);
                 file.Path = MergePath(dirs, file.Name);
 
                 if (file.Name.Length % 2 == 0)
-                    s.Seek(1, SeekOrigin.Current);
+                    _ = s.Seek(1, SeekOrigin.Current);
 
                 files.Add(file);
 
                 while (endings.Count > 0 && s.Position == endings.Last())
                 {
-                    dirs.Remove(dirs.Last());
-                    endings.Remove(endings.Last());
+                    _ = dirs.Remove(dirs.Last());
+                    _ = endings.Remove(endings.Last());
                 }
             }
             else if (fileGroupId > 0)
             {
                 EdataDir dir = new();
 
-                s.Read(buffer, 0, 4);
+                _ = s.Read(buffer, 0, 4);
                 dir.FileEntrySize = BitConverter.ToInt32(buffer, 0);
 
                 if (dir.FileEntrySize != 0)
@@ -226,7 +226,7 @@ public class MeshReader
                 dir.Name = Utils.ReadString(s);
 
                 if (dir.Name.Length % 2 == 0)
-                    s.Seek(1, SeekOrigin.Current);
+                    _ = s.Seek(1, SeekOrigin.Current);
 
                 dirs.Add(dir);
             }
@@ -240,9 +240,9 @@ public class MeshReader
         StringBuilder b = new();
 
         foreach (EdataDir dir in dirs)
-            b.Append(dir.Name);
+            _ = b.Append(dir.Name);
 
-        b.Append(fileName);
+        _ = b.Append(fileName);
 
         return b.ToString();
     }

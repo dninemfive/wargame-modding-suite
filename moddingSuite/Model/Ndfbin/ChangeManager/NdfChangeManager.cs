@@ -4,24 +4,13 @@ namespace moddingSuite.Model.Ndfbin.ChangeManager;
 
 public class NdfChangeManager
 {
-    private readonly ObservableCollection<ChangeEntryBase> _changes = new();
-
     public NdfChangeManager()
     {
     }
 
-    public ObservableCollection<ChangeEntryBase> Changes
-    {
-        get { return _changes; }
-    }
+    public ObservableCollection<ChangeEntryBase> Changes { get; } = new();
 
-    public bool HasChanges
-    {
-        get { return Changes.Count > 0; }
-    }
+    public bool HasChanges => Changes.Count > 0;
 
-    public void AddChange(ChangeEntryBase change)
-    {
-        Changes.Add(change);
-    }
+    public void AddChange(ChangeEntryBase change) => Changes.Add(change);
 }

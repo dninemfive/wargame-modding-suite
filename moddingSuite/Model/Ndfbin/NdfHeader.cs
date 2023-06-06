@@ -19,7 +19,7 @@ public class NdfHeader : ViewModelBase
 
     public bool IsCompressedBody
     {
-        get { return _isCompressedBody; }
+        get => _isCompressedBody;
         set
         {
             _isCompressedBody = value;

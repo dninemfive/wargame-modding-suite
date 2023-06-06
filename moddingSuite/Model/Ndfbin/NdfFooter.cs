@@ -24,18 +24,13 @@ namespace moddingSuite.Model.Ndfbin;
 /// </summary>
 public class NdfFooter : ViewModelBase
 {
-    private readonly ObservableCollection<NdfFooterEntry> _entries = new();
-
     private ulong _offset;
 
-    public ObservableCollection<NdfFooterEntry> Entries
-    {
-        get { return _entries; }
-    }
+    public ObservableCollection<NdfFooterEntry> Entries { get; } = new();
 
     public ulong Offset
     {
-        get { return _offset; }
+        get => _offset;
         set
         {
             _offset = value;
@@ -43,10 +38,7 @@ public class NdfFooter : ViewModelBase
         }
     }
 
-    public void AddEntry(string name, long offset, long size)
-    {
-        Entries.Add(new NdfFooterEntry { Name = name.ToUpper(), Offset = offset, Size = size });
-    }
+    public void AddEntry(string name, long offset, long size) => Entries.Add(new NdfFooterEntry { Name = name.ToUpper(), Offset = offset, Size = size });
 
     public byte[] GetBytes()
     {

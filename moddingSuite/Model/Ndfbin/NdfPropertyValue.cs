@@ -26,20 +26,11 @@ public class NdfPropertyValue : ViewModelBase, IValueHolder, IEditableObject
         DetailsCommand = new ActionCommand(DetailsCommandExecute);
     }
 
-    public NdfType Type
-    {
-        get
-        {
-            if (Value == null)
-                return NdfType.Unset;
-
-            return Value.Type;
-        }
-    }
+    public NdfType Type => Value == null ? NdfType.Unset : Value.Type;
 
     public NdfProperty Property
     {
-        get { return _property; }
+        get => _property;
         set
         {
             _property = value;
@@ -49,7 +40,7 @@ public class NdfPropertyValue : ViewModelBase, IValueHolder, IEditableObject
 
     public NdfObject Instance
     {
-        get { return _instance; }
+        get => _instance;
         set
         {
             _instance = value;
@@ -61,7 +52,7 @@ public class NdfPropertyValue : ViewModelBase, IValueHolder, IEditableObject
 
     public NdfValueWrapper Value
     {
-        get { return _value; }
+        get => _value;
         set
         {
             _value = value;
@@ -70,10 +61,7 @@ public class NdfPropertyValue : ViewModelBase, IValueHolder, IEditableObject
         }
     }
 
-    public NdfBinary Manager
-    {
-        get { return Property.Class.Manager; }
-    }
+    public NdfBinary Manager => Property.Class.Manager;
 
     #endregion
 
@@ -128,7 +116,7 @@ public class NdfPropertyValue : ViewModelBase, IValueHolder, IEditableObject
         if (inst == null)
             return;
 
-        vm.InstancesCollectionView.MoveCurrentTo(inst);
+        _ = vm.InstancesCollectionView.MoveCurrentTo(inst);
 
         DialogProvider.ProvideView(vm);
     }
@@ -138,13 +126,10 @@ public class NdfPropertyValue : ViewModelBase, IValueHolder, IEditableObject
         if (prop.Value is not NdfCollection refe)
             return;
 
-
         ListEditorViewModel editor = new(refe, Manager);
         DialogProvider.ProvideView(editor);
 
-
     }
-
 
     private byte[] _oldVal;
     private bool _dirty;
@@ -159,10 +144,7 @@ public class NdfPropertyValue : ViewModelBase, IValueHolder, IEditableObject
         _dirty = true;
     }
 
-    public void CancelEdit()
-    {
-        _dirty = false;
-    }
+    public void CancelEdit() => _dirty = false;
 
     public void EndEdit()
     {
@@ -174,8 +156,7 @@ public class NdfPropertyValue : ViewModelBase, IValueHolder, IEditableObject
         if (newVal != null && _oldVal != null && Utils.ByteArrayCompare(newVal, _oldVal))
             return;
 
-        ChangeEntryBase change = null;
-
+        ChangeEntryBase change;
         switch (Value.Type)
         {
             case NdfType.Map:

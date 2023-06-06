@@ -11,20 +11,20 @@ public class TgvDDSReader
 {
     public TgvFile ReadDDS(byte[] input)
     {
-        int contentSize = input.Length - Marshal.SizeOf(typeof(DDS.DDS.Header)) - Marshal.SizeOf((typeof(uint)));
+        int contentSize = input.Length - Marshal.SizeOf(typeof(DDS.DDS.Header)) - Marshal.SizeOf(typeof(uint));
 
         TgvFile file = new();
 
         using (MemoryStream ms = new(input))
         {
             byte[] buffer = new byte[4];
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
 
             if (BitConverter.ToUInt32(buffer, 0) != DDS.DDS.MagicHeader)
                 throw new ArgumentException("Wrong DDS magic");
 
             buffer = new byte[Marshal.SizeOf(typeof(DDS.DDS.Header))];
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
 
             DDS.DDS.Header header = Utils.ByteArrayToStructure<DDS.DDS.Header>(buffer);
 
@@ -38,7 +38,7 @@ public class TgvDDSReader
             for (ushort i = 0; i < header.MipMapCount; i++)
             {
                 buffer = new byte[mipSize];
-                ms.Read(buffer, 0, buffer.Length);
+                _ = ms.Read(buffer, 0, buffer.Length);
 
                 TgvMipMap mip = new()
                 { Content = buffer };
@@ -55,9 +55,7 @@ public class TgvDDSReader
 
             file.MipMapCount = (ushort)header.MipMapCount;
 
-            DDSHelper.ConversionFlags conversionFlags;
-
-            file.Format = DDSHelper.GetDXGIFormat(ref header.PixelFormat, out conversionFlags);
+            file.Format = DDSHelper.GetDXGIFormat(ref header.PixelFormat, out _);
         }
 
         return file;

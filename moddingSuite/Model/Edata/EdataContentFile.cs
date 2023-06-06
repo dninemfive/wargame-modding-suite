@@ -42,7 +42,7 @@ public class EdataContentFile : EdataEntity
 
     public string Path
     {
-        get { return _path; }
+        get => _path;
         set
         {
             _path = value;
@@ -52,7 +52,7 @@ public class EdataContentFile : EdataEntity
 
     public long Offset
     {
-        get { return _offset; }
+        get => _offset;
         set
         {
             _offset = value;
@@ -62,7 +62,7 @@ public class EdataContentFile : EdataEntity
 
     public long Size
     {
-        get { return _size; }
+        get => _size;
         set
         {
             _size = value;
@@ -72,7 +72,7 @@ public class EdataContentFile : EdataEntity
 
     public byte[] Checksum
     {
-        get { return _checkSum; }
+        get => _checkSum;
         set
         {
             _checkSum = value;
@@ -82,7 +82,7 @@ public class EdataContentFile : EdataEntity
 
     public uint Id
     {
-        get { return _id; }
+        get => _id;
         set
         {
             _id = value;
@@ -92,7 +92,7 @@ public class EdataContentFile : EdataEntity
 
     public EdataFileType FileType
     {
-        get { return _fileType; }
+        get => _fileType;
         set
         {
             _fileType = value;
@@ -102,7 +102,7 @@ public class EdataContentFile : EdataEntity
 
     public EdataDir Directory
     {
-        get { return _directory; }
+        get => _directory;
         set
         {
             _directory = value;
@@ -110,8 +110,5 @@ public class EdataContentFile : EdataEntity
         }
     }
 
-    public override string ToString()
-    {
-        return Path.ToString(CultureInfo.CurrentCulture);
-    }
+    public override string ToString() => Path.ToString(CultureInfo.CurrentCulture);
 }

@@ -33,13 +33,11 @@ namespace moddingSuite.ViewModel.Edata;
 
 public class EdataManagerViewModel : ViewModelBase
 {
-    private readonly ObservableCollection<EdataFileViewModel> _openFiles = new();
-
     private string _statusText;
 
     public string StatusText
     {
-        get { return _statusText; }
+        get => _statusText;
         set
         {
             _statusText = value;
@@ -60,6 +58,7 @@ public class EdataManagerViewModel : ViewModelBase
             FileInfo fileInfo = new(file);
 
             if (fileInfo.Exists)
+            {
                 try
                 {
                     AddFile(fileInfo.FullName);
@@ -68,13 +67,14 @@ public class EdataManagerViewModel : ViewModelBase
                 {
                     failedFiles.Add(fileInfo);
                 }
+            }
         }
 
         if (failedFiles.Count > 0)
             StatusText = $"{failedFiles.Count} files failed to open. Did you start the modding suite while running the game?";
 
         if (settings.LastOpenedFiles.Count == 0)
-            CollectionViewSource.GetDefaultView(OpenFiles).MoveCurrentToFirst();
+            _ = CollectionViewSource.GetDefaultView(OpenFiles).MoveCurrentToFirst();
 
         Workspace = new WorkspaceViewModel(settings);
         Gamespace = new GameSpaceViewModel(settings);
@@ -106,11 +106,7 @@ public class EdataManagerViewModel : ViewModelBase
     public ICommand OpenEdataFromWorkspaceCommand { get; set; }
     public ICommand AddNewFileCommand { get; set; }
 
-
-    public ObservableCollection<EdataFileViewModel> OpenFiles
-    {
-        get { return _openFiles; }
-    }
+    public ObservableCollection<EdataFileViewModel> OpenFiles { get; } = new();
 
     public WorkspaceViewModel Workspace
     {
@@ -127,7 +123,7 @@ public class EdataManagerViewModel : ViewModelBase
         Settings set = SettingsManager.Load();
         set.LastOpenedFiles.Clear();
         set.LastOpenedFiles.AddRange(OpenFiles.Select(x => x.LoadedFile).ToList());
-        SettingsManager.Save(set);
+        _ = SettingsManager.Save(set);
     }
 
     public void AddFile(string path)
@@ -138,7 +134,7 @@ public class EdataManagerViewModel : ViewModelBase
 
         OpenFiles.Add(vm);
 
-        CollectionViewSource.GetDefaultView(OpenFiles).MoveCurrentTo(vm);
+        _ = CollectionViewSource.GetDefaultView(OpenFiles).MoveCurrentTo(vm);
     }
 
     public void CloseFile(EdataFileViewModel vm)
@@ -146,7 +142,7 @@ public class EdataManagerViewModel : ViewModelBase
         if (!OpenFiles.Contains(vm))
             return;
 
-        OpenFiles.Remove(vm);
+        _ = OpenFiles.Remove(vm);
     }
 
     protected void InitializeCommands()
@@ -210,14 +206,12 @@ public class EdataManagerViewModel : ViewModelBase
         {
             try
             {
-                dispatcher.Invoke(() => IsUIBusy = true);
-                dispatcher.Invoke(report, "Reading scenario...");
-
-
+                _ = dispatcher.Invoke(() => IsUIBusy = true);
+                _ = dispatcher.Invoke(report, "Reading scenario...");
 
                 ScenarioEditorViewModel detailsVm = new(scenario, vm);
 
-                dispatcher.Invoke(open, detailsVm, this);
+                _ = dispatcher.Invoke(open, detailsVm, this);
             }
             catch (Exception ex)
             {
@@ -225,8 +219,8 @@ public class EdataManagerViewModel : ViewModelBase
             }
             finally
             {
-                dispatcher.Invoke(() => IsUIBusy = false);
-                dispatcher.Invoke(report, "Ready");
+                _ = dispatcher.Invoke(() => IsUIBusy = false);
+                _ = dispatcher.Invoke(report, "Ready");
             }
         });
 
@@ -250,15 +244,15 @@ public class EdataManagerViewModel : ViewModelBase
         {
             try
             {
-                dispatcher.Invoke(() => IsUIBusy = true);
-                dispatcher.Invoke(report, "Reading Mesh package...");
+                _ = dispatcher.Invoke(() => IsUIBusy = true);
+                _ = dispatcher.Invoke(report, "Reading Mesh package...");
 
                 MeshReader reader = new();
                 Model.Mesh.MeshFile meshfile = reader.Read(vm.EdataManager.GetRawData(mesh));
 
                 MeshEditorViewModel detailsVm = new(meshfile);
 
-                dispatcher.Invoke(open, detailsVm, this);
+                _ = dispatcher.Invoke(open, detailsVm, this);
             }
             catch (Exception ex)
             {
@@ -266,8 +260,8 @@ public class EdataManagerViewModel : ViewModelBase
             }
             finally
             {
-                dispatcher.Invoke(() => IsUIBusy = false);
-                dispatcher.Invoke(report, "Ready");
+                _ = dispatcher.Invoke(() => IsUIBusy = false);
+                _ = dispatcher.Invoke(report, "Ready");
             }
         });
 
@@ -291,7 +285,7 @@ public class EdataManagerViewModel : ViewModelBase
         if (openfDlg.ShowDialog().Value)
         {
             settings.LastOpenFolder = new FileInfo(openfDlg.FileName).DirectoryName;
-            SettingsManager.Save(settings);
+            _ = SettingsManager.Save(settings);
 
             ReplaceRawFile(File.ReadAllBytes(openfDlg.FileName));
         }
@@ -314,7 +308,7 @@ public class EdataManagerViewModel : ViewModelBase
         if (openfDlg.ShowDialog().Value)
         {
             settings.LastOpenFolder = new FileInfo(openfDlg.FileName).DirectoryName;
-            SettingsManager.Save(settings);
+            _ = SettingsManager.Save(settings);
 
             ReplaceTextureFile(openfDlg.FileName);
         }
@@ -337,7 +331,7 @@ public class EdataManagerViewModel : ViewModelBase
         if (openfDlg.ShowDialog().Value)
         {
             settings.LastOpenFolder = new FileInfo(openfDlg.FileName).DirectoryName;
-            SettingsManager.Save(settings);
+            _ = SettingsManager.Save(settings);
 
             ReplaceSoundFile(openfDlg.FileName);
         }
@@ -388,22 +382,22 @@ public class EdataManagerViewModel : ViewModelBase
         {
             try
             {
-                dispatcher.Invoke(() => IsUIBusy = true);
-                dispatcher.Invoke(report, $"Replacing {file.Path}...");
+                _ = dispatcher.Invoke(() => IsUIBusy = true);
+                _ = dispatcher.Invoke(report, $"Replacing {file.Path}...");
 
                 vm.EdataManager.ReplaceFile(file, newFileData);
                 vm.LoadFile(vm.LoadedFile);
 
-                dispatcher.Invoke(report, "Ready");
+                _ = dispatcher.Invoke(report, "Ready");
             }
             catch (Exception ex)
             {
-                dispatcher.Invoke(report, $"Replacing failed {ex.Message}");
+                _ = dispatcher.Invoke(report, $"Replacing failed {ex.Message}");
                 Trace.TraceError("Unhandeled exception in Thread occoured: {0}", ex.ToString());
             }
             finally
             {
-                dispatcher.Invoke(() => IsUIBusy = false);
+                _ = dispatcher.Invoke(() => IsUIBusy = false);
             }
         });
 
@@ -428,12 +422,12 @@ public class EdataManagerViewModel : ViewModelBase
         {
             try
             {
-                dispatcher.Invoke(() => IsUIBusy = true);
-                dispatcher.Invoke(report, $"Replacing {destTgvFile.Path}...");
+                _ = dispatcher.Invoke(() => IsUIBusy = true);
+                _ = dispatcher.Invoke(report, $"Replacing {destTgvFile.Path}...");
 
                 byte[] sourceDds = File.ReadAllBytes(newFilePath);
 
-                dispatcher.Invoke(report, "Converting DDS to TGV file format...");
+                _ = dispatcher.Invoke(report, "Converting DDS to TGV file format...");
 
                 TgvDDSReader ddsReader = new();
                 Model.Textures.TgvFile sourceTgvFile = ddsReader.ReadDDS(sourceDds);
@@ -446,21 +440,21 @@ public class EdataManagerViewModel : ViewModelBase
                     sourceTgvRawData = tgvwriterStream.ToArray();
                 }
 
-                dispatcher.Invoke(report, "Replacing file in edata container...");
+                _ = dispatcher.Invoke(report, "Replacing file in edata container...");
 
                 vm.EdataManager.ReplaceFile(destTgvFile, sourceTgvRawData);
 
                 vm.LoadFile(vm.LoadedFile);
-                dispatcher.Invoke(report, "Ready");
+                _ = dispatcher.Invoke(report, "Ready");
             }
             catch (Exception ex)
             {
-                dispatcher.Invoke(report, $"Replacing failed {ex.Message}");
+                _ = dispatcher.Invoke(report, $"Replacing failed {ex.Message}");
                 Trace.TraceError("Unhandeled exception in Thread occoured: {0}", ex.ToString());
             }
             finally
             {
-                dispatcher.Invoke(() => IsUIBusy = false);
+                _ = dispatcher.Invoke(() => IsUIBusy = false);
             }
         });
 
@@ -472,7 +466,6 @@ public class EdataManagerViewModel : ViewModelBase
         if (CollectionViewSource.GetDefaultView(OpenFiles).CurrentItem is not EdataFileViewModel vm)
             return;
 
-
         if (vm.FilesCollectionView.CurrentItem is not EdataContentFile file)
             return;
 
@@ -483,8 +476,8 @@ public class EdataManagerViewModel : ViewModelBase
         {
             try
             {
-                dispatcher.Invoke(() => IsUIBusy = true);
-                dispatcher.Invoke(report, $"Replacing {file.Path}...");
+                _ = dispatcher.Invoke(() => IsUIBusy = true);
+                _ = dispatcher.Invoke(report, $"Replacing {file.Path}...");
                 byte[] replacefile = File.ReadAllBytes(newFilePath);
 
                 EssWriter writer = new();
@@ -494,11 +487,11 @@ public class EdataManagerViewModel : ViewModelBase
                     replacefile = writer.Write(replacefile);
                     vm.EdataManager.ReplaceFile(file, replacefile);
                     vm.LoadFile(vm.LoadedFile);
-                    dispatcher.Invoke(report, "Ready");
+                    _ = dispatcher.Invoke(report, "Ready");
                 }
                 catch (InvalidDataException ex)
                 {
-                    dispatcher.Invoke(report, ex.Message);
+                    _ = dispatcher.Invoke(report, ex.Message);
                 }
             }
             catch (Exception ex)
@@ -507,7 +500,7 @@ public class EdataManagerViewModel : ViewModelBase
             }
             finally
             {
-                dispatcher.Invoke(() => IsUIBusy = false);
+                _ = dispatcher.Invoke(() => IsUIBusy = false);
             }
         });
 
@@ -517,7 +510,6 @@ public class EdataManagerViewModel : ViewModelBase
     protected void ExportTextureExecute(object obj)
     {
         EdataFileViewModel vm = CollectionViewSource.GetDefaultView(OpenFiles).CurrentItem as EdataFileViewModel;
-
 
         if (vm?.FilesCollectionView.CurrentItem is not EdataContentFile sourceTgvFile)
             return;
@@ -529,14 +521,14 @@ public class EdataManagerViewModel : ViewModelBase
         {
             try
             {
-                dispatcher.Invoke(() => IsUIBusy = true);
+                _ = dispatcher.Invoke(() => IsUIBusy = true);
 
                 Settings settings = SettingsManager.Load();
 
                 FileInfo f = new(sourceTgvFile.Path);
                 string exportPath = Path.Combine(settings.SavePath, f.Name + ".dds");
 
-                dispatcher.Invoke(report, string.Format("Exporting to {0}...", exportPath));
+                _ = dispatcher.Invoke(report, string.Format("Exporting to {0}...", exportPath));
 
                 TgvReader tgvReader = new();
                 Model.Textures.TgvFile tgv = tgvReader.Read(vm.EdataManager.GetRawData(sourceTgvFile));
@@ -545,11 +537,9 @@ public class EdataManagerViewModel : ViewModelBase
 
                 byte[] content = writer.CreateDDSFile(tgv);
 
-                using (FileStream fs = new(Path.Combine(settings.SavePath, f.Name + ".dds"), FileMode.OpenOrCreate))
-                {
-                    fs.Write(content, 0, content.Length);
-                    fs.Flush();
-                }
+                using FileStream fs = new(Path.Combine(settings.SavePath, f.Name + ".dds"), FileMode.OpenOrCreate);
+                fs.Write(content, 0, content.Length);
+                fs.Flush();
             }
             catch (Exception ex)
             {
@@ -557,8 +547,8 @@ public class EdataManagerViewModel : ViewModelBase
             }
             finally
             {
-                dispatcher.Invoke(report, "Ready");
-                dispatcher.Invoke(() => IsUIBusy = false);
+                _ = dispatcher.Invoke(report, "Ready");
+                _ = dispatcher.Invoke(() => IsUIBusy = false);
             }
         });
 
@@ -570,7 +560,6 @@ public class EdataManagerViewModel : ViewModelBase
         if (CollectionViewSource.GetDefaultView(OpenFiles).CurrentItem is not EdataFileViewModel vm)
             return;
 
-
         if (vm.FilesCollectionView.CurrentItem is not EdataContentFile sourceEssFile)
             return;
 
@@ -581,23 +570,21 @@ public class EdataManagerViewModel : ViewModelBase
         {
             try
             {
-                dispatcher.Invoke(() => IsUIBusy = true);
+                _ = dispatcher.Invoke(() => IsUIBusy = true);
 
                 Settings settings = SettingsManager.Load();
 
                 FileInfo f = new(sourceEssFile.Path);
                 string exportPath = Path.Combine(settings.SavePath, f.Name + ".wav");
 
-                dispatcher.Invoke(report, string.Format("Exporting to {0}...", exportPath));
+                _ = dispatcher.Invoke(report, string.Format("Exporting to {0}...", exportPath));
 
                 EssReader tgvReader = new();
                 byte[] tgv = tgvReader.ReadEss(vm.EdataManager.GetRawData(sourceEssFile));
 
-                using (FileStream fs = new(Path.Combine(settings.SavePath, f.Name + ".wav"), FileMode.OpenOrCreate))
-                {
-                    fs.Write(tgv, 0, tgv.Length);
-                    fs.Flush();
-                }
+                using FileStream fs = new(Path.Combine(settings.SavePath, f.Name + ".wav"), FileMode.OpenOrCreate);
+                fs.Write(tgv, 0, tgv.Length);
+                fs.Flush();
             }
             catch (Exception ex)
             {
@@ -605,8 +592,8 @@ public class EdataManagerViewModel : ViewModelBase
             }
             finally
             {
-                dispatcher.Invoke(report, "Ready");
-                dispatcher.Invoke(() => IsUIBusy = false);
+                _ = dispatcher.Invoke(report, "Ready");
+                _ = dispatcher.Invoke(() => IsUIBusy = false);
             }
         });
 
@@ -626,7 +613,6 @@ public class EdataManagerViewModel : ViewModelBase
     {
         EdataFileViewModel vm = CollectionViewSource.GetDefaultView(OpenFiles).CurrentItem as EdataFileViewModel;
 
-
         return vm?.FilesCollectionView.CurrentItem is EdataContentFile ndf && ndf.Name.EndsWith(ending);
     }
 
@@ -634,7 +620,6 @@ public class EdataManagerViewModel : ViewModelBase
     {
         if (CollectionViewSource.GetDefaultView(OpenFiles).CurrentItem is not EdataFileViewModel vm)
             return;
-
 
         if (vm.FilesCollectionView.CurrentItem is not EdataContentFile ndf)
             return;
@@ -649,7 +634,6 @@ public class EdataManagerViewModel : ViewModelBase
         if (CollectionViewSource.GetDefaultView(OpenFiles).CurrentItem is not EdataFileViewModel vm)
             return;
 
-
         if (vm.FilesCollectionView.CurrentItem is not EdataContentFile ndf)
             return;
 
@@ -662,11 +646,11 @@ public class EdataManagerViewModel : ViewModelBase
             {
                 try
                 {
-                    dispatcher.Invoke(() => IsUIBusy = true);
-                    dispatcher.Invoke(report, "Decompiling ndf binary...");
+                    _ = dispatcher.Invoke(() => IsUIBusy = true);
+                    _ = dispatcher.Invoke(report, "Decompiling ndf binary...");
 
                     NdfEditorMainViewModel detailsVm = new(ndf, vm);
-                    dispatcher.Invoke(open, detailsVm, this);
+                    _ = dispatcher.Invoke(open, detailsVm, this);
                 }
                 catch (Exception ex)
                 {
@@ -674,8 +658,8 @@ public class EdataManagerViewModel : ViewModelBase
                 }
                 finally
                 {
-                    dispatcher.Invoke(() => IsUIBusy = false);
-                    dispatcher.Invoke(report, "Ready");
+                    _ = dispatcher.Invoke(() => IsUIBusy = false);
+                    _ = dispatcher.Invoke(report, "Ready");
                 }
             });
 
@@ -688,7 +672,6 @@ public class EdataManagerViewModel : ViewModelBase
         if (CollectionViewSource.GetDefaultView(OpenFiles).CurrentItem is not EdataFileViewModel vm)
             return;
 
-
         if (vm.FilesCollectionView.CurrentItem is not EdataContentFile ndf)
             return;
 
@@ -698,18 +681,15 @@ public class EdataManagerViewModel : ViewModelBase
 
         FileInfo f = new(ndf.Path);
 
-        using (FileStream fs = new(Path.Combine(settings.SavePath, f.Name), FileMode.OpenOrCreate))
-        {
-            fs.Write(content, 0, content.Length);
-            fs.Flush();
-        }
+        using FileStream fs = new(Path.Combine(settings.SavePath, f.Name), FileMode.OpenOrCreate);
+        fs.Write(content, 0, content.Length);
+        fs.Flush();
     }
 
     protected void ExportRawExecute(object obj)
     {
         if (CollectionViewSource.GetDefaultView(OpenFiles).CurrentItem is not EdataFileViewModel vm)
             return;
-
 
         if (vm.FilesCollectionView.CurrentItem is not EdataContentFile ndf)
             return;
@@ -721,7 +701,7 @@ public class EdataManagerViewModel : ViewModelBase
         {
             try
             {
-                dispatcher.Invoke(() => IsUIBusy = true);
+                _ = dispatcher.Invoke(() => IsUIBusy = true);
 
                 Settings settings = SettingsManager.Load();
 
@@ -731,17 +711,15 @@ public class EdataManagerViewModel : ViewModelBase
                 string exportDir = Path.GetDirectoryName(exportFullName);
 
                 if (!Directory.Exists(exportDir))
-                    Directory.CreateDirectory(exportDir);
+                    _ = Directory.CreateDirectory(exportDir);
 
-                dispatcher.Invoke(report, string.Format("Exporting to {0}...", exportFullName));
+                _ = dispatcher.Invoke(report, string.Format("Exporting to {0}...", exportFullName));
 
                 byte[] buffer = vm.EdataManager.GetRawData(ndf);
 
-                using (FileStream fs = new(exportFullName, FileMode.OpenOrCreate))
-                {
-                    fs.Write(buffer, 0, buffer.Length);
-                    fs.Flush();
-                }
+                using FileStream fs = new(exportFullName, FileMode.OpenOrCreate);
+                fs.Write(buffer, 0, buffer.Length);
+                fs.Flush();
             }
             catch (Exception ex)
             {
@@ -749,8 +727,8 @@ public class EdataManagerViewModel : ViewModelBase
             }
             finally
             {
-                dispatcher.Invoke(report, "Ready");
-                dispatcher.Invoke(() => IsUIBusy = false);
+                _ = dispatcher.Invoke(report, "Ready");
+                _ = dispatcher.Invoke(() => IsUIBusy = false);
             }
         });
 
@@ -792,7 +770,7 @@ public class EdataManagerViewModel : ViewModelBase
         if (folderDlg.ShowDialog() == DialogResult.OK)
         {
             settings.SavePath = folderDlg.SelectedPath;
-            SettingsManager.Save(settings);
+            _ = SettingsManager.Save(settings);
         }
     }
 
@@ -810,7 +788,7 @@ public class EdataManagerViewModel : ViewModelBase
         if (folderDlg.ShowDialog() == DialogResult.OK)
         {
             settings.WargamePath = folderDlg.SelectedPath;
-            SettingsManager.Save(settings);
+            _ = SettingsManager.Save(settings);
         }
     }
 
@@ -828,7 +806,7 @@ public class EdataManagerViewModel : ViewModelBase
         if (folderDlg.ShowDialog() == DialogResult.OK)
         {
             settings.PythonPath = folderDlg.SelectedPath;
-            SettingsManager.Save(settings);
+            _ = SettingsManager.Save(settings);
         }
     }
 
@@ -846,11 +824,10 @@ public class EdataManagerViewModel : ViewModelBase
         if (File.Exists(settings.LastOpenFolder))
             openfDlg.InitialDirectory = settings.LastOpenFolder;
 
-
         if (openfDlg.ShowDialog().Value)
         {
             settings.LastOpenFolder = new FileInfo(openfDlg.FileName).DirectoryName;
-            SettingsManager.Save(settings);
+            _ = SettingsManager.Save(settings);
             foreach (string fileName in openfDlg.FileNames)
             {
                 HandleNewFile(fileName);
@@ -865,7 +842,7 @@ public class EdataManagerViewModel : ViewModelBase
         using (FileStream fs = new(fileName, FileMode.Open))
         {
             byte[] headerBuffer = new byte[12];
-            fs.Read(headerBuffer, 0, headerBuffer.Length);
+            _ = fs.Read(headerBuffer, 0, headerBuffer.Length);
 
             type = EdataManager.GetFileTypeFromHeaderData(headerBuffer);
 
@@ -873,8 +850,8 @@ public class EdataManagerViewModel : ViewModelBase
             {
                 byte[] buffer = new byte[fs.Length];
 
-                fs.Seek(0, SeekOrigin.Begin);
-                fs.Read(buffer, 0, buffer.Length);
+                _ = fs.Seek(0, SeekOrigin.Begin);
+                _ = fs.Read(buffer, 0, buffer.Length);
 
                 NdfEditorMainViewModel detailsVm = new(buffer);
 
@@ -889,10 +866,7 @@ public class EdataManagerViewModel : ViewModelBase
             AddFile(fileName);
     }
 
-    protected void CloseFileExecute(object obj)
-    {
-        CloseFile(CollectionViewSource.GetDefaultView(OpenFiles).CurrentItem as EdataFileViewModel);
-    }
+    protected void CloseFileExecute(object obj) => CloseFile(CollectionViewSource.GetDefaultView(OpenFiles).CurrentItem as EdataFileViewModel);
 
     protected void PlayMovieExecute(object obj)
     {
@@ -900,7 +874,6 @@ public class EdataManagerViewModel : ViewModelBase
 
         if (CollectionViewSource.GetDefaultView(OpenFiles).CurrentItem is not EdataFileViewModel vm)
             return;
-
 
         if (vm.FilesCollectionView.CurrentItem is not EdataContentFile ndf)
             return;
@@ -925,8 +898,5 @@ public class EdataManagerViewModel : ViewModelBase
         view.Show();
     }
 
-    protected void AboutUsExecute(object obj)
-    {
-        DialogProvider.ProvideView(new AboutViewModel(), this);
-    }
+    protected void AboutUsExecute(object obj) => DialogProvider.ProvideView(new AboutViewModel(), this);
 }

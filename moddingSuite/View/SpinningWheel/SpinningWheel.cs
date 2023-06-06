@@ -1,4 +1,4 @@
-﻿using moddingSuite.View.Enums;
+﻿using moddingSuite.View.SpinningWheel.Enums;
 using System;
 using System.Collections;
 using System.Windows;
@@ -7,14 +7,14 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace moddingSuite.View;
+namespace moddingSuite.View.SpinningWheel;
 
 [TemplatePart(Name = "PART_Container", Type = typeof(Canvas))]
 public class SpinningWheel : Control
 {
     private Canvas container = null;
-    private Storyboard storyBoard = new();
-    private DoubleAnimation rotateAnimation = new(0, 360, new Duration(TimeSpan.FromSeconds(1)));
+    private readonly Storyboard storyBoard = new();
+    private readonly DoubleAnimation rotateAnimation = new(0, 360, new Duration(TimeSpan.FromSeconds(1)));
 
     static SpinningWheel()
     {
@@ -23,8 +23,8 @@ public class SpinningWheel : Control
 
     public int DotCount
     {
-        get { return (int)GetValue(DotCountProperty); }
-        set { SetValue(DotCountProperty, value); }
+        get => (int)GetValue(DotCountProperty);
+        set => SetValue(DotCountProperty, value);
     }
 
     public static readonly DependencyProperty DotCountProperty =
@@ -32,8 +32,8 @@ public class SpinningWheel : Control
 
     public Brush DotColor
     {
-        get { return (Brush)GetValue(DotColorProperty); }
-        set { SetValue(DotColorProperty, value); }
+        get => (Brush)GetValue(DotColorProperty);
+        set => SetValue(DotColorProperty, value);
     }
 
     public static readonly DependencyProperty DotColorProperty =
@@ -41,8 +41,8 @@ public class SpinningWheel : Control
 
     public double DotRadius
     {
-        get { return (double)GetValue(DotRadiusProperty); }
-        set { SetValue(DotRadiusProperty, value); }
+        get => (double)GetValue(DotRadiusProperty);
+        set => SetValue(DotRadiusProperty, value);
     }
 
     public static readonly DependencyProperty DotRadiusProperty =
@@ -50,18 +50,17 @@ public class SpinningWheel : Control
 
     public double Radius
     {
-        get { return (double)GetValue(RadiusProperty); }
-        set { SetValue(RadiusProperty, value); }
+        get => (double)GetValue(RadiusProperty);
+        set => SetValue(RadiusProperty, value);
     }
 
     public static readonly DependencyProperty RadiusProperty =
       DependencyProperty.Register("Radius", typeof(double), typeof(SpinningWheel), new FrameworkPropertyMetadata(14.0, FrameworkPropertyMetadataOptions.AffectsMeasure ,OnRadiusChanged));
 
-
     public bool IsSpinning
     {
-        get { return (bool)GetValue(IsSpinningProperty); }
-        set { SetValue(IsSpinningProperty, value); }
+        get => (bool)GetValue(IsSpinningProperty);
+        set => SetValue(IsSpinningProperty, value);
     }
 
     public static readonly DependencyProperty IsSpinningProperty =
@@ -69,18 +68,17 @@ public class SpinningWheel : Control
 
     public double Speed
     {
-        get { return (double)GetValue(SpeedProperty); }
-        set { SetValue(SpeedProperty, value); }
+        get => (double)GetValue(SpeedProperty);
+        set => SetValue(SpeedProperty, value);
     }
 
     public static readonly DependencyProperty SpeedProperty =
       DependencyProperty.Register("Speed", typeof(double), typeof(SpinningWheel), new UIPropertyMetadata(1.0, OnSpeedChanged));
 
-
     public RotateDirection Direction
     {
-        get { return (RotateDirection)GetValue(DirectionProperty); }
-        set { SetValue(DirectionProperty, value); }
+        get => (RotateDirection)GetValue(DirectionProperty);
+        set => SetValue(DirectionProperty, value);
     }
 
     public static readonly DependencyProperty DirectionProperty =
@@ -88,8 +86,8 @@ public class SpinningWheel : Control
 
     public bool SymmetricalArrange
     {
-        get { return (bool)GetValue(SymmetricalArrangeProperty); }
-        set { SetValue(SymmetricalArrangeProperty, value); }
+        get => (bool)GetValue(SymmetricalArrangeProperty);
+        set => SetValue(SymmetricalArrangeProperty, value);
     }
 
     public static readonly DependencyProperty SymmetricalArrangeProperty =
@@ -110,20 +108,18 @@ public class SpinningWheel : Control
     private static void OnIsSpinningChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
     {
         if (obj is SpinningWheel wheel && e.NewValue != null && wheel.storyBoard != null)
-        {
             wheel.ToggleSpinning((bool)e.NewValue);
-        }
     }
 
     private void ToggleSpinning(bool value)
     {
         if (value)
         {
-            this.storyBoard.Begin();
+            storyBoard.Begin();
         }
         else
         {
-            this.storyBoard.Stop();
+            storyBoard.Stop();
         }
     }
 
@@ -140,9 +136,7 @@ public class SpinningWheel : Control
     private static void OnRadiusChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
     {
         if (obj is SpinningWheel wheel && wheel.container != null && e.NewValue != null)
-        {
             UpdateEllipses(wheel.container.Children, (c, ellipse) => wheel.SetEllipsePosition(ellipse, c));
-        }
     }
 
     private static void UpdateEllipses(IEnumerable ellipses, Action<int, Ellipse> updateMethod)
@@ -152,11 +146,8 @@ public class SpinningWheel : Control
             int i = 1;
             foreach (object child in ellipses)
             {
-                Ellipse ellipse = (child as Ellipse);
-                if (ellipse != null)
-                {
+                if (child is Ellipse ellipse)
                     updateMethod(i++, ellipse);
-                }
             }
         }
     }
@@ -190,73 +181,71 @@ public class SpinningWheel : Control
     {
         base.OnApplyTemplate();
 
-        this.container = this.GetTemplateChild("PART_Container") as Canvas;
+        container = GetTemplateChild("PART_Container") as Canvas;
 
-        this.InitializeControl();
+        InitializeControl();
     }
 
     private void InitializeControl()
     {
-        this.GenerateDots();
-        this.CreateAnimation();
+        GenerateDots();
+        CreateAnimation();
 
-        this.ToggleSpinning(this.IsSpinning);
+        ToggleSpinning(IsSpinning);
     }
 
     private Ellipse CreateEllipse(int counter)
     {
         Ellipse ellipse = new()
         {
-            Fill = this.DotColor,
-            Width = this.DotRadius * 2,
-            Height = this.DotRadius * 2,
-            Opacity = (double)counter / (double)this.DotCount
+            Fill = DotColor,
+            Width = DotRadius * 2,
+            Height = DotRadius * 2,
+            Opacity = counter / (double)DotCount
         };
 
-        this.SetEllipsePosition(ellipse, counter);
+        SetEllipsePosition(ellipse, counter);
 
         return ellipse;
     }
 
     private Point CalculatePosition(double radian)
     {
-        double x = 0 + this.Radius * Math.Cos(radian);
-        double y = 0 + this.Radius * Math.Sin(radian);
+        double x = 0 + (Radius * Math.Cos(radian));
+        double y = 0 + (Radius * Math.Sin(radian));
 
-        return new Point(x - this.DotRadius, y - this.DotRadius);
+        return new Point(x - DotRadius, y - DotRadius);
     }
 
     private void SetEllipsePosition(Ellipse ellipse, int ellipseCounter)
     {
-        double maxCount = this.SymmetricalArrange ? this.DotCount : (2 * this.Radius * Math.PI) / (2 * this.DotRadius + 2);
+        double maxCount = SymmetricalArrange ? DotCount : 2 * Radius * Math.PI / ((2 * DotRadius) + 2);
 
-        Point position = this.CalculatePosition(ellipseCounter * 2 * Math.PI / maxCount);
+        Point position = CalculatePosition(ellipseCounter * 2 * Math.PI / maxCount);
         Canvas.SetLeft(ellipse, position.X);
         Canvas.SetTop(ellipse, position.Y);
     }
 
     private void GenerateDots()
     {
-        for (int i = 0; i < this.DotCount; i++)
+        for (int i = 0; i < DotCount; i++)
         {
-            Ellipse ellipse = this.CreateEllipse(i);
+            Ellipse ellipse = CreateEllipse(i);
 
-            this.container.Children.Add(ellipse);
+            _ = container.Children.Add(ellipse);
         }
     }
 
     private void CreateAnimation()
     {
-        this.rotateAnimation.RepeatBehavior = RepeatBehavior.Forever;
-        this.rotateAnimation.SpeedRatio = this.Speed;
-        if (this.Direction == RotateDirection.CCW)
-        {
-            this.rotateAnimation.To *= -1;
-        }
+        rotateAnimation.RepeatBehavior = RepeatBehavior.Forever;
+        rotateAnimation.SpeedRatio = Speed;
+        if (Direction == RotateDirection.CCW)
+            rotateAnimation.To *= -1;
 
-        Storyboard.SetTarget(this.rotateAnimation, this.container);
-        Storyboard.SetTargetProperty(this.rotateAnimation, new PropertyPath("(UIElement.RenderTransform).(RotateTransform.Angle)"));
+        Storyboard.SetTarget(rotateAnimation, container);
+        Storyboard.SetTargetProperty(rotateAnimation, new PropertyPath("(UIElement.RenderTransform).(RotateTransform.Angle)"));
 
-        this.storyBoard.Children.Add(this.rotateAnimation);
+        storyBoard.Children.Add(rotateAnimation);
     }
 }

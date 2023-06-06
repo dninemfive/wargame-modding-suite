@@ -25,8 +25,5 @@ public class NdfWideString : NdfFlatValueWrapper
         return data.ToArray();
     }
 
-    public override byte[] GetNdfText()
-    {
-        throw new NotImplementedException();
-    }
+    public override byte[] GetNdfText() => throw new NotImplementedException();
 }

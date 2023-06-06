@@ -47,18 +47,16 @@ public static class SettingsManager
         string dir = Path.GetDirectoryName(SettingsPath);
 
         if (dir != null && !Directory.Exists(dir))
-            Directory.CreateDirectory(dir);
+            _ = Directory.CreateDirectory(dir);
 
         try
         {
-            using (FileStream fs = File.Create(SettingsPath))
-            {
-                XmlSerializer serializer = new(typeof (Settings));
+            using FileStream fs = File.Create(SettingsPath);
+            XmlSerializer serializer = new(typeof (Settings));
 
-                serializer.Serialize(fs, settingsToSave);
+            serializer.Serialize(fs, settingsToSave);
 
-                fs.Flush();
-            }
+            fs.Flush();
         }
         catch (UnauthorizedAccessException uaex)
         {

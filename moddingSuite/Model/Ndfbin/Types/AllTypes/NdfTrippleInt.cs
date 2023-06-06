@@ -17,7 +17,7 @@ public class NdfTrippleInt : NdfFlatValueWrapper
 
     public int Value2
     {
-        get { return _value2; }
+        get => _value2;
         set
         {
             _value2 = value;
@@ -27,7 +27,7 @@ public class NdfTrippleInt : NdfFlatValueWrapper
 
     public int Value3
     {
-        get { return _value3; }
+        get => _value3;
         set
         {
             _value3 = value;
@@ -44,14 +44,8 @@ public class NdfTrippleInt : NdfFlatValueWrapper
         return value.ToArray();
     }
 
-    public override byte[] GetNdfText()
-    {
-        throw new NotImplementedException();
-    }
+    public override byte[] GetNdfText() => throw new NotImplementedException();
 
-    public override string ToString()
-    {
-        return string.Format("Int tripplet: {0} : {1} : {2}", Value, Value2, Value3);
-    }
+    public override string ToString() => string.Format("Int tripplet: {0} : {1} : {2}", Value, Value2, Value3);
 
 }

@@ -30,7 +30,6 @@ public class ScenarioWriter
 
         file.ContentFiles[1] = ndfBinWriter.Write(file.NdfBinary, false); // something wrong here; enohka: Should be fixed by now?
 
-
         foreach (byte[] contentFile in file.ContentFiles)
         {
             int padding = Utils.RoundToNextDivBy4(contentFile.Length) - contentFile.Length;
@@ -55,87 +54,85 @@ public class ScenarioWriter
 
     protected byte[] CreateAreaSubFile(AreaFile file)
     {
-        using (MemoryStream ms = new())
+        using MemoryStream ms = new();
+        ms.WriteAreaMagic();
+        ms.Write(BitConverter.GetBytes(AreaFileVersion), 0, 4);
+
+        // Seek size part, needs to be written as we know.
+        _ = ms.Seek(4, SeekOrigin.Current);
+
+        ms.Write(BitConverter.GetBytes(file.AreaManagers.Count), 0, 4);
+
+        foreach (AreaColletion areaManager in file.AreaManagers)
         {
-            ms.WriteAreaMagic();
-            ms.Write(BitConverter.GetBytes(AreaFileVersion), 0, 4);
+            ms.Write(BitConverter.GetBytes(areaManager.Count), 0, 4);
 
-            // Seek size part, needs to be written as we know.
-            ms.Seek(4, SeekOrigin.Current);
-
-            ms.Write(BitConverter.GetBytes(file.AreaManagers.Count), 0, 4);
-
-            foreach (AreaColletion areaManager in file.AreaManagers)
+            foreach (Area area in areaManager)
             {
-                ms.Write(BitConverter.GetBytes(areaManager.Count), 0, 4);
+                ms.WriteAreaMagic();
+                ms.Write(BitConverter.GetBytes(AreaPartVersion), 0, 4);
+                ms.Write(BitConverter.GetBytes(area.Id), 0, 4);
+                ms.Write(BitConverter.GetBytes(area.Name.Length), 0, 4);
+                byte[] nameBuffer = Encoding.UTF8.GetBytes(area.Name);
+                ms.Write(nameBuffer, 0, nameBuffer.Length);
+                _ = ms.Seek(Util.Utils.RoundToNextDivBy4(nameBuffer.Length) - nameBuffer.Length, SeekOrigin.Current);
 
-                foreach (Area area in areaManager)
+                ms.WriteAreaMagic();
+                ms.Write(BitConverter.GetBytes((float)area.AttachmentPoint.X), 0, 4);
+                ms.Write(BitConverter.GetBytes((float)area.AttachmentPoint.Y), 0, 4);
+                ms.Write(BitConverter.GetBytes((float)area.AttachmentPoint.Z), 0, 4);
+
+                ms.WriteAreaMagic();
+                ms.Write(BitConverter.GetBytes(area.Content.ClippedAreas.Count), 0, 4);
+                foreach (AreaClipped clippedArea in area.Content.ClippedAreas)
                 {
-                    ms.WriteAreaMagic();
-                    ms.Write(BitConverter.GetBytes(AreaPartVersion), 0, 4);
-                    ms.Write(BitConverter.GetBytes(area.Id), 0, 4);
-                    ms.Write(BitConverter.GetBytes(area.Name.Length), 0, 4);
-                    byte[] nameBuffer = Encoding.UTF8.GetBytes(area.Name);
-                    ms.Write(nameBuffer, 0, nameBuffer.Length);
-                    ms.Seek(Util.Utils.RoundToNextDivBy4(nameBuffer.Length) - nameBuffer.Length, SeekOrigin.Current);
-
-                    ms.WriteAreaMagic();
-                    ms.Write(BitConverter.GetBytes((float)area.AttachmentPoint.X), 0, 4);
-                    ms.Write(BitConverter.GetBytes((float)area.AttachmentPoint.Y), 0, 4);
-                    ms.Write(BitConverter.GetBytes((float)area.AttachmentPoint.Z), 0, 4);
-
-                    ms.WriteAreaMagic();
-                    ms.Write(BitConverter.GetBytes(area.Content.ClippedAreas.Count), 0, 4);
-                    foreach (AreaClipped clippedArea in area.Content.ClippedAreas)
-                    {
-                        ms.Write(BitConverter.GetBytes(clippedArea.StartTriangle), 0, 4);
-                        ms.Write(BitConverter.GetBytes(clippedArea.TriangleCount), 0, 4);
-                        ms.Write(BitConverter.GetBytes(clippedArea.StartVertex), 0, 4);
-                        ms.Write(BitConverter.GetBytes(clippedArea.VertexCount), 0, 4);
-                    }
-
-                    ms.WriteAreaMagic();
-                    ms.Write(BitConverter.GetBytes(area.Content.BorderTriangle.StartTriangle), 0, 4);
-                    ms.Write(BitConverter.GetBytes(area.Content.BorderTriangle.TriangleCount), 0, 4);
-                    ms.Write(BitConverter.GetBytes(area.Content.BorderTriangle.StartVertex), 0, 4);
-                    ms.Write(BitConverter.GetBytes(area.Content.BorderTriangle.VertexCount), 0, 4);
-
-                    ms.WriteAreaMagic();
-                    ms.Write(BitConverter.GetBytes(area.Content.BorderVertex.StartVertex), 0, 4);
-                    ms.Write(BitConverter.GetBytes(area.Content.BorderVertex.VertexCount), 0, 4);
-
-                    ms.WriteAreaMagic();
-                    ms.Write(BitConverter.GetBytes(area.Content.Vertices.Count), 0, 4);
-                    ms.Write(BitConverter.GetBytes(area.Content.Triangles.Count), 0, 4);
-                    foreach (AreaVertex vertex in area.Content.Vertices)
-                    {
-                        ms.Write(BitConverter.GetBytes(vertex.X), 0, 4);
-                        ms.Write(BitConverter.GetBytes(vertex.Y), 0, 4);
-                        ms.Write(BitConverter.GetBytes(vertex.Z), 0, 4);
-                        ms.Write(BitConverter.GetBytes(vertex.W), 0, 4);
-                        ms.Write(BitConverter.GetBytes(vertex.Center), 0, 4);
-                    }
-
-                    ms.WriteAreaMagic();
-                    foreach (Model.Common.MeshTriangularFace triangle in area.Content.Triangles)
-                    {
-                        ms.Write(BitConverter.GetBytes(triangle.Point1), 0, 4);
-                        ms.Write(BitConverter.GetBytes(triangle.Point2), 0, 4);
-                        ms.Write(BitConverter.GetBytes(triangle.Point3), 0, 4);
-                    }
-
-                    ms.WriteAreaMagic();
-                    ms.Seek(4, SeekOrigin.Current);
-                    ms.WriteAreaMagic();
-
-                    ms.Write(BitConverter.GetBytes(809782853), 0, 4);
+                    ms.Write(BitConverter.GetBytes(clippedArea.StartTriangle), 0, 4);
+                    ms.Write(BitConverter.GetBytes(clippedArea.TriangleCount), 0, 4);
+                    ms.Write(BitConverter.GetBytes(clippedArea.StartVertex), 0, 4);
+                    ms.Write(BitConverter.GetBytes(clippedArea.VertexCount), 0, 4);
                 }
+
+                ms.WriteAreaMagic();
+                ms.Write(BitConverter.GetBytes(area.Content.BorderTriangle.StartTriangle), 0, 4);
+                ms.Write(BitConverter.GetBytes(area.Content.BorderTriangle.TriangleCount), 0, 4);
+                ms.Write(BitConverter.GetBytes(area.Content.BorderTriangle.StartVertex), 0, 4);
+                ms.Write(BitConverter.GetBytes(area.Content.BorderTriangle.VertexCount), 0, 4);
+
+                ms.WriteAreaMagic();
+                ms.Write(BitConverter.GetBytes(area.Content.BorderVertex.StartVertex), 0, 4);
+                ms.Write(BitConverter.GetBytes(area.Content.BorderVertex.VertexCount), 0, 4);
+
+                ms.WriteAreaMagic();
+                ms.Write(BitConverter.GetBytes(area.Content.Vertices.Count), 0, 4);
+                ms.Write(BitConverter.GetBytes(area.Content.Triangles.Count), 0, 4);
+                foreach (AreaVertex vertex in area.Content.Vertices)
+                {
+                    ms.Write(BitConverter.GetBytes(vertex.X), 0, 4);
+                    ms.Write(BitConverter.GetBytes(vertex.Y), 0, 4);
+                    ms.Write(BitConverter.GetBytes(vertex.Z), 0, 4);
+                    ms.Write(BitConverter.GetBytes(vertex.W), 0, 4);
+                    ms.Write(BitConverter.GetBytes(vertex.Center), 0, 4);
+                }
+
+                ms.WriteAreaMagic();
+                foreach (Model.Common.MeshTriangularFace triangle in area.Content.Triangles)
+                {
+                    ms.Write(BitConverter.GetBytes(triangle.Point1), 0, 4);
+                    ms.Write(BitConverter.GetBytes(triangle.Point2), 0, 4);
+                    ms.Write(BitConverter.GetBytes(triangle.Point3), 0, 4);
+                }
+
+                ms.WriteAreaMagic();
+                _ = ms.Seek(4, SeekOrigin.Current);
+                ms.WriteAreaMagic();
+
+                ms.Write(BitConverter.GetBytes(809782853), 0, 4);
             }
-
-            ms.Seek(8, SeekOrigin.Begin);
-            ms.Write(BitConverter.GetBytes((uint)(ms.Length - 12)), 0, 4);
-
-            return ms.ToArray();
         }
+
+        _ = ms.Seek(8, SeekOrigin.Begin);
+        ms.Write(BitConverter.GetBytes((uint)(ms.Length - 12)), 0, 4);
+
+        return ms.ToArray();
     }
 }

@@ -18,15 +18,12 @@ public class NdfVector : NdfFlatValueWrapper
 
         List<byte> vector = new();
 
-        vector.AddRange(BitConverter.GetBytes((Single)pt.X));
-        vector.AddRange(BitConverter.GetBytes((Single)pt.Y));
-        vector.AddRange(BitConverter.GetBytes((Single)pt.Z));
+        vector.AddRange(BitConverter.GetBytes((float)pt.X));
+        vector.AddRange(BitConverter.GetBytes((float)pt.Y));
+        vector.AddRange(BitConverter.GetBytes((float)pt.Z));
 
         return vector.ToArray();
     }
 
-    public override byte[] GetNdfText()
-    {
-        return NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
-    }
+    public override byte[] GetNdfText() => NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
 }

@@ -12,7 +12,7 @@ public class NdfSingle : NdfFlatValueWrapper
 
     public new float Value
     {
-        get { return (float)base.Value; }
+        get => (float)base.Value;
         set
         {
             base.Value = value;
@@ -20,18 +20,9 @@ public class NdfSingle : NdfFlatValueWrapper
         }
     }
 
-    public override byte[] GetBytes()
-    {
-        return BitConverter.GetBytes(Convert.ToSingle(Value));
-    }
+    public override byte[] GetBytes() => BitConverter.GetBytes(Convert.ToSingle(Value));
 
-    public override string ToString()
-    {
-        return string.Format("{0:0.####################}", Value);
-    }
+    public override string ToString() => string.Format("{0:0.####################}", Value);
 
-    public override byte[] GetNdfText()
-    {
-        return NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
-    }
+    public override byte[] GetNdfText() => NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
 }

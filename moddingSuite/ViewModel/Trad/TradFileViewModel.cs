@@ -47,10 +47,9 @@ public class TradFileViewModel : ViewModelBase
     public ICommand AddEntryCommand { get; set; }
     public ICommand RemoveEntryCommand { get; set; }
 
-
     public ObservableCollection<TradEntry> Entries
     {
-        get { return _entries; }
+        get => _entries;
         set
         {
             _entries = value;
@@ -74,7 +73,7 @@ public class TradFileViewModel : ViewModelBase
 
     public string FilterExpression
     {
-        get { return _filterExpression; }
+        get => _filterExpression;
         set
         {
             _filterExpression = value;
@@ -85,7 +84,7 @@ public class TradFileViewModel : ViewModelBase
 
     public string TitleText
     {
-        get { return _titleText; }
+        get => _titleText;
         set
         {
             _titleText = value;
@@ -93,13 +92,7 @@ public class TradFileViewModel : ViewModelBase
         }
     }
 
-    private bool CreateHashCanExecute()
-    {
-        if (EntriesCollectionView.CurrentItem is not TradEntry item || !item.UserCreated)
-            return false;
-
-        return true;
-    }
+    private bool CreateHashCanExecute() => EntriesCollectionView.CurrentItem is TradEntry item && item.UserCreated;
 
     private void CreateHashExecute(object obj)
     {
@@ -117,8 +110,10 @@ public class TradFileViewModel : ViewModelBase
         StringBuilder wordToHash = new();
 
         foreach (char t in item.Content)
+        {
             if (allowedChars.Contains(t))
-                wordToHash.Append(t);
+                _ = wordToHash.Append(t);
+        }
 
         string word = wordToHash.ToString();
 
@@ -138,27 +133,17 @@ public class TradFileViewModel : ViewModelBase
         OwnerFile = newOwen;
     }
 
-    private bool FilterEntries(object obj)
-    {
-        if (obj is not TradEntry entr)
-            return false;
-
-        if (FilterExpression.Length < 2)
-            return true;
-
-        if (entr.Content.ToLower().Contains(FilterExpression.ToLower()) ||
-            entr.HashView.ToLower().Contains(FilterExpression.ToLower()))
-            return true;
-
-        return false;
-    }
+    private bool FilterEntries(object obj) => obj is TradEntry entr
+&& (FilterExpression.Length < 2
+|| entr.Content.ToLower().Contains(FilterExpression.ToLower()) ||
+            entr.HashView.ToLower().Contains(FilterExpression.ToLower()));
 
     private void RemoveEntryExecute(object obj)
     {
         if (EntriesCollectionView.CurrentItem is not TradEntry entry)
             return;
 
-        Entries.Remove(entry);
+        _ = Entries.Remove(entry);
     }
 
     private void AddEntryExecute(object obj)
@@ -168,12 +153,7 @@ public class TradFileViewModel : ViewModelBase
 
         //CalculateHash(newEntry);
 
-        int newIndex;
-
-        if (Entries.Count > 1)
-            newIndex = Entries.Count - 1;
-        else
-            newIndex = Entries.Count;
+        int newIndex = Entries.Count > 1 ? Entries.Count - 1 : Entries.Count;
 
         Entries.Insert(newIndex, newEntry);
     }

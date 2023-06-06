@@ -9,12 +9,10 @@ public abstract class ObjectWrapperViewModel<T> : ViewModelBase
 
     protected ObjectWrapperViewModel(T obj, ViewModelBase parentVm)
     {
-        if (obj == null)
-            throw new ArgumentException("obj");
         //if (parentVm == null)
         //    throw new ArgumentException("parentVm");
 
-        Object = obj;
+        Object = obj ?? throw new ArgumentException("obj");
         ParentVm = parentVm;
     }
 
@@ -22,7 +20,7 @@ public abstract class ObjectWrapperViewModel<T> : ViewModelBase
 
     public ViewModelBase ParentVm
     {
-        get { return _parentVm; }
+        get => _parentVm;
         set { _parentVm = value; OnPropertyChanged("ParentVm"); }
     }
 }

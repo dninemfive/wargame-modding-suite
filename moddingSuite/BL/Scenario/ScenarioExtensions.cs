@@ -11,7 +11,7 @@ public static class ScenarioExtensions
     {
         byte[] buffer = new byte[4];
 
-        s.Read(buffer, 0, buffer.Length);
+        _ = s.Read(buffer, 0, buffer.Length);
 
         if (BitConverter.ToInt32(buffer, 0) != AreaMagic)
             throw new InvalidDataException("AREA expected");

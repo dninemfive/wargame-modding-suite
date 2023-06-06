@@ -11,7 +11,7 @@ public class NdfColor128 : NdfFlatValueWrapper
 
     public new byte[] Value
     {
-        get { return (byte[])base.Value; }
+        get => (byte[])base.Value;
         set
         {
             base.Value = value;
@@ -19,19 +19,9 @@ public class NdfColor128 : NdfFlatValueWrapper
         }
     }
 
-    public override byte[] GetBytes()
-    {
-        return Value;
-    }
+    public override byte[] GetBytes() => Value;
 
-    public override string ToString()
-    {
-        return string.Format("Vec4: {0}", Utils.ByteArrayToBigEndianHexByteString(Value));
-    }
+    public override string ToString() => string.Format("Vec4: {0}", Utils.ByteArrayToBigEndianHexByteString(Value));
 
-
-    public override byte[] GetNdfText()
-    {
-        throw new NotImplementedException();
-    }
+    public override byte[] GetNdfText() => throw new NotImplementedException();
 }

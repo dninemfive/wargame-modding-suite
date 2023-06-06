@@ -23,25 +23,18 @@ public struct BlockDXT1
     [FieldOffset(4)]
     public uint indices;
 
-    public byte row(uint r)
-    {
-        if (r > 3)
-            throw new ArgumentException("r");
+    public byte row(uint r) => r > 3
+            ? throw new ArgumentException("r")
+            : r switch
+            {
+                0 => row_1,
+                1 => row_2,
+                2 => row_3,
+                3 => row_4,
+                _ => throw new InvalidOperationException("r ist not 0-3"),
+            };
 
-        return r switch
-        {
-            0 => row_1,
-            1 => row_2,
-            2 => row_3,
-            3 => row_4,
-            _ => throw new InvalidOperationException("r ist not 0-3"),
-        };
-    }
-
-    public bool isFourColorMode()
-    {
-        return col0.u > col1.u;
-    }
+    public bool isFourColorMode() => col0.u > col1.u;
 
     public uint evaluatePalette(ref Color32[] color_array)
     {
@@ -75,14 +68,14 @@ public struct BlockDXT1
         if (col0.u > col1.u)
         {
             // Four-color block: derive the other two colors.
-            color_array[2].r = (byte)((2 * color_array[0].r + color_array[1].r) / 3);
-            color_array[2].g = (byte)((2 * color_array[0].g + color_array[1].g) / 3);
-            color_array[2].b = (byte)((2 * color_array[0].b + color_array[1].b) / 3);
+            color_array[2].r = (byte)(((2 * color_array[0].r) + color_array[1].r) / 3);
+            color_array[2].g = (byte)(((2 * color_array[0].g) + color_array[1].g) / 3);
+            color_array[2].b = (byte)(((2 * color_array[0].b) + color_array[1].b) / 3);
             color_array[2].a = 0xFF;
 
-            color_array[3].r = (byte)((2 * color_array[1].r + color_array[0].r) / 3);
-            color_array[3].g = (byte)((2 * color_array[1].g + color_array[0].g) / 3);
-            color_array[3].b = (byte)((2 * color_array[1].b + color_array[0].b) / 3);
+            color_array[3].r = (byte)(((2 * color_array[1].r) + color_array[0].r) / 3);
+            color_array[3].g = (byte)(((2 * color_array[1].g) + color_array[0].g) / 3);
+            color_array[3].b = (byte)(((2 * color_array[1].b) + color_array[0].b) / 3);
             color_array[3].a = 0xFF;
 
             return 4;
@@ -151,14 +144,14 @@ public struct BlockDXT1
         color_array[1].a = 0xFF;
 
         // Four-color block: derive the other two colors.
-        color_array[2].r = (byte)((2 * color_array[0].r + color_array[1].r) / 3);
-        color_array[2].g = (byte)((2 * color_array[0].g + color_array[1].g) / 3);
-        color_array[2].b = (byte)((2 * color_array[0].b + color_array[1].b) / 3);
+        color_array[2].r = (byte)(((2 * color_array[0].r) + color_array[1].r) / 3);
+        color_array[2].g = (byte)(((2 * color_array[0].g) + color_array[1].g) / 3);
+        color_array[2].b = (byte)(((2 * color_array[0].b) + color_array[1].b) / 3);
         color_array[2].a = 0xFF;
 
-        color_array[3].r = (byte)((2 * color_array[1].r + color_array[0].r) / 3);
-        color_array[3].g = (byte)((2 * color_array[1].g + color_array[0].g) / 3);
-        color_array[3].b = (byte)((2 * color_array[1].b + color_array[0].b) / 3);
+        color_array[3].r = (byte)(((2 * color_array[1].r) + color_array[0].r) / 3);
+        color_array[3].g = (byte)(((2 * color_array[1].g) + color_array[0].g) / 3);
+        color_array[3].b = (byte)(((2 * color_array[1].b) + color_array[0].b) / 3);
         color_array[3].a = 0xFF;
     }
 
@@ -169,7 +162,7 @@ public struct BlockDXT1
 
         // Decode color block.
         Color32[] color_array = { new Color32(), new Color32(), new Color32(), new Color32() };
-        evaluatePalette(ref color_array);
+        _ = evaluatePalette(ref color_array);
 
         // Write color block.
         for (uint j = 0; j < 4; j++)
@@ -177,7 +170,7 @@ public struct BlockDXT1
             for (uint i = 0; i < 4; i++)
             {
                 uint idx = ((uint)row(j) >> (ushort)(2 * i)) & 3;
-                block.Data[j * 4 + i] = color_array[idx];
+                block.Data[(j * 4) + i] = color_array[idx];
             }
         }
     }
@@ -199,8 +192,5 @@ public struct BlockDXT1
     }
 
     /// Flip half DXT1 block vertically.
-    public void flip2()
-    {
-        Utils.Swap(row(0), row(1));
-    }
+    public void flip2() => Utils.Swap(row(0), row(1));
 }

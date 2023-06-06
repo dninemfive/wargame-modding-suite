@@ -1,22 +1,22 @@
-﻿using moddingSuite.Geometry;
-using moddingSuite.Model.Scenario;
+﻿using moddingSuite.Model.Scenario;
+using moddingSuite.Util;
 using moddingSuite.ZoneEditor.Markers;
 using moddingSuite.ZoneEditor.ScenarioItems;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-namespace ZoneEditor;
+
+namespace moddingSuite.ZoneEditor;
 
 public class Outline
 {
-
-    List<Point> nodes = new();
-    List<VertexMarker> markers = new();
-    List<CreaterMarker> creaters = new();
-    Control parent;
+    private readonly List<Point> nodes = new();
+    private readonly List<VertexMarker> markers = new();
+    private readonly List<CreaterMarker> creaters = new();
+    private Control parent;
     public Possession possession;
-    private PaintEventHandler paintEvent;
+    private readonly PaintEventHandler paintEvent;
     public Outline(List<Point> nodes)
     {
 
@@ -44,7 +44,6 @@ public class Outline
         center.Offset(-sideLength / 2, -sideLength / 2);
         nodes.Add(PanAndZoom.fromLocalToGlobal(center));
 
-
         center.Offset(0, sideLength);
         nodes.Add(PanAndZoom.fromLocalToGlobal(center));
 
@@ -56,8 +55,6 @@ public class Outline
 
         //parent.Controls.Add(this);
         //BringToFront();
-
-
 
         foreach (Point n in nodes)
         {
@@ -78,7 +75,7 @@ public class Outline
     }
     public void attachTo(Control c)
     {
-        this.parent = c;
+        parent = c;
         parent.Paint += paintEvent;
         c.Controls.AddRange(markers.ToArray());
         c.Controls.AddRange(creaters.ToArray());
@@ -95,7 +92,7 @@ public class Outline
         {
             c.Controls.Remove(cr);
         }
-        this.parent = null;
+        parent = null;
     }
     public void paint(object sen, PaintEventArgs e)
     {
@@ -131,7 +128,6 @@ public class Outline
         PanAndZoom.Transform(e);
         e.Graphics.FillPolygon(b, pos.ToArray());
 
-
     }
     public void deleteMarker(object obj, MouseEventArgs e)
     {
@@ -159,7 +155,6 @@ public class Outline
         if (e.Button != MouseButtons.Left)
             return;
         CreaterMarker creater = (CreaterMarker)obj;
-
 
         VertexMarker marker = new();
         marker.setPosition(creater.getPosition());

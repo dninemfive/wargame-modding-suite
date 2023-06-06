@@ -23,10 +23,6 @@ namespace moddingSuite.View.DialogProvider;
 
 public static class DialogProvider
 {
-    private static IList<ViewInstance> _registeredViews = new List<ViewInstance>();
-
-    private static IList<IViewMap> _maps = new List<IViewMap>();
-
     static DialogProvider()
     {
         Maps.Add(new ViewMap<EdataManagerView, EdataManagerViewModel>());
@@ -52,17 +48,9 @@ public static class DialogProvider
         Maps.Add(new ViewMap<ArmourDamageTableWindowView, ArmourDamageViewModel>());
     }
 
-    public static IList<ViewInstance> RegisteredViews
-    {
-        get { return _registeredViews; }
-        set { _registeredViews = value; }
-    }
+    public static IList<ViewInstance> RegisteredViews { get; set; } = new List<ViewInstance>();
 
-    public static IList<IViewMap> Maps
-    {
-        get { return _maps; }
-        set { _maps = value; }
-    }
+    public static IList<IViewMap> Maps { get; set; } = new List<IViewMap>();
 
     public static void ProvideView(ViewModelBase vm, ViewModelBase parentVm = null)
     {
@@ -71,10 +59,8 @@ public static class DialogProvider
         if (map == null)
             return;
 
-
         if (Activator.CreateInstance(map.ViewType) is not Window viewInstance)
             throw new InvalidOperationException($"Can not create an instance of {map.ViewType}");
-
 
         if (parentVm != null)
         {

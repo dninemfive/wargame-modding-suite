@@ -23,27 +23,25 @@ public class NdfbinReader : INdfReader
 
             if (ndf.Header.IsCompressedBody)
             {
-                using (MemoryStream uncompStream = new())
-                {
-                    ms.Seek(0, SeekOrigin.Begin);
-                    byte[] headBuffer = new byte[ndf.Header.HeaderSize];
-                    ms.Read(headBuffer, 0, headBuffer.Length);
-                    uncompStream.Write(headBuffer, 0, headBuffer.Length);
+                using MemoryStream uncompStream = new();
+                _ = ms.Seek(0, SeekOrigin.Begin);
+                byte[] headBuffer = new byte[ndf.Header.HeaderSize];
+                _ = ms.Read(headBuffer, 0, headBuffer.Length);
+                uncompStream.Write(headBuffer, 0, headBuffer.Length);
 
-                    ms.Seek((long)ndf.Header.HeaderSize, SeekOrigin.Begin);
+                _ = ms.Seek((long)ndf.Header.HeaderSize, SeekOrigin.Begin);
 
-                    byte[] buffer = new byte[4];
-                    ms.Read(buffer, 0, buffer.Length);
-                    uint compressedblocklen = BitConverter.ToUInt32(buffer, 0);
+                byte[] buffer = new byte[4];
+                _ = ms.Read(buffer, 0, buffer.Length);
+                uint compressedblocklen = BitConverter.ToUInt32(buffer, 0);
 
-                    byte[] contentBuffer = new byte[(ulong)(data.Length) - ndf.Header.HeaderSize];
-                    ms.Read(contentBuffer, 0, contentBuffer.Length);
+                byte[] contentBuffer = new byte[(ulong)data.Length - ndf.Header.HeaderSize];
+                _ = ms.Read(contentBuffer, 0, contentBuffer.Length);
 
-                    byte[] da = Compressor.Decomp(contentBuffer);
-                    uncompStream.Write(da, 0, da.Length);
+                byte[] da = Compressor.Decomp(contentBuffer);
+                uncompStream.Write(da, 0, da.Length);
 
-                    data = uncompStream.ToArray();
-                }
+                data = uncompStream.ToArray();
             }
         }
 
@@ -55,7 +53,6 @@ public class NdfbinReader : INdfReader
 
             ndf.Strings = ReadStrings(ms, ndf);
             ndf.Trans = ReadTrans(ms, ndf);
-
 
             ndf.TopObjects = new HashSet<uint>(ReadUIntList(ms, ndf, "TOPO"));
             ndf.Import = ReadUIntList(ms, ndf, "IMPR");
@@ -75,28 +72,26 @@ public class NdfbinReader : INdfReader
 
             if (header.IsCompressedBody)
             {
-                using (MemoryStream uncompStream = new())
-                {
-                    ms.Seek(0, SeekOrigin.Begin);
-                    byte[] headBuffer = new byte[header.HeaderSize];
-                    ms.Read(headBuffer, 0, headBuffer.Length);
-                    uncompStream.Write(headBuffer, 0, headBuffer.Length);
+                using MemoryStream uncompStream = new();
+                _ = ms.Seek(0, SeekOrigin.Begin);
+                byte[] headBuffer = new byte[header.HeaderSize];
+                _ = ms.Read(headBuffer, 0, headBuffer.Length);
+                uncompStream.Write(headBuffer, 0, headBuffer.Length);
 
-                    ms.Seek((long)header.HeaderSize, SeekOrigin.Begin);
+                _ = ms.Seek((long)header.HeaderSize, SeekOrigin.Begin);
 
-                    byte[] buffer = new byte[4];
-                    ms.Read(buffer, 0, buffer.Length);
-                    uint compressedblocklen = BitConverter.ToUInt32(buffer, 0);
+                byte[] buffer = new byte[4];
+                _ = ms.Read(buffer, 0, buffer.Length);
+                uint compressedblocklen = BitConverter.ToUInt32(buffer, 0);
 
-                    byte[] contentBuffer = new byte[(ulong)(data.Length) - header.HeaderSize];
-                    ms.Read(contentBuffer, 0, contentBuffer.Length);
-                    //Compressor.Decomp(contentBuffer, uncompStream);
-                    byte[] da = Compressor.Decomp(contentBuffer);
+                byte[] contentBuffer = new byte[(ulong)data.Length - header.HeaderSize];
+                _ = ms.Read(contentBuffer, 0, contentBuffer.Length);
+                //Compressor.Decomp(contentBuffer, uncompStream);
+                byte[] da = Compressor.Decomp(contentBuffer);
 
-                    uncompStream.Write(da, 0, da.Length);
+                uncompStream.Write(da, 0, da.Length);
 
-                    data = uncompStream.ToArray();
-                }
+                data = uncompStream.ToArray();
             }
         }
 
@@ -112,33 +107,33 @@ public class NdfbinReader : INdfReader
         NdfHeader header = new();
 
         byte[] buffer = new byte[4];
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
 
         if (BitConverter.ToUInt32(buffer, 0) != 809981253)
             throw new InvalidDataException("No EUG0 found on top of this file!");
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
 
         if (BitConverter.ToUInt32(buffer, 0) != 0)
             throw new InvalidDataException("Bytes between EUG0 and CNDF have to be 0");
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
 
         if (BitConverter.ToUInt32(buffer, 0) != 1178881603)
             throw new InvalidDataException("No CNDF (Compiled NDF)!");
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         header.IsCompressedBody = BitConverter.ToInt32(buffer, 0) == 128;
 
         buffer = new byte[8];
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         header.FooterOffset = BitConverter.ToUInt64(buffer, 0);
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         header.HeaderSize = BitConverter.ToUInt64(buffer, 0);
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         header.FullFileSizeUncomp = BitConverter.ToUInt64(buffer, 0);
 
         return header;
@@ -152,30 +147,29 @@ public class NdfbinReader : INdfReader
     {
         NdfFooter footer = new();
 
-        ms.Seek((long)head.FooterOffset, SeekOrigin.Begin);
+        _ = ms.Seek((long)head.FooterOffset, SeekOrigin.Begin);
 
         byte[] dwdBuffer = new byte[4];
         byte[] qwdbuffer = new byte[8];
 
-        ms.Read(dwdBuffer, 0, dwdBuffer.Length);
+        _ = ms.Read(dwdBuffer, 0, dwdBuffer.Length);
         if (BitConverter.ToUInt32(dwdBuffer, 0) != 809717588)
             throw new InvalidDataException("Footer doesnt start with TOC0");
 
-
-        ms.Read(dwdBuffer, 0, dwdBuffer.Length);
+        _ = ms.Read(dwdBuffer, 0, dwdBuffer.Length);
         uint footerEntryCount = BitConverter.ToUInt32(dwdBuffer, 0);
 
         for (int i = 0; i < footerEntryCount; i++)
         {
             NdfFooterEntry entry = new();
 
-            ms.Read(qwdbuffer, 0, qwdbuffer.Length);
+            _ = ms.Read(qwdbuffer, 0, qwdbuffer.Length);
             entry.Name = Encoding.ASCII.GetString(qwdbuffer).TrimEnd('\0');
 
-            ms.Read(qwdbuffer, 0, qwdbuffer.Length);
+            _ = ms.Read(qwdbuffer, 0, qwdbuffer.Length);
             entry.Offset = BitConverter.ToInt64(qwdbuffer, 0);
 
-            ms.Read(qwdbuffer, 0, qwdbuffer.Length);
+            _ = ms.Read(qwdbuffer, 0, qwdbuffer.Length);
             entry.Size = BitConverter.ToInt64(qwdbuffer, 0);
 
             footer.Entries.Add(entry);
@@ -196,7 +190,7 @@ public class NdfbinReader : INdfReader
 
         NdfFooterEntry classEntry = owner.Footer.Entries.Single(x => x.Name == "CLAS");
 
-        ms.Seek(classEntry.Offset, SeekOrigin.Begin);
+        _ = ms.Seek(classEntry.Offset, SeekOrigin.Begin);
 
         uint i = 0;
         byte[] buffer = new byte[4];
@@ -205,11 +199,11 @@ public class NdfbinReader : INdfReader
         {
             NdfClass nclass = new(owner, i);
 
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             int strLen = BitConverter.ToInt32(buffer, 0);
 
             byte[] strBuffer = new byte[strLen];
-            ms.Read(strBuffer, 0, strBuffer.Length);
+            _ = ms.Read(strBuffer, 0, strBuffer.Length);
 
             nclass.Name = Encoding.GetEncoding("ISO-8859-1").GetString(strBuffer);
 
@@ -228,7 +222,7 @@ public class NdfbinReader : INdfReader
     protected void ReadProperties(Stream ms, NdfBinary owner)
     {
         NdfFooterEntry propEntry = owner.Footer.Entries.Single(x => x.Name == "PROP");
-        ms.Seek(propEntry.Offset, SeekOrigin.Begin);
+        _ = ms.Seek(propEntry.Offset, SeekOrigin.Begin);
 
         int i = 0;
         byte[] buffer = new byte[4];
@@ -236,15 +230,15 @@ public class NdfbinReader : INdfReader
         {
             NdfProperty property = new(i);
 
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             int strLen = BitConverter.ToInt32(buffer, 0);
 
             byte[] strBuffer = new byte[strLen];
-            ms.Read(strBuffer, 0, strBuffer.Length);
+            _ = ms.Read(strBuffer, 0, strBuffer.Length);
 
             property.Name = Encoding.GetEncoding("ISO-8859-1").GetString(strBuffer);
 
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
 
             NdfClass cls = owner.Classes.Single(x => x.Id == BitConverter.ToUInt32(buffer, 0));
             property.Class = cls;
@@ -266,7 +260,7 @@ public class NdfbinReader : INdfReader
         ObservableCollection<NdfStringReference> strings = new();
 
         NdfFooterEntry stringEntry = owner.Footer.Entries.Single(x => x.Name == "STRG");
-        ms.Seek(stringEntry.Offset, SeekOrigin.Begin);
+        _ = ms.Seek(stringEntry.Offset, SeekOrigin.Begin);
 
         int i = 0;
         byte[] buffer = new byte[4];
@@ -275,11 +269,11 @@ public class NdfbinReader : INdfReader
             NdfStringReference nstring = new()
             { Id = i };
 
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             int strLen = BitConverter.ToInt32(buffer, 0);
 
             byte[] strBuffer = new byte[strLen];
-            ms.Read(strBuffer, 0, strBuffer.Length);
+            _ = ms.Read(strBuffer, 0, strBuffer.Length);
 
             nstring.Value = Encoding.GetEncoding("ISO-8859-1").GetString(strBuffer);
 
@@ -301,7 +295,7 @@ public class NdfbinReader : INdfReader
         ObservableCollection<NdfTranReference> trans = new();
 
         NdfFooterEntry stringEntry = owner.Footer.Entries.Single(x => x.Name == "TRAN");
-        ms.Seek(stringEntry.Offset, SeekOrigin.Begin);
+        _ = ms.Seek(stringEntry.Offset, SeekOrigin.Begin);
 
         int i = 0;
         byte[] buffer = new byte[4];
@@ -310,11 +304,11 @@ public class NdfbinReader : INdfReader
             NdfTranReference ntran = new()
             { Id = i };
 
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             int strLen = BitConverter.ToInt32(buffer, 0);
 
             byte[] strBuffer = new byte[strLen];
-            ms.Read(strBuffer, 0, strBuffer.Length);
+            _ = ms.Read(strBuffer, 0, strBuffer.Length);
 
             ntran.Value = Encoding.GetEncoding("ISO-8859-1").GetString(strBuffer);
 
@@ -336,12 +330,12 @@ public class NdfbinReader : INdfReader
     protected uint ReadChunk(Stream ms, NdfBinary owner)
     {
         NdfFooterEntry chnk = owner.Footer.Entries.Single(x => x.Name == "CHNK");
-        ms.Seek(chnk.Offset, SeekOrigin.Begin);
+        _ = ms.Seek(chnk.Offset, SeekOrigin.Begin);
 
         byte[] buffer = new byte[4];
 
-        ms.Read(buffer, 0, buffer.Length);
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
 
         return BitConverter.ToUInt32(buffer, 0);
     }
@@ -358,12 +352,12 @@ public class NdfbinReader : INdfReader
         List<uint> uintList = new();
 
         NdfFooterEntry uintEntry = owner.Footer.Entries.Single(x => x.Name == lst);
-        ms.Seek(uintEntry.Offset, SeekOrigin.Begin);
+        _ = ms.Seek(uintEntry.Offset, SeekOrigin.Begin);
 
         byte[] buffer = new byte[4];
         while (ms.Position < uintEntry.Offset + uintEntry.Size)
         {
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             uintList.Add(BitConverter.ToUInt32(buffer, 0));
         }
 
@@ -383,7 +377,7 @@ public class NdfbinReader : INdfReader
         uint instanceCount = ReadChunk(ms, owner);
 
         NdfFooterEntry objEntry = owner.Footer.Entries.Single(x => x.Name == "OBJE");
-        ms.Seek(objEntry.Offset, SeekOrigin.Begin);
+        _ = ms.Seek(objEntry.Offset, SeekOrigin.Begin);
 
         for (uint i = 0; i < instanceCount; i++)
         {
@@ -396,9 +390,9 @@ public class NdfbinReader : INdfReader
 
                 objects.Add(obj);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
             }
         }
 
@@ -421,7 +415,7 @@ public class NdfbinReader : INdfReader
             instance.IsTopObject = true;
 
         byte[] buffer = new byte[4];
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         int classId = BitConverter.ToInt32(buffer, 0);
 
         if (owner.Classes.Count < classId)
@@ -434,7 +428,7 @@ public class NdfbinReader : INdfReader
         // Read properties
         for (; ; )
         {
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             uint propertyId = BitConverter.ToUInt32(buffer, 0);
 
             if (propertyId == 0xABABABAB)
@@ -446,14 +440,20 @@ public class NdfbinReader : INdfReader
             };
 
             if (propVal.Property == null)
+            {
                 // throw new InvalidDataException("Found a value for a property which doens't exist in this class.");
                 foreach (NdfClass c in owner.Classes)
+                {
                     foreach (NdfProperty p in c.Properties)
+                    {
                         if (p.Id == propertyId)
                         {
                             propVal.Property = p;
                             break;
                         }
+                    }
+                }
+            }
 
             instance.PropertyValues.Add(propVal);
             try
@@ -461,11 +461,10 @@ public class NdfbinReader : INdfReader
                 NdfValueWrapper res = ReadValue(ms, owner);
                 propVal.Value = res;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
             }
-
         }
 
         owner.AddEmptyProperties(instance);
@@ -485,9 +484,8 @@ public class NdfbinReader : INdfReader
         NdfValueWrapper value;
         byte[] buffer = new byte[4];
 
-        ms.Read(buffer, 0, buffer.Length);
+        _ = ms.Read(buffer, 0, buffer.Length);
         NdfType type=NdfTypeManager.GetType(buffer);
-
 
         if (type == NdfType.Unknown)
         {
@@ -495,7 +493,7 @@ public class NdfbinReader : INdfReader
             {
                 int k = 64;
                 byte[] buf = new byte[k];
-                ms.Read(buf, 0, k);
+                _ = ms.Read(buf, 0, k);
                 file.Write(buf, 0, k);
                 file.Flush();
                 Console.WriteLine("dumped");
@@ -506,7 +504,7 @@ public class NdfbinReader : INdfReader
         }
         if (type == NdfType.Reference)
         {
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             type = NdfTypeManager.GetType(buffer);
         }
 
@@ -517,12 +515,15 @@ public class NdfbinReader : INdfReader
             case NdfType.MapList:
             case NdfType.Blob:
             case NdfType.ZipBlob:
-                ms.Read(buffer, 0, buffer.Length);
+                _ = ms.Read(buffer, 0, buffer.Length);
                 contBufferlen = BitConverter.ToUInt32(buffer, 0);
 
                 if (type == NdfType.ZipBlob)
+                {
                     if (ms.ReadByte() != 1)
                         throw new InvalidDataException("has to be checked.");
+                }
+
                 break;
             default:
                 contBufferlen = NdfTypeManager.SizeofType(type);
@@ -537,11 +538,9 @@ public class NdfbinReader : INdfReader
 
                 for (int i = 0; i < contBufferlen; i++)
                 {
-                    CollectionItemValueHolder res;
-                    if (type == NdfType.List)
-                        res = new CollectionItemValueHolder(ReadValue(ms, binary), binary);
-                    else
-                        res = new CollectionItemValueHolder(
+                    CollectionItemValueHolder res = type == NdfType.List
+                        ? new CollectionItemValueHolder(ReadValue(ms, binary), binary)
+                        : new CollectionItemValueHolder(
                             new NdfMap(
                                 new MapValueHolder(ReadValue(ms, binary), binary),
                                 new MapValueHolder(ReadValue(ms, binary), binary),
@@ -560,7 +559,7 @@ public class NdfbinReader : INdfReader
                 break;
             default:
                 byte[] contBuffer = new byte[contBufferlen];
-                ms.Read(contBuffer, 0, contBuffer.Length);
+                _ = ms.Read(contBuffer, 0, contBuffer.Length);
 
                 value = NdfTypeManager.GetValue(contBuffer, type, binary);
                 break;

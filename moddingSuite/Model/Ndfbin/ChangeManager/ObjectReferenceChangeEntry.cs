@@ -14,7 +14,7 @@ public class ObjectReferenceChangeEntry : ChangeEntryBase
 
     public uint ClassId
     {
-        get { return _classId; }
+        get => _classId;
         set
         {
             _classId = value;
@@ -24,7 +24,7 @@ public class ObjectReferenceChangeEntry : ChangeEntryBase
 
     public uint InstanceId
     {
-        get { return _instanceId; }
+        get => _instanceId;
         set
         {
             _instanceId = value;

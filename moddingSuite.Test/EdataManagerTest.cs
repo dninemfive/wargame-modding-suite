@@ -28,7 +28,7 @@ public class EdataManagerTest : BaseTests
     {
         EdataManager sut = new($"{RedDragonGameDataPath}{path}.dat");
         sut.ParseEdataFile();
-        sut.Files.Should().NotBeEmpty();
+        _ = sut.Files.Should().NotBeEmpty();
     }
 
     [DataTestMethod]
@@ -42,7 +42,7 @@ public class EdataManagerTest : BaseTests
 
         Model.Edata.EdataContentFile config = manager.Files.First(f => f.Path == @"pc\ndf\nonpatchable\config.ndfbin");
         byte[] bytes = manager.GetRawData(config);
-        bytes.Should().NotBeEmpty();
+        _ = bytes.Should().NotBeEmpty();
     }
 
     [TestMethod]
@@ -54,9 +54,9 @@ public class EdataManagerTest : BaseTests
         {
             EdataManager sut = new(file);
             sut.ParseEdataFile();
-            sut.Header.Magic.Should().BeGreaterThan(0);
+            _ = sut.Header.Magic.Should().BeGreaterThan(0);
             count++;
         }
-        count.Should().BeGreaterThan(0);
+        _ = count.Should().BeGreaterThan(0);
     }
 }

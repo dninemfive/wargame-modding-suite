@@ -27,8 +27,6 @@ namespace moddingSuite.ViewModel.Ndf;
 
 public class NdfEditorMainViewModel : ViewModelBase
 {
-    private readonly ObservableCollection<NdfClassViewModel> _classes = new();
-
     private ICollectionView _classesCollectionView;
     private string _classesFilterExpression = string.Empty;
     private string _statusText = string.Empty;
@@ -108,13 +106,12 @@ public class NdfEditorMainViewModel : ViewModelBase
         if (ClassesCollectionView.CurrentItem is not NdfClassViewModel cls)
             return;
 
-
         if (cls.InstancesCollectionView.CurrentItem is not NdfObjectViewModel inst)
             return;
 
         if (!inst.Object.IsTopObject)
         {
-            NdfBinary.TopObjects.Add(inst.Object.Id);
+            _ = NdfBinary.TopObjects.Add(inst.Object.Id);
             inst.Object.IsTopObject = true;
         }
     }
@@ -124,19 +121,18 @@ public class NdfEditorMainViewModel : ViewModelBase
         if (ClassesCollectionView.CurrentItem is not NdfClassViewModel cls)
             return;
 
-
         if (cls.InstancesCollectionView.CurrentItem is not NdfObjectViewModel inst)
             return;
 
         if (!inst.Object.IsTopObject)
         {
-            MessageBox.Show("You can only create a copy of an top object.", "Information", MessageBoxButton.OK);
+            _ = MessageBox.Show("You can only create a copy of an top object.", "Information", MessageBoxButton.OK);
             return;
         }
 
         _copyInstanceResults = new List<NdfObject>();
 
-        CopyInstance(inst.Object);
+        _ = CopyInstance(inst.Object);
 
         ObjectCopyResultViewModel resultViewModel = new(_copyInstanceResults, this);
         DialogProvider.ProvideView(resultViewModel, this);
@@ -176,10 +172,9 @@ public class NdfEditorMainViewModel : ViewModelBase
         switch (toCopy.Value.Type)
         {
             case NdfType.ObjectReference:
-                if (toCopy.Value is NdfObjectReference origInst && !origInst.Instance.IsTopObject)
-                    copiedValue = new NdfObjectReference(origInst.Class, CopyInstance(origInst.Instance).Id);
-                else
-                    copiedValue = NdfTypeManager.GetValue(toCopy.Value.GetBytes(), toCopy.Value.Type, toCopy.Manager);
+                copiedValue = toCopy.Value is NdfObjectReference origInst && !origInst.Instance.IsTopObject
+                    ? new NdfObjectReference(origInst.Class, CopyInstance(origInst.Instance).Id)
+                    : NdfTypeManager.GetValue(toCopy.Value.GetBytes(), toCopy.Value.Type, toCopy.Manager);
 
                 break;
             case NdfType.List:
@@ -192,8 +187,11 @@ public class NdfEditorMainViewModel : ViewModelBase
 
             case NdfType.Map:
                 if (toCopy.Value is NdfMap map)
+                {
                     copiedValue = new NdfMap(new MapValueHolder(GetCopiedValue(map.Key), toCopy.Manager),
                         new MapValueHolder(GetCopiedValue(map.Value as IValueHolder), toCopy.Manager), toCopy.Manager);
+                }
+
                 break;
 
             default:
@@ -209,7 +207,6 @@ public class NdfEditorMainViewModel : ViewModelBase
         if (ClassesCollectionView.CurrentItem is not NdfClassViewModel cls)
             return;
 
-
         if (cls.InstancesCollectionView.CurrentItem is not NdfObjectViewModel inst)
             return;
 
@@ -223,21 +220,23 @@ public class NdfEditorMainViewModel : ViewModelBase
             try
             {
                 //dispatcher.Invoke(() => IsUIBusy = true);
-                dispatcher.Invoke(report, string.Format("Searching for references..."));
+                _ = dispatcher.Invoke(report, string.Format("Searching for references..."));
 
                 foreach (NdfObject instance in NdfBinary.Instances)
+                {
                     foreach (NdfPropertyValue propertyValue in instance.PropertyValues)
                         GetValue(propertyValue, inst, result, propertyValue);
+                }
 
                 ReferenceSearchResultViewModel resultVm = new(result, this);
 
                 dispatcher.Invoke(() => DialogProvider.ProvideView(resultVm, this));
-                dispatcher.Invoke(report, string.Format("{0} references found", result.Count));
+                _ = dispatcher.Invoke(report, string.Format("{0} references found", result.Count));
             }
             catch (Exception ex)
             {
                 Trace.TraceError(string.Format("Error while saving Ndfbin file: {0}", ex));
-                dispatcher.Invoke(report, "Error while searching");
+                _ = dispatcher.Invoke(report, "Error while searching");
             }
         });
 
@@ -255,8 +254,11 @@ public class NdfEditorMainViewModel : ViewModelBase
             case NdfType.List:
             case NdfType.MapList:
                 if (valueHolder.Value is NdfCollection ndfCollection)
+                {
                     foreach (CollectionItemValueHolder col in ndfCollection)
                         GetValue(col, inst, result, propertyValue);
+                }
+
                 break;
             case NdfType.Map:
                 if (valueHolder.Value is NdfMap map)
@@ -285,15 +287,15 @@ public class NdfEditorMainViewModel : ViewModelBase
             scope.SetVariable("Classes", new NdfScriptableClassList(Classes));
             try
             {
-                engine.ExecuteFile(scriptDlg.FileName, scope);
+                _ = engine.ExecuteFile(scriptDlg.FileName, scope);
             }
             catch (Exception e)
             {
                 ExceptionOperations exceptionOps = engine.GetService<ExceptionOperations>();
-                MessageBox.Show(exceptionOps.FormatException(e));
+                _ = MessageBox.Show(exceptionOps.FormatException(e));
                 return;
             }
-            MessageBox.Show("Script successfully executed!");
+            _ = MessageBox.Show("Script successfully executed!");
         }
     }
 
@@ -326,7 +328,7 @@ public class NdfEditorMainViewModel : ViewModelBase
 
     public string StatusText
     {
-        get { return _statusText; }
+        get => _statusText;
         set
         {
             _statusText = value;
@@ -336,7 +338,7 @@ public class NdfEditorMainViewModel : ViewModelBase
 
     public string ClassesFilterExpression
     {
-        get { return _classesFilterExpression; }
+        get => _classesFilterExpression;
         set
         {
             _classesFilterExpression = value;
@@ -348,7 +350,7 @@ public class NdfEditorMainViewModel : ViewModelBase
 
     public string StringFilterExpression
     {
-        get { return _stringFilterExpression; }
+        get => _stringFilterExpression;
         set
         {
             _stringFilterExpression = value;
@@ -359,7 +361,7 @@ public class NdfEditorMainViewModel : ViewModelBase
 
     public string TransFilterExpression
     {
-        get { return _transFilterExpression; }
+        get => _transFilterExpression;
         set
         {
             _transFilterExpression = value;
@@ -407,14 +409,11 @@ public class NdfEditorMainViewModel : ViewModelBase
         }
     }
 
-    public ObservableCollection<NdfClassViewModel> Classes
-    {
-        get { return _classes; }
-    }
+    public ObservableCollection<NdfClassViewModel> Classes { get; } = new();
 
     public ObservableCollection<NdfStringReference> Strings
     {
-        get { return _strings; }
+        get => _strings;
         set
         {
             _strings = value;
@@ -424,7 +423,7 @@ public class NdfEditorMainViewModel : ViewModelBase
 
     public ObservableCollection<NdfTranReference> Trans
     {
-        get { return _trans; }
+        get => _trans;
         set
         {
             _trans = value;
@@ -463,17 +462,14 @@ public class NdfEditorMainViewModel : ViewModelBase
 
         string[] parts = ClassesFilterExpression.Split(new[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
 
-        int cls;
-
-        if (parts.Length > 1 && Int32.TryParse(parts[0], out cls) && (clas.Id == cls || clas.Name == parts[0]))
+        if (parts.Length > 1 && int.TryParse(parts[0], out int cls) && (clas.Id == cls || clas.Name == parts[0]))
         {
-            int inst;
-            if (Int32.TryParse(parts[1], out inst))
+            if (int.TryParse(parts[1], out int inst))
             {
                 NdfObjectViewModel instObj = clas.Instances.SingleOrDefault(x => x.Id == inst);
 
                 if (instObj != null)
-                    clas.InstancesCollectionView.MoveCurrentTo(instObj);
+                    _ = clas.InstancesCollectionView.MoveCurrentTo(instObj);
             }
         }
 
@@ -482,23 +478,13 @@ public class NdfEditorMainViewModel : ViewModelBase
                clas.Instances.Any(x => x.Id.ToString(CultureInfo.InvariantCulture) == parts[0]);
     }
 
-    public bool FilterStrings(object o)
-    {
-        if (o is not NdfStringReference str || StringFilterExpression == string.Empty)
-            return true;
-
-        return str.Value.ToLower().Contains(StringFilterExpression.ToLower()) ||
+    public bool FilterStrings(object o) => o is not NdfStringReference str || StringFilterExpression == string.Empty
+|| str.Value.ToLower().Contains(StringFilterExpression.ToLower()) ||
                str.Id.ToString(CultureInfo.CurrentCulture).Contains(StringFilterExpression);
-    }
 
-    public bool FilterTrans(object o)
-    {
-        if (o is not NdfTranReference tran || TransFilterExpression == string.Empty)
-            return true;
-
-        return tran.Value.ToLower().Contains(TransFilterExpression.ToLower()) ||
+    public bool FilterTrans(object o) => o is not NdfTranReference tran || TransFilterExpression == string.Empty
+|| tran.Value.ToLower().Contains(TransFilterExpression.ToLower()) ||
                tran.Id.ToString(CultureInfo.CurrentCulture).Contains(TransFilterExpression);
-    }
 
     private void SaveNdfbinExecute(object obj)
     {
@@ -509,31 +495,31 @@ public class NdfEditorMainViewModel : ViewModelBase
             {
                 try
                 {
-                    dispatcher.Invoke(() => IsUIBusy = true);
-                    dispatcher.Invoke(report, string.Format("Saving back changes..."));
+                    _ = dispatcher.Invoke(() => IsUIBusy = true);
+                    _ = dispatcher.Invoke(report, string.Format("Saving back changes..."));
 
                     NdfbinWriter writer = new();
                     byte[] newFile = writer.Write(NdfBinary, NdfBinary.Header.IsCompressedBody);
-                    dispatcher.Invoke(report, string.Format("Recompiling of {0} finished! ", EdataFileViewModel.EdataManager.FilePath));
+                    _ = dispatcher.Invoke(report, string.Format("Recompiling of {0} finished! ", EdataFileViewModel.EdataManager.FilePath));
 
                     EdataFileViewModel.EdataManager.ReplaceFile(OwnerFile, newFile);
-                    dispatcher.Invoke(report, "Replacing new File in edata finished!");
+                    _ = dispatcher.Invoke(report, "Replacing new File in edata finished!");
 
                     EdataFileViewModel.LoadFile(EdataFileViewModel.LoadedFile);
 
                     EdataContentFile newOwen = EdataFileViewModel.EdataManager.Files.Single(x => x.Path == OwnerFile.Path);
 
                     OwnerFile = newOwen;
-                    dispatcher.Invoke(report, string.Format("Saving of changes finished! {0}", EdataFileViewModel.EdataManager.FilePath));
+                    _ = dispatcher.Invoke(report, string.Format("Saving of changes finished! {0}", EdataFileViewModel.EdataManager.FilePath));
                 }
                 catch (Exception ex)
                 {
                     Trace.TraceError(string.Format("Error while saving Ndfbin file: {0}", ex));
-                    dispatcher.Invoke(report, "Saving interrupted - Did you start Wargame before I was ready?");
+                    _ = dispatcher.Invoke(report, "Saving interrupted - Did you start Wargame before I was ready?");
                 }
                 finally
                 {
-                    dispatcher.Invoke(() => IsUIBusy = false);
+                    _ = dispatcher.Invoke(() => IsUIBusy = false);
                 }
             });
         s.Start();
@@ -555,7 +541,7 @@ public class NdfEditorMainViewModel : ViewModelBase
             default:
                 if (inst == null)
                     return;
-                vm.InstancesCollectionView.MoveCurrentTo(inst);
+                _ = vm.InstancesCollectionView.MoveCurrentTo(inst);
                 baseViewModel = vm;
                 break;
         }
@@ -567,12 +553,12 @@ public class NdfEditorMainViewModel : ViewModelBase
         if (StringCollectionView.CurrentItem is not NdfStringReference cur)
             return;
 
-        Strings.Remove(cur);
+        _ = Strings.Remove(cur);
     }
 
     private void AddStringExecute(object obj)
     {
         Strings.Add(new NdfStringReference { Id = Strings.Count, Value = "<New string>" });
-        StringCollectionView.MoveCurrentToLast();
+        _ = StringCollectionView.MoveCurrentToLast();
     }
 }

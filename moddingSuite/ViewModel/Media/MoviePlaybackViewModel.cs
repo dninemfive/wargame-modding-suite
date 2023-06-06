@@ -13,7 +13,7 @@ public class MoviePlaybackViewModel : ViewModelBase
 
     public string File
     {
-        get { return _file; }
+        get => _file;
         set
         {
             _file = value;

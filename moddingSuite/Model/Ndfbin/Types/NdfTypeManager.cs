@@ -17,10 +17,7 @@ public static class NdfTypeManager
 
         uint value = BitConverter.ToUInt32(data, 0);
 
-        if (Enum.IsDefined(typeof(NdfType), value))
-            return (NdfType)value;
-
-        return NdfType.Unknown;
+        return Enum.IsDefined(typeof(NdfType), value) ? (NdfType)value : NdfType.Unknown;
     }
 
     public static NdfValueWrapper GetValue(byte[] data, NdfType type, NdfBinary mgr)
@@ -132,25 +129,20 @@ public static class NdfTypeManager
         }
     }
 
-    public static uint SizeofType(NdfType type)
+    public static uint SizeofType(NdfType type) => type switch
     {
-        return type switch
-        {
-            NdfType.Boolean or NdfType.Int8 => 1,
-            NdfType.Int16 or NdfType.UInt16 => 2,
-            NdfType.Int32 or NdfType.UInt32 or NdfType.Float32 or NdfType.TableStringFile or NdfType.TableString or NdfType.Color32 or NdfType.WideString => 4,
-            NdfType.Float64 or NdfType.Long or NdfType.LocalisationHash or NdfType.ObjectReference or NdfType.EugInt2 or NdfType.EugFloat2 or NdfType.Time64 => 8,
-            NdfType.TrippleInt or NdfType.Vector => 12,
-            NdfType.Color128 or NdfType.Guid or NdfType.Hash => 16,
-            NdfType.Map => 0,
-            NdfType.List or NdfType.MapList or NdfType.TransTableReference => 4,
-            _ => 0,
-        };
-    }
+        NdfType.Boolean or NdfType.Int8 => 1,
+        NdfType.Int16 or NdfType.UInt16 => 2,
+        NdfType.Int32 or NdfType.UInt32 or NdfType.Float32 or NdfType.TableStringFile or NdfType.TableString or NdfType.Color32 or NdfType.WideString => 4,
+        NdfType.Float64 or NdfType.Long or NdfType.LocalisationHash or NdfType.ObjectReference or NdfType.EugInt2 or NdfType.EugFloat2 or NdfType.Time64 => 8,
+        NdfType.TrippleInt or NdfType.Vector => 12,
+        NdfType.Color128 or NdfType.Guid or NdfType.Hash => 16,
+        NdfType.Map => 0,
+        NdfType.List or NdfType.MapList or NdfType.TransTableReference => 4,
+        _ => 0,
+    };
 
-    public static IEnumerable<NdfType> GetTypeSelection()
-    {
-        return new[]
+    public static IEnumerable<NdfType> GetTypeSelection() => new[]
                    {
                        NdfType.Boolean,
                        NdfType.Int32,
@@ -175,5 +167,4 @@ public static class NdfTypeManager
                        NdfType.Color128,
                        NdfType.MapList
                    };
-    }
 }

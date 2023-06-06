@@ -21,18 +21,12 @@ public class ViewModelBase : INotifyPropertyChanged
         }
     }
 
-    public void OnPropertyChanged([CallerMemberName] string prop = "")
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-    }
+    public void OnPropertyChanged([CallerMemberName] string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
     [XmlIgnore]
     public bool IsUIBusy
     {
-        get
-        {
-            return _isUiBusy;
-        }
+        get => _isUiBusy;
         set
         {
             _isUiBusy = value;

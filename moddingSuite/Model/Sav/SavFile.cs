@@ -2,13 +2,7 @@
 
 public class SavFile
 {
-    private byte[] _checksum = new byte[16];
-
-    public byte[] Checksum
-    {
-        get { return _checksum; }
-        set { _checksum = value; }
-    }
+    public byte[] Checksum { get; set; } = new byte[16];
 
     public uint FileSize { get; set; }
 

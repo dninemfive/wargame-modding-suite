@@ -1,39 +1,33 @@
 ﻿using moddingSuite.Model.Ndfbin;
 using moddingSuite.Model.Ndfbin.Types.AllTypes;
+using moddingSuite.Util;
 using moddingSuite.ZoneEditor.Markers;
 using moddingSuite.ZoneEditor.ScenarioItems.PropertyPanels;
 using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using ZoneEditor;
 
 namespace moddingSuite.ZoneEditor.ScenarioItems;
 
 public class Spawn : ScenarioItem
 {
-    VertexMarker head;
-    VertexMarker source;
-    int arrowLength = 250000;
-    int arrowHeadLength = 1500;
+    private readonly VertexMarker head;
+    private readonly VertexMarker source;
+    private int arrowLength = 250000;
+    private readonly int arrowHeadLength = 1500;
     private SpawnType _type;
     public SpawnType type
     {
-        get { return _type; }
+        get => _type;
         set
         {
             _type = value;
+
             try
             { head.Parent.Refresh(); }
-            catch (NullReferenceException e) { }
-            if (_type == SpawnType.Sea)
-            {
-                arrowLength = 350000;
-            }
-            else
-            {
-                arrowLength = 250000;
-            }
+            catch (NullReferenceException) { }
+            arrowLength = _type == SpawnType.Sea ? 350000 : 250000;
             ((SpawnProperty)propertypanel).update();
         }
     }
@@ -55,7 +49,7 @@ public class Spawn : ScenarioItem
         {
             Colour = Brushes.Yellow
         };
-        p.Offset(-(int)(scale * arrowLength * Math.Cos(rot) / Geometry.Geometry.scaleFactor), -(int)(scale * arrowLength * Math.Sin(rot) / Geometry.Geometry.scaleFactor));
+        p.Offset(-(int)(scale * arrowLength * Math.Cos(rot) / Geometry.scaleFactor), -(int)(scale * arrowLength * Math.Sin(rot) / Geometry.scaleFactor));
         source.setPosition(p);
         Name = string.Format("Spawn {0}", i);
 
@@ -77,7 +71,7 @@ public class Spawn : ScenarioItem
     protected override void paint(object sen, PaintEventArgs e)
     {
         PanAndZoom.Transform(e);
-        Pen p = new(Brushes.White, 10);
+        _ = new Pen(Brushes.White, 10);
         int width = 5;
         Brush b=Brushes.White;
         switch (type)
@@ -94,20 +88,19 @@ public class Spawn : ScenarioItem
 
                 break;
         }
-        p = new Pen(b, width);
+        Pen p = new(b, width);
         Point ah = head.getPosition();
         Point ahBase = ah;
-        ahBase = ah;
         float rot = getRotation();
-        ahBase.Offset(-(int)(width * arrowHeadLength * Math.Cos(rot) / Geometry.Geometry.scaleFactor), -(int)(width * arrowHeadLength * Math.Sin(rot) / Geometry.Geometry.scaleFactor));
+        ahBase.Offset(-(int)(width * arrowHeadLength * Math.Cos(rot) / Geometry.scaleFactor), -(int)(width * arrowHeadLength * Math.Sin(rot) / Geometry.scaleFactor));
         Point ahLeft = ahBase;
         rot += (float)Math.PI / 2;
-        ahLeft.Offset(-(int)(width * arrowHeadLength * Math.Cos(rot) / Geometry.Geometry.scaleFactor), -(int)(width * arrowHeadLength * Math.Sin(rot) / Geometry.Geometry.scaleFactor));
+        ahLeft.Offset(-(int)(width * arrowHeadLength * Math.Cos(rot) / Geometry.scaleFactor), -(int)(width * arrowHeadLength * Math.Sin(rot) / Geometry.scaleFactor));
         Point ahRight = ahBase;
         rot -= (float)Math.PI;
-        ahRight.Offset(-(int)(width * arrowHeadLength * Math.Cos(rot) / Geometry.Geometry.scaleFactor), -(int)(width * arrowHeadLength * Math.Sin(rot) / Geometry.Geometry.scaleFactor));
+        ahRight.Offset(-(int)(width * arrowHeadLength * Math.Cos(rot) / Geometry.scaleFactor), -(int)(width * arrowHeadLength * Math.Sin(rot) / Geometry.scaleFactor));
         rot += (float)Math.PI / 2;
-        ahBase.Offset((int)(500 * width * Math.Cos(rot) / Geometry.Geometry.scaleFactor), (int)(500 * width * Math.Sin(rot) / Geometry.Geometry.scaleFactor));
+        ahBase.Offset((int)(500 * width * Math.Cos(rot) / Geometry.scaleFactor), (int)(500 * width * Math.Sin(rot) / Geometry.scaleFactor));
         e.Graphics.DrawLine(p, source.getPosition(), ahBase);
         e.Graphics.FillPolygon(b, new Point[] { ah, ahLeft, ahRight });
     }
@@ -119,21 +112,17 @@ public class Spawn : ScenarioItem
     public override void buildNdf(NdfBinary data, ref int i)
     {
         string name = "";
-        string ranking = "";
         switch (type)
         {
             case SpawnType.Land:
                 name = "TGameDesignAddOn_ReinforcementLocation";
-                ranking = "ReinforcementLocations";
 
                 break;
             case SpawnType.Sea:
                 name = "TGameDesignAddOn_MaritimeCorridor";
-                ranking = "MaritimeCorridors";
                 break;
             case SpawnType.Air:
                 name = "TGameDesignAddOn_AerialCorridor";
-                ranking = "AerialCorridors";
                 break;
 
         }
@@ -154,7 +143,7 @@ public class Spawn : ScenarioItem
 
         NdfPropertyValue positionProperty = getProperty(designItem, "Position");
         Point hp=head.getPosition();
-        System.Windows.Media.Media3D.Point3D p = Geometry.Geometry.convertPoint(hp);
+        System.Windows.Media.Media3D.Point3D p = Geometry.convertPoint(hp);
         positionProperty.Value = new NdfVector(p);
 
         NdfPropertyValue rotationProperty = getProperty(designItem, "Rotation");
@@ -163,8 +152,8 @@ public class Spawn : ScenarioItem
         rotationProperty.Value = new NdfSingle((float)rot);
 
         NdfPropertyValue scaleProperty = getProperty(designItem, "Scale");
-        double length = Math.Sqrt((hp.Y - sp.Y) * (hp.Y - sp.Y) + (hp.X - sp.X) * (hp.X - sp.X));
-        float xScale = (float)(length * Geometry.Geometry.scaleFactor) / arrowLength;
+        double length = Math.Sqrt(((hp.Y - sp.Y) * (hp.Y - sp.Y)) + ((hp.X - sp.X) * (hp.X - sp.X)));
+        float xScale = (float)(length * Geometry.scaleFactor) / arrowLength;
         scaleProperty.Value = new NdfVector(new System.Windows.Media.Media3D.Point3D(xScale, 1, 1));
 
         NdfPropertyValue addOnProperty = getProperty(designItem, "AddOn");

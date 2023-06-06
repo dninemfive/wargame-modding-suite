@@ -12,7 +12,7 @@ public class NdfLocalisationHash : NdfFlatValueWrapper
 
     public new byte[] Value
     {
-        get { return (byte[])base.Value; }
+        get => (byte[])base.Value;
         set
         {
             base.Value = value;
@@ -20,18 +20,9 @@ public class NdfLocalisationHash : NdfFlatValueWrapper
         }
     }
 
-    public override byte[] GetBytes()
-    {
-        return Value;
-    }
+    public override byte[] GetBytes() => Value;
 
-    public override string ToString()
-    {
-        return Utils.ByteArrayToBigEndianHexByteString(Value);
-    }
+    public override string ToString() => Utils.ByteArrayToBigEndianHexByteString(Value);
 
-    public override byte[] GetNdfText()
-    {
-        throw new NotImplementedException();
-    }
+    public override byte[] GetNdfText() => throw new NotImplementedException();
 }

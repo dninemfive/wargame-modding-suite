@@ -13,10 +13,9 @@ public abstract class EdataEntity : ViewModelBase
         Name = name;
     }
 
-
     public string Name
     {
-        get { return _name; }
+        get => _name;
         set
         {
             _name = value;
@@ -26,7 +25,7 @@ public abstract class EdataEntity : ViewModelBase
 
     public int FileEntrySize
     {
-        get { return _fileEntrySize; }
+        get => _fileEntrySize;
         set
         {
             _fileEntrySize = value;
@@ -34,8 +33,5 @@ public abstract class EdataEntity : ViewModelBase
         }
     }
 
-    public override string ToString()
-    {
-        return Name.ToString(CultureInfo.CurrentCulture);
-    }
+    public override string ToString() => Name.ToString(CultureInfo.CurrentCulture);
 }

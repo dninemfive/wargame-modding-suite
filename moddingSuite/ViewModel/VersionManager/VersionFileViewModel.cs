@@ -10,13 +10,13 @@ public class VersionFileViewModel : ViewModelBase
 
     public string Path
     {
-        get { return _path; }
+        get => _path;
         set { _path = value; OnPropertyChanged(() => Path); }
     }
 
     public FileInfo FileInfo
     {
-        get { return _fileInfo; }
+        get => _fileInfo;
         set { _fileInfo = value; OnPropertyChanged(() => FileInfo); }
     }
 

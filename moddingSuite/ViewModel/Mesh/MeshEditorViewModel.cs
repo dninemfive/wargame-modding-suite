@@ -31,13 +31,13 @@ public class MeshEditorViewModel : ViewModelBase
 
     public MeshFile MeshFile
     {
-        get { return _meshFile; }
+        get => _meshFile;
         set { _meshFile = value; OnPropertyChanged("MeshFile"); }
     }
 
     public string MultiMaterialMeshesFilterExpression
     {
-        get { return _multiMaterialMeshesFilterExpression; }
+        get => _multiMaterialMeshesFilterExpression;
         set
         {
             _multiMaterialMeshesFilterExpression = value;
@@ -68,14 +68,7 @@ public class MeshEditorViewModel : ViewModelBase
         OnPropertyChanged(() => MultiMaterialMeshesCollectionView);
     }
 
-    private bool FilterMultiMaterialMeshes(object obj)
-    {
-        if (obj is not MeshContentFile file || MultiMaterialMeshesFilterExpression == string.Empty || MultiMaterialMeshesFilterExpression.Length < 3)
-        {
-            return true;
-        }
-
-        return file.Path.Contains(MultiMaterialMeshesFilterExpression);
-    }
+    private bool FilterMultiMaterialMeshes(object obj) => obj is not MeshContentFile file || MultiMaterialMeshesFilterExpression == string.Empty || MultiMaterialMeshesFilterExpression.Length < 3
+|| file.Path.Contains(MultiMaterialMeshesFilterExpression);
 
 }

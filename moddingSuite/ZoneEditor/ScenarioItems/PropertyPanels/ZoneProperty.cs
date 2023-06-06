@@ -5,7 +5,7 @@ namespace moddingSuite.ZoneEditor.ScenarioItems.PropertyPanels;
 
 public partial class ZoneProperty : UserControl
 {
-    Zone zone;
+    private readonly Zone zone;
     public ZoneProperty(Zone z)
     {
         InitializeComponent();
@@ -22,15 +22,11 @@ public partial class ZoneProperty : UserControl
 
     }
 
-    private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        zone.possession = (Possession)comboBox1.SelectedIndex;
-    }
+    private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) => zone.possession = (Possession)comboBox1.SelectedIndex;
 
     private void textBox1_TextChanged(object sender, EventArgs e)
     {
-        int temp;
-        if (int.TryParse(textBox1.Text, out temp))
+        if (int.TryParse(textBox1.Text, out int temp))
         {
             zone.value = temp;
         }

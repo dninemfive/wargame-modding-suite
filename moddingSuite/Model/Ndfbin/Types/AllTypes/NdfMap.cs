@@ -8,7 +8,6 @@ namespace moddingSuite.Model.Ndfbin.Types.AllTypes;
 
 public class NdfMap : NdfFlatValueWrapper
 {
-    private readonly List<NdfType> _typeSelection = new();
     private MapValueHolder _key;
 
     private NdfType _keyType = NdfType.Unset;
@@ -20,14 +19,14 @@ public class NdfMap : NdfFlatValueWrapper
         Key = key;
         Manager = mgr;
 
-        _typeSelection.AddRange(NdfTypeManager.GetTypeSelection());
+        TypeSelection.AddRange(NdfTypeManager.GetTypeSelection());
     }
 
     public NdfBinary Manager { get; protected set; }
 
     public NdfType KeyType
     {
-        get { return _keyType; }
+        get => _keyType;
         set
         {
             _keyType = value;
@@ -38,7 +37,7 @@ public class NdfMap : NdfFlatValueWrapper
 
     public NdfType ValueType
     {
-        get { return _valueType; }
+        get => _valueType;
         set
         {
             _valueType = value;
@@ -47,24 +46,15 @@ public class NdfMap : NdfFlatValueWrapper
         }
     }
 
-    public List<NdfType> TypeSelection
-    {
-        get { return _typeSelection; }
-    }
+    public List<NdfType> TypeSelection { get; } = new();
 
-    public bool IsKeyNull
-    {
-        get { return Key.Value == null; }
-    }
+    public bool IsKeyNull => Key.Value == null;
 
-    public bool IsValueNull
-    {
-        get { return ((MapValueHolder)Value).Value == null; }
-    }
+    public bool IsValueNull => ((MapValueHolder)Value).Value == null;
 
     public MapValueHolder Key
     {
-        get { return _key; }
+        get => _key;
         set
         {
             _key = value;
@@ -75,13 +65,17 @@ public class NdfMap : NdfFlatValueWrapper
     private void GetValueForType(bool keyOrValue)
     {
         if (keyOrValue)
+        {
             Key =
                 new MapValueHolder(
                     NdfTypeManager.GetValue(new byte[NdfTypeManager.SizeofType(KeyType)], KeyType, Manager), Manager);
+        }
         else
+        {
             Value =
                 new MapValueHolder(
                     NdfTypeManager.GetValue(new byte[NdfTypeManager.SizeofType(ValueType)], ValueType, Manager), Manager);
+        }
 
         OnPropertyChanged("IsKeyNull");
         OnPropertyChanged("IsValueNull");
@@ -106,7 +100,9 @@ public class NdfMap : NdfFlatValueWrapper
 
         if (((MapValueHolder)Value).Value.Type is NdfType.ObjectReference or
             NdfType.TransTableReference)
+        {
             mapdata.AddRange(BitConverter.GetBytes((uint)NdfType.Reference));
+        }
 
         mapdata.AddRange(BitConverter.GetBytes((uint)((MapValueHolder)Value).Value.Type));
         mapdata.AddRange(value);
@@ -121,19 +117,14 @@ public class NdfMap : NdfFlatValueWrapper
 
         data.AddRange(end.GetBytes("(\n"));
 
-
-        data.AddRange((Key).Value.GetNdfText());
+        data.AddRange(Key.Value.GetNdfText());
 
         data.AddRange(end.GetBytes(",\n"));
-
 
         data.AddRange(end.GetBytes(")\n"));
 
         return data.ToArray();
     }
 
-    public override string ToString()
-    {
-        return string.Format("Map: {0} : {1}", Key.Value, ((MapValueHolder)Value).Value);
-    }
+    public override string ToString() => string.Format("Map: {0} : {1}", Key.Value, ((MapValueHolder)Value).Value);
 }

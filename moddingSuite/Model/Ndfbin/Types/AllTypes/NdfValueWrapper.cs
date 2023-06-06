@@ -5,7 +5,7 @@ namespace moddingSuite.Model.Ndfbin.Types.AllTypes;
 public abstract class NdfValueWrapper : ViewModelBase, INdfScriptSerializable
 {
     private NdfType _type;
-    private NdfPropertyValue _parentProperty;
+
     protected NdfValueWrapper(NdfType type)
     {
         Type = type;
@@ -13,21 +13,14 @@ public abstract class NdfValueWrapper : ViewModelBase, INdfScriptSerializable
 
     public NdfType Type
     {
-        get { return _type; }
+        get => _type;
         protected set
         {
             _type = value;
             OnPropertyChanged("Type");
         }
     }
-    public NdfPropertyValue ParentProperty
-    {
-        get { return _parentProperty; }
-        set
-        {
-            _parentProperty = value;
-        }
-    }
+    public NdfPropertyValue ParentProperty { get; set; }
     #region INdfScriptSerializable Members
 
     public abstract byte[] GetNdfText();

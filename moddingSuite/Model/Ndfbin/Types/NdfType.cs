@@ -8,8 +8,6 @@ public enum NdfType : uint
     Int16 = 0x00000018,
     UInt16 = 0x00000019,
 
-
-
     Int32 = 0x00000002,
     UInt32 = 0x00000003,
     Float32 = 0x00000005,

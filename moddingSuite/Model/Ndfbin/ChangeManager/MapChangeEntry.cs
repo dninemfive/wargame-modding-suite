@@ -15,7 +15,7 @@ public class MapChangeEntry : ChangeEntryBase
 
     public MapValueHolder NewKey
     {
-        get { return _newKey; }
+        get => _newKey;
         set
         {
             _newKey = value;
@@ -25,7 +25,7 @@ public class MapChangeEntry : ChangeEntryBase
 
     public MapValueHolder NewValue
     {
-        get { return _newValue; }
+        get => _newValue;
         set
         {
             _newValue = value;
@@ -33,15 +33,8 @@ public class MapChangeEntry : ChangeEntryBase
         }
     }
 
+    private int min(int l, int r) => l < r ? l : r;
 
-    int min(int l, int r)
-    {
-        return l < r ? l : r;
-    }
-
-    float min(float l, float r)
-    {
-        return l < r ? l : r;
-    }
+    private float min(float l, float r) => l < r ? l : r;
 
 }

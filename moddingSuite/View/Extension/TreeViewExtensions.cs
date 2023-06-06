@@ -13,15 +13,9 @@ public static class TreeViewExtension
        typeof(TreeViewExtension),
        new UIPropertyMetadata(false, OnSelectItemOnRightClickChanged));
 
-    public static bool GetSelectItemOnRightClick(DependencyObject d)
-    {
-        return (bool)d.GetValue(SelectItemOnRightClickProperty);
-    }
+    public static bool GetSelectItemOnRightClick(DependencyObject d) => (bool)d.GetValue(SelectItemOnRightClickProperty);
 
-    public static void SetSelectItemOnRightClick(DependencyObject d, bool value)
-    {
-        d.SetValue(SelectItemOnRightClickProperty, value);
-    }
+    public static void SetSelectItemOnRightClick(DependencyObject d, bool value) => d.SetValue(SelectItemOnRightClickProperty, value);
 
     private static void OnSelectItemOnRightClickChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -42,7 +36,7 @@ public static class TreeViewExtension
 
         if (treeViewItem != null)
         {
-            treeViewItem.Focus();
+            _ = treeViewItem.Focus();
             e.Handled = true;
         }
     }

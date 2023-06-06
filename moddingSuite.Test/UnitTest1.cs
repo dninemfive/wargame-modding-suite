@@ -21,16 +21,12 @@ public class UnitTest1 : BaseTests
     {
         SavManager mgr = new();
 
-        using (FileStream fs = new($@"{AirLandUserDataPath}\remote\profile.wargame", FileMode.Open))
-        {
-            using (MemoryStream ms = new())
-            {
-                fs.CopyTo(ms);
+        using FileStream fs = new($@"{AirLandUserDataPath}\remote\profile.wargame", FileMode.Open);
+        using MemoryStream ms = new();
+        fs.CopyTo(ms);
 
-                Model.Sav.SavFile save = mgr.Read(ms.ToArray());
-                save.Checksum.Should().NotBeEmpty();
-            }
-        }
+        Model.Sav.SavFile save = mgr.Read(ms.ToArray());
+        _ = save.Checksum.Should().NotBeEmpty();
     }
 
     //[TestMethod]
@@ -44,7 +40,7 @@ public class UnitTest1 : BaseTests
         byte[] inData = new byte[inFi.Length];
 
         using (FileStream fs = new(inpath, FileMode.Open))
-            fs.Read(inData, 0, inData.Length);
+            _ = fs.Read(inData, 0, inData.Length);
 
         byte[] outData = Compressor.Decomp(inData);
 
@@ -60,61 +56,59 @@ public class UnitTest1 : BaseTests
 
         TgvReader tgvReader = new();
 
-        FileInfo inFileInfo = new(inFile);
+        _ = new
+        FileInfo(inFile);
 
         TgvFile tgv;
 
-        using (FileStream fs = new(inFile, FileMode.Open))
+        using FileStream fs = new(inFile, FileMode.Open);
+        TgvDDSWriter writer = new();
+
+        int index = 1;
+
+        const uint fatMagic = 810828102;
+        Console.WriteLine("start");
+        while (fs.Position < fs.Length)
         {
-            TgvDDSWriter writer = new();
+            _ = fs.Seek(4, SeekOrigin.Current);
 
-            int index = 1;
+            byte[] buffer = new byte[4];
+            _ = fs.Read(buffer, 0, buffer.Length);
 
-            const uint fatMagic = 810828102;
-            Console.WriteLine("start");
-            while (fs.Position < fs.Length)
+            if (BitConverter.ToUInt32(buffer, 0) != fatMagic)
+                throw new InvalidDataException();
+            Console.WriteLine("passe");
+            _ = fs.Seek(8, SeekOrigin.Current);
+
+            _ = fs.Read(buffer, 0, buffer.Length);
+            uint blockSize = BitConverter.ToUInt32(buffer, 0);
+
+            if (fs.Position >= fs.Length)
+                continue;
+
+            byte[] tileBuffer = new byte[blockSize];
+
+            _ = fs.Read(tileBuffer, 0, tileBuffer.Length);
+
+            tgv = tgvReader.Read(tileBuffer);
+
+            byte[] content = writer.CreateDDSFile(tgv);
+
+            FileInfo f = new(inFile);
+
+            string path = Path.Combine(inpath, string.Format("{0}_{1}", f.Name, "export"));
+
+            if (!Directory.Exists(path))
+                _ = Directory.CreateDirectory(path);
+
+            using (FileStream outFs = new(Path.Combine(path, string.Format("{0}.dds", index)), FileMode.OpenOrCreate))
             {
-                fs.Seek(4, SeekOrigin.Current);
-
-                byte[] buffer = new byte[4];
-                fs.Read(buffer, 0, buffer.Length);
-
-                if (BitConverter.ToUInt32(buffer, 0) != fatMagic)
-                    throw new InvalidDataException();
-                Console.WriteLine("passe");
-                fs.Seek(8, SeekOrigin.Current);
-
-                fs.Read(buffer, 0, buffer.Length);
-                uint blockSize = BitConverter.ToUInt32(buffer, 0);
-
-                if (fs.Position >= fs.Length)
-                    continue;
-
-                byte[] tileBuffer = new byte[blockSize];
-
-                fs.Read(tileBuffer, 0, tileBuffer.Length);
-
-                tgv = tgvReader.Read(tileBuffer);
-
-                byte[] content = writer.CreateDDSFile(tgv);
-
-                FileInfo f = new(inFile);
-
-                string path = Path.Combine(inpath, string.Format("{0}_{1}", f.Name, "export"));
-
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-
-                using (FileStream outFs = new(Path.Combine(path, string.Format("{0}.dds", index)), FileMode.OpenOrCreate))
-                {
-                    outFs.Write(content, 0, content.Length);
-                    outFs.Flush();
-                }
-
-                index++;
+                outFs.Write(content, 0, content.Length);
+                outFs.Flush();
             }
-        }
 
+            index++;
+        }
     }
 
     //[TestMethod]
@@ -124,8 +118,8 @@ public class UnitTest1 : BaseTests
 
         MeshReader mreader = new();
 
-        using (FileStream fs = new(file, FileMode.Open))
-            mreader.Read(fs);
+        using FileStream fs = new(file, FileMode.Open);
+        _ = mreader.Read(fs);
     }
 
     [TestMethod]
@@ -150,66 +144,62 @@ public class UnitTest1 : BaseTests
 
         const int areaMagic = 1095062081;
 
-        using (FileStream i = File.OpenRead(input))
+        using FileStream i = File.OpenRead(input);
+        byte[] buffer = new byte[4];
+        _ = i.Read(buffer, 0, buffer.Length);
+
+        if (BitConverter.ToInt32(buffer, 0) != areaMagic)
+            throw new InvalidDataException();
+
+        _ = i.Read(buffer, 0, buffer.Length);
+        int vertexCount = BitConverter.ToInt32(buffer, 0);
+
+        _ = i.Read(buffer, 0, buffer.Length);
+        int facesCount = BitConverter.ToInt32(buffer, 0);
+
+        using FileStream o = File.OpenWrite(output);
+        for (int v = 0; v < vertexCount; v++)
         {
-            byte[] buffer = new byte[4];
-            i.Read(buffer, 0, buffer.Length);
+            _ = i.Read(buffer, 0, buffer.Length);
+            byte[] x = enc.GetBytes(BitConverter.ToSingle(buffer, 0).ToString());
 
-            if (BitConverter.ToInt32(buffer, 0) != areaMagic)
-                throw new InvalidDataException();
+            _ = i.Read(buffer, 0, buffer.Length);
+            byte[] y = enc.GetBytes(BitConverter.ToSingle(buffer, 0).ToString());
 
-            i.Read(buffer, 0, buffer.Length);
-            int vertexCount = BitConverter.ToInt32(buffer, 0);
+            _ = i.Seek(8, SeekOrigin.Current);
 
-            i.Read(buffer, 0, buffer.Length);
-            int facesCount = BitConverter.ToInt32(buffer, 0);
+            _ = i.Read(buffer, 0, buffer.Length);
+            byte[] z = enc.GetBytes(BitConverter.ToSingle(buffer, 0).ToString());
 
-            using (FileStream o = File.OpenWrite(output))
-            {
-                for (int v = 0; v < vertexCount; v++)
-                {
-                    i.Read(buffer, 0, buffer.Length);
-                    byte[] x = enc.GetBytes(BitConverter.ToSingle(buffer, 0).ToString());
+            o.Write(y, 0, y.Length);
+            o.Write(sep, 0, sep.Length);
+            o.Write(x, 0, x.Length);
+            o.Write(sep, 0, sep.Length);
+            o.Write(z, 0, z.Length);
+            o.Write(nl, 0, nl.Length);
+        }
 
-                    i.Read(buffer, 0, buffer.Length);
-                    byte[] y = enc.GetBytes(BitConverter.ToSingle(buffer, 0).ToString());
+        _ = i.Read(buffer, 0, buffer.Length);
+        if (BitConverter.ToInt32(buffer, 0) != areaMagic)
+            throw new InvalidDataException();
 
-                    i.Seek(8, SeekOrigin.Current);
+        for (int f = 0; f < facesCount; f++)
+        {
+            _ = i.Read(buffer, 0, buffer.Length);
+            byte[] f1 = enc.GetBytes(BitConverter.ToInt32(buffer, 0).ToString());
 
-                    i.Read(buffer, 0, buffer.Length);
-                    byte[] z = enc.GetBytes(BitConverter.ToSingle(buffer, 0).ToString());
+            _ = i.Read(buffer, 0, buffer.Length);
+            byte[] f2 = enc.GetBytes(BitConverter.ToInt32(buffer, 0).ToString());
 
-                    o.Write(y, 0, y.Length);
-                    o.Write(sep, 0, sep.Length);
-                    o.Write(x, 0, x.Length);
-                    o.Write(sep, 0, sep.Length);
-                    o.Write(z, 0, z.Length);
-                    o.Write(nl, 0, nl.Length);
-                }
+            _ = i.Read(buffer, 0, buffer.Length);
+            byte[] f3 = enc.GetBytes(BitConverter.ToInt32(buffer, 0).ToString());
 
-                i.Read(buffer, 0, buffer.Length);
-                if (BitConverter.ToInt32(buffer, 0) != areaMagic)
-                    throw new InvalidDataException();
-
-                for (int f = 0; f < facesCount; f++)
-                {
-                    i.Read(buffer, 0, buffer.Length);
-                    byte[] f1 = enc.GetBytes(BitConverter.ToInt32(buffer, 0).ToString());
-
-                    i.Read(buffer, 0, buffer.Length);
-                    byte[] f2 = enc.GetBytes(BitConverter.ToInt32(buffer, 0).ToString());
-
-                    i.Read(buffer, 0, buffer.Length);
-                    byte[] f3 = enc.GetBytes(BitConverter.ToInt32(buffer, 0).ToString());
-
-                    o.Write(f1, 0, f1.Length);
-                    o.Write(sep, 0, sep.Length);
-                    o.Write(f2, 0, f2.Length);
-                    o.Write(sep, 0, sep.Length);
-                    o.Write(f3, 0, f3.Length);
-                    o.Write(nl, 0, nl.Length);
-                }
-            }
+            o.Write(f1, 0, f1.Length);
+            o.Write(sep, 0, sep.Length);
+            o.Write(f2, 0, f2.Length);
+            o.Write(sep, 0, sep.Length);
+            o.Write(f3, 0, f3.Length);
+            o.Write(nl, 0, nl.Length);
         }
     }
 }

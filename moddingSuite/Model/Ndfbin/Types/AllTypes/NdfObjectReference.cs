@@ -21,7 +21,7 @@ public class NdfObjectReference : NdfValueWrapper
 
     public NdfClass Class
     {
-        get { return _class; }
+        get => _class;
         set
         {
             _class = value;
@@ -31,7 +31,7 @@ public class NdfObjectReference : NdfValueWrapper
 
     public uint InstanceId
     {
-        get { return _instanceId; }
+        get => _instanceId;
         set
         {
             _instanceId = value;
@@ -41,32 +41,19 @@ public class NdfObjectReference : NdfValueWrapper
 
     public NdfObject Instance
     {
-        get
-        {
-            if (Class == null)
-                return null;
-
-            return Class.Instances.FirstOrDefault(o => o.Id == InstanceId);
-        }
+        get => Class?.Instances.FirstOrDefault(o => o.Id == InstanceId);
         set
         {
-            if (!Class.Instances.Contains(value))
-                InstanceId = Class.Instances.First().Id;
-            else
-                InstanceId = value.Id;
+            InstanceId = !Class.Instances.Contains(value) ? Class.Instances.First().Id : value.Id;
 
             OnPropertyChanged("Instance");
             OnPropertyChanged("InstanceId");
         }
     }
 
-    public override string ToString()
-    {
-        if (Class == null)
-            return string.Format("Class does not exist : {0}", InstanceId);
-
-        return string.Format("{0} : {1} ({2}) - {3}", Class.Id, InstanceId, Instance.IsTopObject, Class.Name);
-    }
+    public override string ToString() => Class == null
+            ? string.Format("Class does not exist : {0}", InstanceId)
+            : string.Format("{0} : {1} ({2}) - {3}", Class.Id, InstanceId, Instance.IsTopObject, Class.Name);
 
     public override byte[] GetBytes()
     {
@@ -79,8 +66,5 @@ public class NdfObjectReference : NdfValueWrapper
         return refereceData.ToArray();
     }
 
-    public override byte[] GetNdfText()
-    {
-        throw new NotImplementedException();
-    }
+    public override byte[] GetNdfText() => throw new NotImplementedException();
 }

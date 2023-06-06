@@ -13,8 +13,5 @@ public class ColorToBrushConverter : IValueConverter
         return new SolidBrush(Color.FromArgb(col.A, col.R, col.B, col.G));
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) => throw new NotImplementedException();
 }

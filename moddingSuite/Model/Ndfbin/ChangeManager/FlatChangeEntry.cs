@@ -14,12 +14,11 @@ public class FlatChangeEntry : ChangeEntryBase
 
     public NdfValueWrapper NewValue
     {
-        get { return _newValue; }
+        get => _newValue;
         set
         {
             _newValue = value;
             OnPropertyChanged(() => NewValue);
         }
     }
-
 }

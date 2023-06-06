@@ -10,14 +10,7 @@ public class NdfTrans : NdfFlatValueWrapper
     {
     }
 
-    public override byte[] GetBytes()
-    {
-        return BitConverter.GetBytes(((NdfTranReference)Value).Id);
-    }
+    public override byte[] GetBytes() => BitConverter.GetBytes(((NdfTranReference)Value).Id);
 
-
-    public override byte[] GetNdfText()
-    {
-        return NdfTextWriter.NdfTextEncoding.GetBytes(string.Format("\"{0}\"", ((NdfStringReference)Value).Value));
-    }
+    public override byte[] GetNdfText() => NdfTextWriter.NdfTextEncoding.GetBytes(string.Format("\"{0}\"", ((NdfStringReference)Value).Value));
 }

@@ -4,8 +4,8 @@ namespace moddingSuite.BL.ImageService.BlockDXT;
 
 public struct BlockDXT5
 {
-    AlphaBlockDXT5 alpha;
-    BlockDXT1 color;
+    private AlphaBlockDXT5 alpha;
+    private BlockDXT1 color;
 
     public void decodeBlock(ref ColorBlock block)
     {
@@ -20,14 +20,14 @@ public struct BlockDXT5
     }
 
     /// Flip DXT5 block vertically.
-    void flip4()
+    private void flip4()
     {
         alpha.flip4();
         color.flip4();
     }
 
     /// Flip half DXT5 block vertically.
-    void flip2()
+    private void flip2()
     {
         alpha.flip2();
         color.flip2();

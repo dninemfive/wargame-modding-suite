@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace moddingSuite.ViewModel.Ndf;
 
-class ArmourDamageViewModel : ObjectWrapperViewModel<NdfObject>
+internal class ArmourDamageViewModel : ObjectWrapperViewModel<NdfObject>
 {
     public ArmourDamageViewModel(NdfObject obj, ViewModelBase parentVm)
         : base(obj, parentVm)
@@ -25,7 +25,6 @@ class ArmourDamageViewModel : ObjectWrapperViewModel<NdfObject>
             default:
                 throw new Exception(string.Format("Cannot read object {0} as ArmourDamageViewModel", obj.Class.Name));
         }
-
     }
 
     private void readTGameplayArmeArmureContainer(NdfObject obj)
@@ -33,7 +32,7 @@ class ArmourDamageViewModel : ObjectWrapperViewModel<NdfObject>
         NdfCollection maps = obj.PropertyValues[0].Value as NdfCollection;
         for (int i = 0; i < 42; i++)
         {
-            TableData.Columns.Add(i.ToString());
+            _ = TableData.Columns.Add(i.ToString());
         }
         for (int i = 0; i < 70; i++)
         {
@@ -55,7 +54,6 @@ class ArmourDamageViewModel : ObjectWrapperViewModel<NdfObject>
     private void readTGameplayDamageResistanceContainer(NdfObject obj)
     {
 
-
         NdfCollection armourFamilies = obj.PropertyValues[1].Value as NdfCollection;
         NdfCollection damageFamilies = obj.PropertyValues[0].Value as NdfCollection;
         NdfCollection values = obj.PropertyValues[2].Value as NdfCollection;
@@ -63,7 +61,7 @@ class ArmourDamageViewModel : ObjectWrapperViewModel<NdfObject>
         TableData.TableName = "table";
         foreach (CollectionItemValueHolder armourFamily in armourFamilies)
         {
-            TableData.Columns.Add(armourFamily.Value.ToString());
+            _ = TableData.Columns.Add(armourFamily.Value.ToString());
         }
         int k = 0;
         for (int i = 0; i < damageFamilies.Count; i++)
@@ -71,12 +69,12 @@ class ArmourDamageViewModel : ObjectWrapperViewModel<NdfObject>
             RowHeaders.Add(damageFamilies[i].Value.ToString());
             DataRow row = TableData.NewRow();
             TableData.Rows.Add(row);
-            ObservableCollection<NdfPropertyValue> damageFamily = new();
+
+            _ = new ObservableCollection<NdfPropertyValue>();
             for (int j = 0; j < armourFamilies.Count; j++)
             {
                 row[j] = values[k++].Value;
             }
-
         }
         TableData.AcceptChanges();
     }

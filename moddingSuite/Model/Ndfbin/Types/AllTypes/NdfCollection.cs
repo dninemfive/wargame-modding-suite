@@ -11,9 +11,6 @@ namespace moddingSuite.Model.Ndfbin.Types.AllTypes;
 
 public class NdfCollection : NdfValueWrapper, IList<CollectionItemValueHolder>, INotifyCollectionChanged, IList
 {
-    private readonly ObservableCollection<CollectionItemValueHolder> _innerList =
-        new();
-
     public NdfCollection()
         : base(NdfType.List)
     {
@@ -23,21 +20,17 @@ public class NdfCollection : NdfValueWrapper, IList<CollectionItemValueHolder>, 
         : this()
     {
         if (list != null)
+        {
             foreach (CollectionItemValueHolder wrapper in list)
                 InnerList.Add(wrapper);
+        }
     }
 
-    protected ObservableCollection<CollectionItemValueHolder> InnerList
-    {
-        get { return _innerList; }
-    }
+    protected ObservableCollection<CollectionItemValueHolder> InnerList { get; } = new();
 
     #region IList<CollectionItemValueHolder> Members
 
-    public int IndexOf(CollectionItemValueHolder item)
-    {
-        return InnerList.IndexOf(item);
-    }
+    public int IndexOf(CollectionItemValueHolder item) => InnerList.IndexOf(item);
 
     public void Insert(int index, CollectionItemValueHolder item)
     {
@@ -54,8 +47,8 @@ public class NdfCollection : NdfValueWrapper, IList<CollectionItemValueHolder>, 
 
     public CollectionItemValueHolder this[int index]
     {
-        get { return InnerList[index]; }
-        set { InnerList[index] = value; }
+        get => InnerList[index];
+        set => InnerList[index] = value;
     }
 
     public void Add(CollectionItemValueHolder item)
@@ -72,25 +65,13 @@ public class NdfCollection : NdfValueWrapper, IList<CollectionItemValueHolder>, 
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
     }
 
-    public bool Contains(CollectionItemValueHolder item)
-    {
-        return InnerList.Contains(item);
-    }
+    public bool Contains(CollectionItemValueHolder item) => InnerList.Contains(item);
 
-    public void CopyTo(CollectionItemValueHolder[] array, int arrayIndex)
-    {
-        InnerList.CopyTo(array, arrayIndex);
-    }
+    public void CopyTo(CollectionItemValueHolder[] array, int arrayIndex) => InnerList.CopyTo(array, arrayIndex);
 
-    public int Count
-    {
-        get { return InnerList.Count; }
-    }
+    public int Count => InnerList.Count;
 
-    public bool IsReadOnly
-    {
-        get { return false; }
-    }
+    public bool IsReadOnly => false;
 
     public bool Remove(CollectionItemValueHolder item)
     {
@@ -102,15 +83,9 @@ public class NdfCollection : NdfValueWrapper, IList<CollectionItemValueHolder>, 
         return res;
     }
 
-    public IEnumerator<CollectionItemValueHolder> GetEnumerator()
-    {
-        return InnerList.GetEnumerator();
-    }
+    public IEnumerator<CollectionItemValueHolder> GetEnumerator() => InnerList.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return InnerList.GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => InnerList.GetEnumerator();
 
     #endregion
 
@@ -128,54 +103,27 @@ public class NdfCollection : NdfValueWrapper, IList<CollectionItemValueHolder>, 
         return IndexOf(value);
     }
 
-    public bool Contains(object value)
-    {
-        if (value is not CollectionItemValueHolder val)
-            return false;
+    public bool Contains(object value) => value is CollectionItemValueHolder && InnerList.Contains(value as CollectionItemValueHolder);
 
-        return InnerList.Contains(value as CollectionItemValueHolder);
-    }
+    public int IndexOf(object value) => IndexOf(value as CollectionItemValueHolder);
 
-    public int IndexOf(object value)
-    {
-        return IndexOf(value as CollectionItemValueHolder);
-    }
+    public void Insert(int index, object value) => Insert(index, value as CollectionItemValueHolder);
 
-    public void Insert(int index, object value)
-    {
-        Insert(index, value as CollectionItemValueHolder);
-    }
+    public bool IsFixedSize => false;
 
-    public bool IsFixedSize
-    {
-        get { return false; }
-    }
-
-    public void Remove(object value)
-    {
-        Remove(value as CollectionItemValueHolder);
-    }
+    public void Remove(object value) => Remove(value as CollectionItemValueHolder);
 
     object IList.this[int index]
     {
-        get { return this[index]; }
-        set { this[index] = value as CollectionItemValueHolder; }
+        get => this[index];
+        set => this[index] = value as CollectionItemValueHolder;
     }
 
-    public void CopyTo(Array array, int index)
-    {
-        throw new NotImplementedException();
-    }
+    public void CopyTo(Array array, int index) => throw new NotImplementedException();
 
-    public bool IsSynchronized
-    {
-        get { return false; }
-    }
+    public bool IsSynchronized => false;
 
-    public object SyncRoot
-    {
-        get { return this; }
-    }
+    public object SyncRoot => this;
 
     #endregion
 
@@ -185,18 +133,11 @@ public class NdfCollection : NdfValueWrapper, IList<CollectionItemValueHolder>, 
 
     #endregion
 
-    protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-    {
-        if (CollectionChanged != null)
-            CollectionChanged(this, e);
-    }
+    protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e) => CollectionChanged?.Invoke(this, e);
 
     #endregion
 
-    public override string ToString()
-    {
-        return string.Format("Collection[{0}]", InnerList.Count);
-    }
+    public override string ToString() => string.Format("Collection[{0}]", InnerList.Count);
 
     public override byte[] GetBytes()
     {
@@ -210,7 +151,9 @@ public class NdfCollection : NdfValueWrapper, IList<CollectionItemValueHolder>, 
 
             if (valueHolder.Value.Type is NdfType.ObjectReference or
                 NdfType.TransTableReference)
+            {
                 data.AddRange(BitConverter.GetBytes((uint)NdfType.Reference));
+            }
 
             data.AddRange(BitConverter.GetBytes((uint)valueHolder.Value.Type));
             data.AddRange(valueDat);
@@ -223,27 +166,25 @@ public class NdfCollection : NdfValueWrapper, IList<CollectionItemValueHolder>, 
     {
         Encoding enc = NdfTextWriter.NdfTextEncoding;
 
-        using (MemoryStream ms = new())
+        using MemoryStream ms = new();
+        byte[] buffer = enc.GetBytes("[\n");
+        ms.Write(buffer, 0, buffer.Length);
+
+        foreach (CollectionItemValueHolder collectionItemValueHolder in InnerList)
         {
-            byte[] buffer = enc.GetBytes("[\n");
+            buffer = collectionItemValueHolder.Value.GetNdfText();
             ms.Write(buffer, 0, buffer.Length);
 
-            foreach (CollectionItemValueHolder collectionItemValueHolder in InnerList)
+            if (InnerList.IndexOf(collectionItemValueHolder) < InnerList.Count)
             {
-                buffer = collectionItemValueHolder.Value.GetNdfText();
+                buffer = enc.GetBytes(",\n");
                 ms.Write(buffer, 0, buffer.Length);
-
-                if (InnerList.IndexOf(collectionItemValueHolder) < InnerList.Count)
-                {
-                    buffer = enc.GetBytes(",\n");
-                    ms.Write(buffer, 0, buffer.Length);
-                }
             }
-
-            buffer = enc.GetBytes("]\n");
-            ms.Write(buffer, 0, buffer.Length);
-
-            return ms.ToArray();
         }
+
+        buffer = enc.GetBytes("]\n");
+        ms.Write(buffer, 0, buffer.Length);
+
+        return ms.ToArray();
     }
 }

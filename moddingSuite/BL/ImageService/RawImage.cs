@@ -6,8 +6,6 @@ namespace moddingSuite.BL.ImageService;
 
 public class RawImage
 {
-    private Color32[] _data;
-
     public enum Format
     {
         Format_RGB,
@@ -26,10 +24,7 @@ public class RawImage
         set;
     }
 
-    public Color32[] Data
-    {
-        get { return _data; }
-    }
+    public Color32[] Data { get; }
 
     public Format ColFormat
     {
@@ -40,9 +35,9 @@ public class RawImage
     public RawImage(Color32[] data, uint width, uint height)
     {
         if (data == null)
-            _data = new Color32[width * height * 4]; // sizeof(Color32) == 4
+            Data = new Color32[width * height * 4]; // sizeof(Color32) == 4
         else
-            _data = data;
+            Data = data;
 
         Width = width;
         Height = height;
@@ -60,15 +55,9 @@ public class RawImage
         return tmp;
     }
 
-    public Color32 Pixel(uint px)
-    {
-        return Data[px];
-    }
+    public Color32 Pixel(uint px) => Data[px];
 
-    public Color32 Pixel(uint x, uint y)
-    {
-        return Pixel(y * Width + x);
-    }
+    public Color32 Pixel(uint x, uint y) => Pixel((y * Width) + x);
 
     public byte[] GetRawData()
     {

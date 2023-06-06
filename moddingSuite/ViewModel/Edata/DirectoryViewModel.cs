@@ -9,25 +9,18 @@ namespace moddingSuite.ViewModel.Edata;
 public class DirectoryViewModel : FileSystemItemViewModel
 {
     private ObservableCollection<FileSystemItemViewModel> _items = new();
-    private  DirectoryInfo _directoryInfo;
 
     public DirectoryViewModel(DirectoryInfo info)
     {
-        _directoryInfo = info;
+        Info = info;
         OpenInFileExplorerCommand = new ActionCommand(OpenInFileExplorerExecute);
     }
 
-    private void OpenInFileExplorerExecute(object obj)
-    {
-        Process.Start(this.Info.FullName);
-    }
+    private void OpenInFileExplorerExecute(object obj) => Process.Start(Info.FullName);
 
     public ObservableCollection<FileSystemItemViewModel> Items
     {
-        get
-        {
-            return _items;
-        }
+        get => _items;
         set
         {
             _items = value;
@@ -35,28 +28,12 @@ public class DirectoryViewModel : FileSystemItemViewModel
         }
     }
 
-    public DirectoryInfo Info
-    {
-        get
-        {
-            return _directoryInfo;
-        }
-        set
-        {
-            _directoryInfo = value;
-        }
-    }
+    public DirectoryInfo Info { get; set; }
 
     public ICommand OpenInFileExplorerCommand
     {
         get; set;
     }
 
-    public override string Name
-    {
-        get
-        {
-            return Info.Name;
-        }
-    }
+    public override string Name => Info.Name;
 }

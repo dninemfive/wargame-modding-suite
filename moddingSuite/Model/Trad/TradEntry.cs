@@ -17,7 +17,7 @@ public class TradEntry : ViewModelBase
 
     public string HashView
     {
-        get { return _hashView; }
+        get => _hashView;
         set
         {
             _hashView = value;
@@ -27,7 +27,7 @@ public class TradEntry : ViewModelBase
 
     public byte[] Hash
     {
-        get { return _hash; }
+        get => _hash;
         set
         {
             _hash = value;
@@ -40,7 +40,7 @@ public class TradEntry : ViewModelBase
 
     public uint OffsetDic
     {
-        get { return _offsetDic; }
+        get => _offsetDic;
         set
         {
             _offsetDic = value;
@@ -50,7 +50,7 @@ public class TradEntry : ViewModelBase
 
     public uint OffsetCont
     {
-        get { return _offsetCont; }
+        get => _offsetCont;
         set
         {
             _offsetCont = value;
@@ -60,7 +60,7 @@ public class TradEntry : ViewModelBase
 
     public uint ContLen
     {
-        get { return _contLen; }
+        get => _contLen;
         set
         {
             _contLen = value;
@@ -70,7 +70,7 @@ public class TradEntry : ViewModelBase
 
     public string Content
     {
-        get { return _content; }
+        get => _content;
         set
         {
             _content = value;
@@ -84,7 +84,7 @@ public class TradEntry : ViewModelBase
 
     public bool UserCreated
     {
-        get { return _userCreated; }
+        get => _userCreated;
         set
         {
             _userCreated = value;

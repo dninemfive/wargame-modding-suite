@@ -9,13 +9,7 @@ public class NdfInt8 : NdfFlatValueWrapper
     {
     }
 
-    public override byte[] GetBytes()
-    {
-        return new byte[1] { (byte)Value };
-    }
+    public override byte[] GetBytes() => new byte[1] { (byte)Value };
 
-    public override byte[] GetNdfText()
-    {
-        return NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
-    }
+    public override byte[] GetNdfText() => NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
 }

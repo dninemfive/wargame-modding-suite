@@ -11,7 +11,7 @@ public class NdfProperty : ViewModelBase
 
     public int Id
     {
-        get { return _id; }
+        get => _id;
         set
         {
             _id = value;
@@ -21,7 +21,7 @@ public class NdfProperty : ViewModelBase
 
     public string Name
     {
-        get { return _name; }
+        get => _name;
         set
         {
             _name = value;
@@ -31,7 +31,7 @@ public class NdfProperty : ViewModelBase
 
     public NdfClass Class
     {
-        get { return _class; }
+        get => _class;
         set
         {
             _class = value;
@@ -44,8 +44,5 @@ public class NdfProperty : ViewModelBase
         Id = id;
     }
 
-    public override string ToString()
-    {
-        return Name.ToString(CultureInfo.InvariantCulture);
-    }
+    public override string ToString() => Name.ToString(CultureInfo.InvariantCulture);
 }

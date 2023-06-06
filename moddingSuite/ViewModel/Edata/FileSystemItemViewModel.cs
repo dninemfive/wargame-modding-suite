@@ -6,8 +6,5 @@ public abstract class FileSystemItemViewModel : ViewModelBase
 {
     public abstract string Name { get; }
 
-    public void Invalidate()
-    {
-        OnPropertyChanged(nameof(Name));
-    }
+    public void Invalidate() => OnPropertyChanged(nameof(Name));
 }

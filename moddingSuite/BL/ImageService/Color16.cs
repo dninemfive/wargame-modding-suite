@@ -14,8 +14,8 @@ public struct Color16
 
     public ushort b
     {
-        get { return (ushort)((b_i >> 11) & 0x1F); }
-        set { b_i = (ushort)((b_i & ~(0x1F << 11)) | (value & 0x3F) << 11); }
+        get => (ushort)((b_i >> 11) & 0x1F);
+        set => b_i = (ushort)((b_i & ~(0x1F << 11)) | ((value & 0x3F) << 11));
     }
 
     // Bitfield: 6
@@ -24,8 +24,8 @@ public struct Color16
 
     public ushort g
     {
-        get { return (ushort)((g_i >> 5) & 0x7F); }
-        set { g_i = (ushort)((g_i & ~(0x7F << 5)) | (value & 0x7F) << 5); }
+        get => (ushort)((g_i >> 5) & 0x7F);
+        set => g_i = (ushort)((g_i & ~(0x7F << 5)) | ((value & 0x7F) << 5));
     }
 
     // Bitfield: 5
@@ -34,8 +34,8 @@ public struct Color16
 
     public ushort r
     {
-        get { return (ushort)(r_i & 0x1F); }
-        set { r_i = (ushort)((r_i & ~0x1F) | (value & 0x1F)); }
+        get => (ushort)(r_i & 0x1F);
+        set => r_i = (ushort)((r_i & ~0x1F) | (value & 0x1F));
     }
 
     [FieldOffset(0)]
@@ -44,6 +44,4 @@ public struct Color16
     //public Color16() { }
     public Color16(Color16 c) { r_i = 0; g_i = 0; b_i = 0; u = c.u; }
     public Color16(ushort U) { r_i = 0; g_i = 0; b_i = 0; u = U; }
-
-
 }

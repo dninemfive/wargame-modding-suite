@@ -48,18 +48,18 @@ public class TgvWriter
 
         buffer = Encoding.ASCII.GetBytes(sourceFile.PixelFormatStr);
         destStream.Write(buffer, 0, buffer.Length);
-        destStream.Seek(Utils.RoundToNextDivBy4(fmtLen) - fmtLen, SeekOrigin.Current);
+        _ = destStream.Seek(Utils.RoundToNextDivBy4(fmtLen) - fmtLen, SeekOrigin.Current);
 
         destStream.Write(sourceChecksum, 0, sourceChecksum.Length);
 
-        long mipdefOffset = (destStream.Position);
+        long mipdefOffset = destStream.Position;
 
         List<int> mipImgsizes = new();
-        uint tileSize = sourceFile.Width - sourceFile.Width / sourceFile.MipMapCount;
+        uint tileSize = sourceFile.Width - (sourceFile.Width / sourceFile.MipMapCount);
 
         for (int i = 0; i < sourceFile.MipMapCount; i++)
         {
-            destStream.Seek(8, SeekOrigin.Current);
+            _ = destStream.Seek(8, SeekOrigin.Current);
             mipImgsizes.Add((int)tileSize);
             tileSize /= 4;
         }
@@ -92,7 +92,7 @@ public class TgvWriter
             }
         }
 
-        destStream.Seek(mipdefOffset, SeekOrigin.Begin);
+        _ = destStream.Seek(mipdefOffset, SeekOrigin.Begin);
 
         // Write the offset collection in the header.
         for (int i = 0; i < sourceFile.MipMapCount; i++)
@@ -109,32 +109,29 @@ public class TgvWriter
         }
     }
 
-    protected string TranslatePixelFormatBack(PixelFormats pixelFormat)
+    protected string TranslatePixelFormatBack(PixelFormats pixelFormat) => pixelFormat switch
     {
-        return pixelFormat switch
-        {
-            PixelFormats.R8G8B8A8_UNORM => "A8R8G8B8",
-            PixelFormats.B8G8R8X8_UNORM => "X8R8G8B8",
-            PixelFormats.B8G8R8X8_UNORM_SRGB => "X8R8G8B8_SRGB",
-            PixelFormats.R8G8B8A8_UNORM_SRGB => "A8R8G8B8_SRGB",
-            PixelFormats.R16G16B16A16_UNORM => "A16B16G16R16",
-            PixelFormats.R16G16B16A16_FLOAT => "A16B16G16R16F",
-            PixelFormats.R32G32B32A32_FLOAT => "A32B32G32R32F",
-            PixelFormats.A8_UNORM => "A8",
-            PixelFormats.A8P8 => "A8P8",
-            PixelFormats.P8 => "P8",
-            PixelFormats.R8_UNORM => "L8",
-            PixelFormats.R16_UNORM => "L16",
-            PixelFormats.D16_UNORM => "D16",
-            PixelFormats.R8G8_SNORM => "V8U8",
-            PixelFormats.R16G16_SNORM => "V16U16",
-            PixelFormats.BC1_UNORM => "DXT1",
-            PixelFormats.BC1_UNORM_SRGB => "DXT1_SRGB",
-            PixelFormats.BC2_UNORM => "DXT3",
-            PixelFormats.BC2_UNORM_SRGB => "DXT3_SRGB",
-            PixelFormats.BC3_UNORM => "DXT5",
-            PixelFormats.BC3_UNORM_SRGB => "DXT5_SRGB",
-            _ => throw new NotSupportedException(string.Format("Unsupported PixelFormat {0}", pixelFormat)),
-        };
-    }
+        PixelFormats.R8G8B8A8_UNORM => "A8R8G8B8",
+        PixelFormats.B8G8R8X8_UNORM => "X8R8G8B8",
+        PixelFormats.B8G8R8X8_UNORM_SRGB => "X8R8G8B8_SRGB",
+        PixelFormats.R8G8B8A8_UNORM_SRGB => "A8R8G8B8_SRGB",
+        PixelFormats.R16G16B16A16_UNORM => "A16B16G16R16",
+        PixelFormats.R16G16B16A16_FLOAT => "A16B16G16R16F",
+        PixelFormats.R32G32B32A32_FLOAT => "A32B32G32R32F",
+        PixelFormats.A8_UNORM => "A8",
+        PixelFormats.A8P8 => "A8P8",
+        PixelFormats.P8 => "P8",
+        PixelFormats.R8_UNORM => "L8",
+        PixelFormats.R16_UNORM => "L16",
+        PixelFormats.D16_UNORM => "D16",
+        PixelFormats.R8G8_SNORM => "V8U8",
+        PixelFormats.R16G16_SNORM => "V16U16",
+        PixelFormats.BC1_UNORM => "DXT1",
+        PixelFormats.BC1_UNORM_SRGB => "DXT1_SRGB",
+        PixelFormats.BC2_UNORM => "DXT3",
+        PixelFormats.BC2_UNORM_SRGB => "DXT3_SRGB",
+        PixelFormats.BC3_UNORM => "DXT5",
+        PixelFormats.BC3_UNORM_SRGB => "DXT5_SRGB",
+        _ => throw new NotSupportedException(string.Format("Unsupported PixelFormat {0}", pixelFormat)),
+    };
 }

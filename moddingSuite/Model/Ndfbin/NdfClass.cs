@@ -9,12 +9,10 @@ public class NdfClass : ViewModelBase
     private uint _id;
 
     private string _name;
-    private readonly ObservableCollection<NdfObject> _instances = new();
-    private readonly ObservableCollection<NdfProperty> _properties = new();
 
     public uint Id
     {
-        get { return _id; }
+        get => _id;
         set
         {
             _id = value;
@@ -24,7 +22,7 @@ public class NdfClass : ViewModelBase
 
     public string Name
     {
-        get { return _name; }
+        get => _name;
         set
         {
             _name = value;
@@ -32,15 +30,9 @@ public class NdfClass : ViewModelBase
         }
     }
 
-    public ObservableCollection<NdfProperty> Properties
-    {
-        get { return _properties; }
-    }
+    public ObservableCollection<NdfProperty> Properties { get; } = new();
 
-    public ObservableCollection<NdfObject> Instances
-    {
-        get { return _instances; }
-    }
+    public ObservableCollection<NdfObject> Instances { get; } = new();
 
     public NdfBinary Manager { get; protected set; }
 
@@ -50,8 +42,5 @@ public class NdfClass : ViewModelBase
         Id = id;
     }
 
-    public override string ToString()
-    {
-        return Name.ToString(CultureInfo.InvariantCulture);
-    }
+    public override string ToString() => Name.ToString(CultureInfo.InvariantCulture);
 }

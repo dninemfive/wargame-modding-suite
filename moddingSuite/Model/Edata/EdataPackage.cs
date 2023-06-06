@@ -7,7 +7,6 @@ namespace moddingSuite.Model.Edata;
 public class EdataPackage : EdataManager
 {
     private EdataDir _root;
-    private Dictionary<EdataContentFile, byte[]> _loadedFiles = new();
 
     public EdataPackage(string path)
         : base(path)
@@ -17,7 +16,7 @@ public class EdataPackage : EdataManager
 
     public EdataDir Root
     {
-        get { return _root; }
+        get => _root;
         set
         {
             _root = value;
@@ -25,10 +24,7 @@ public class EdataPackage : EdataManager
         }
     }
 
-    public Dictionary<EdataContentFile, byte[]> LoadedFiles
-    {
-        get { return _loadedFiles; }
-    }
+    public Dictionary<EdataContentFile, byte[]> LoadedFiles { get; } = new();
 
     public byte[] GetRawData(EdataContentFile ofFile, bool cacheResult = true)
     {
@@ -56,5 +52,4 @@ public class EdataPackage : EdataManager
         else
             LoadedFiles.Add(oldFile, newContent);
     }
-
 }

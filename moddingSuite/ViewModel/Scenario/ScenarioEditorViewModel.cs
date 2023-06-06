@@ -5,13 +5,13 @@ using moddingSuite.View.DialogProvider;
 using moddingSuite.ViewModel.Base;
 using moddingSuite.ViewModel.Edata;
 using moddingSuite.ViewModel.Ndf;
+using moddingSuite.ZoneEditor;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
-using ZoneEditor;
 
 namespace moddingSuite.ViewModel.Scenario;
 
@@ -29,7 +29,7 @@ public class ScenarioEditorViewModel : ViewModelBase
     private ZoneEditorData zoneEditor;
     public string StatusText
     {
-        get { return _statusText; }
+        get => _statusText;
         set
         {
             _statusText = value;
@@ -39,10 +39,9 @@ public class ScenarioEditorViewModel : ViewModelBase
 
     public ScenarioFile ScenarioFile
     {
-        get { return _scenarioFile; }
+        get => _scenarioFile;
         set { _scenarioFile = value; OnPropertyChanged("ScenarioFile"); }
     }
-
 
     public ScenarioEditorViewModel(EdataContentFile file, EdataFileViewModel ownerVm)
     {
@@ -78,31 +77,31 @@ public class ScenarioEditorViewModel : ViewModelBase
             {
                 try
                 {
-                    dispatcher.Invoke(() => IsUIBusy = true);
-                    dispatcher.Invoke(report, string.Format("Saving back changes..."));
+                    _ = dispatcher.Invoke(() => IsUIBusy = true);
+                    _ = dispatcher.Invoke(report, string.Format("Saving back changes..."));
 
                     ScenarioWriter writer = new();
                     byte[] newFile = writer.Write(ScenarioFile);
-                    dispatcher.Invoke(report, string.Format("Recompiling of {0} finished! ", EdataFileViewModel.EdataManager.FilePath));
+                    _ = dispatcher.Invoke(report, string.Format("Recompiling of {0} finished! ", EdataFileViewModel.EdataManager.FilePath));
 
                     EdataFileViewModel.EdataManager.ReplaceFile(OwnerFile, newFile);
-                    dispatcher.Invoke(report, "Replacing new File in edata finished!");
+                    _ = dispatcher.Invoke(report, "Replacing new File in edata finished!");
 
                     EdataFileViewModel.LoadFile(EdataFileViewModel.LoadedFile);
 
                     EdataContentFile newOwen = EdataFileViewModel.EdataManager.Files.Single(x => x.Path == OwnerFile.Path);
 
                     OwnerFile = newOwen;
-                    dispatcher.Invoke(report, string.Format("Saving of changes finished! {0}", EdataFileViewModel.EdataManager.FilePath));
+                    _ = dispatcher.Invoke(report, string.Format("Saving of changes finished! {0}", EdataFileViewModel.EdataManager.FilePath));
                 }
                 catch (Exception ex)
                 {
                     Trace.TraceError(string.Format("Error while saving scenario file: {0}", ex));
-                    dispatcher.Invoke(report, "Saving interrupted - Did you start Wargame before I was ready?");
+                    _ = dispatcher.Invoke(report, "Saving interrupted - Did you start Wargame before I was ready?");
                 }
                 finally
                 {
-                    dispatcher.Invoke(() => IsUIBusy = false);
+                    _ = dispatcher.Invoke(() => IsUIBusy = false);
                 }
             });
         s.Start();

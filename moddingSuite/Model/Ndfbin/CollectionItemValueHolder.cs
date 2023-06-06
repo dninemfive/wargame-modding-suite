@@ -21,7 +21,7 @@ public class CollectionItemValueHolder : ViewModelBase, IValueHolder
 
     public virtual NdfValueWrapper Value
     {
-        get { return _value; }
+        get => _value;
         set
         {
             _value = value;

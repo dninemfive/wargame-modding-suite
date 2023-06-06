@@ -16,7 +16,7 @@ public class Settings : ViewModelBase
 
     public string SavePath
     {
-        get { return _savePath; }
+        get => _savePath;
         set
         {
             _savePath = value;
@@ -26,7 +26,7 @@ public class Settings : ViewModelBase
 
     public List<string> LastOpenedFiles
     {
-        get { return _lastOpenedFile; }
+        get => _lastOpenedFile;
         set
         {
             _lastOpenedFile = value;
@@ -36,31 +36,31 @@ public class Settings : ViewModelBase
 
     public string LastOpenFolder
     {
-        get { return _lastOpenFolder; }
+        get => _lastOpenFolder;
         set { _lastOpenFolder = value; OnPropertyChanged(() => LastOpenedFiles); }
     }
 
     public int LastHighlightedFileIndex
     {
-        get { return _lastHighlightedFileIndex; }
+        get => _lastHighlightedFileIndex;
         set { _lastHighlightedFileIndex = value; OnPropertyChanged(() => LastOpenedFiles); }
     }
 
     public string WargamePath
     {
-        get { return _wargamePath; }
+        get => _wargamePath;
         set { _wargamePath = value; OnPropertyChanged(() => WargamePath); }
     }
 
     public string PythonPath
     {
-        get { return _pythonPath; }
+        get => _pythonPath;
         set { _pythonPath = value; OnPropertyChanged(() => PythonPath); }
     }
 
     public bool ExportWithFullPath
     {
-        get { return _exportWithFullPath; }
+        get => _exportWithFullPath;
         set
         {
             _exportWithFullPath = value;
@@ -70,10 +70,7 @@ public class Settings : ViewModelBase
 
     public bool InitialSettings
     {
-        get
-        {
-            return _initialSettings;
-        }
+        get => _initialSettings;
         set
         {
             _initialSettings = value;

@@ -21,11 +21,9 @@ public class TgvFile : ViewModelBase
     private uint _version;
     private uint _width;
 
-    private readonly List<TgvMipMap> _mipMaps = new();
-
     public uint Version
     {
-        get { return _version; }
+        get => _version;
         set
         {
             _version = value;
@@ -35,7 +33,7 @@ public class TgvFile : ViewModelBase
 
     public bool IsCompressed
     {
-        get { return _isCompressed; }
+        get => _isCompressed;
         set
         {
             _isCompressed = value;
@@ -45,7 +43,7 @@ public class TgvFile : ViewModelBase
 
     public uint Width
     {
-        get { return _width; }
+        get => _width;
         set
         {
             _width = value;
@@ -55,7 +53,7 @@ public class TgvFile : ViewModelBase
 
     public uint Height
     {
-        get { return _height; }
+        get => _height;
         set
         {
             _height = value;
@@ -65,7 +63,7 @@ public class TgvFile : ViewModelBase
 
     public uint ImageWidth
     {
-        get { return _imageWidth; }
+        get => _imageWidth;
         set
         {
             _imageWidth = value;
@@ -75,7 +73,7 @@ public class TgvFile : ViewModelBase
 
     public uint ImageHeight
     {
-        get { return _imageHeight; }
+        get => _imageHeight;
         set
         {
             _imageHeight = value;
@@ -85,7 +83,7 @@ public class TgvFile : ViewModelBase
 
     public ushort MipMapCount
     {
-        get { return _mipMapCount; }
+        get => _mipMapCount;
         set
         {
             _mipMapCount = value;
@@ -95,7 +93,7 @@ public class TgvFile : ViewModelBase
 
     public PixelFormats Format
     {
-        get { return _format; }
+        get => _format;
         set
         {
             _format = value;
@@ -105,7 +103,7 @@ public class TgvFile : ViewModelBase
 
     public byte[] SourceChecksum
     {
-        get { return _sourceChecksum; }
+        get => _sourceChecksum;
         set
         {
             _sourceChecksum = value;
@@ -115,7 +113,7 @@ public class TgvFile : ViewModelBase
 
     public List<uint> Offsets
     {
-        get { return _offsets; }
+        get => _offsets;
         set
         {
             _offsets = value;
@@ -125,7 +123,7 @@ public class TgvFile : ViewModelBase
 
     public List<uint> Sizes
     {
-        get { return _sizes; }
+        get => _sizes;
         set
         {
             _sizes = value;
@@ -135,7 +133,7 @@ public class TgvFile : ViewModelBase
 
     public string PixelFormatStr
     {
-        get { return _pixelFormatStr; }
+        get => _pixelFormatStr;
         set
         {
             _pixelFormatStr = value;
@@ -143,8 +141,5 @@ public class TgvFile : ViewModelBase
         }
     }
 
-    public List<TgvMipMap> MipMaps
-    {
-        get { return _mipMaps; }
-    }
+    public List<TgvMipMap> MipMaps { get; } = new();
 }

@@ -46,17 +46,17 @@ public class NdfbinWriter : INdfWriter
             outStream.Write(da, 0, da.Length);
         }
         else
+        {
             outStream.Write(data, 0, data.Length);
+        }
     }
 
     public byte[] Write(NdfBinary ndf, bool compressed)
     {
-        using (MemoryStream ms = new())
-        {
-            Write(ms, ndf, compressed);
+        using MemoryStream ms = new();
+        Write(ms, ndf, compressed);
 
-            return ms.ToArray();
-        }
+        return ms.ToArray();
     }
 
     protected byte[] GetCompiledContent(NdfBinary ndf)
@@ -65,53 +65,51 @@ public class NdfbinWriter : INdfWriter
 
         const long headerSize = (long)NdfbinHeaderSize;
 
-        using (MemoryStream contentStream = new())
-        {
-            byte[] buffer = RecompileObj(ndf);
-            footer.AddEntry("OBJE", contentStream.Position + headerSize, buffer.Length);
-            contentStream.Write(buffer, 0, buffer.Length);
+        using MemoryStream contentStream = new();
+        byte[] buffer = RecompileObj(ndf);
+        footer.AddEntry("OBJE", contentStream.Position + headerSize, buffer.Length);
+        contentStream.Write(buffer, 0, buffer.Length);
 
-            buffer = RecompileTopo(ndf);
-            footer.AddEntry("TOPO", contentStream.Position + headerSize, buffer.Length);
-            contentStream.Write(buffer, 0, buffer.Length);
+        buffer = RecompileTopo(ndf);
+        footer.AddEntry("TOPO", contentStream.Position + headerSize, buffer.Length);
+        contentStream.Write(buffer, 0, buffer.Length);
 
-            buffer = RecompileChnk(ndf);
-            footer.AddEntry("CHNK", contentStream.Position + headerSize, buffer.Length);
-            contentStream.Write(buffer, 0, buffer.Length);
+        buffer = RecompileChnk(ndf);
+        footer.AddEntry("CHNK", contentStream.Position + headerSize, buffer.Length);
+        contentStream.Write(buffer, 0, buffer.Length);
 
-            buffer = RecompileClas(ndf);
-            footer.AddEntry("CLAS", contentStream.Position + headerSize, buffer.Length);
-            contentStream.Write(buffer, 0, buffer.Length);
+        buffer = RecompileClas(ndf);
+        footer.AddEntry("CLAS", contentStream.Position + headerSize, buffer.Length);
+        contentStream.Write(buffer, 0, buffer.Length);
 
-            buffer = RecompileProp(ndf);
-            footer.AddEntry("PROP", contentStream.Position + headerSize, buffer.Length);
-            contentStream.Write(buffer, 0, buffer.Length);
+        buffer = RecompileProp(ndf);
+        footer.AddEntry("PROP", contentStream.Position + headerSize, buffer.Length);
+        contentStream.Write(buffer, 0, buffer.Length);
 
-            buffer = RecompileStrTable(ndf.Strings);
-            footer.AddEntry("STRG", contentStream.Position + headerSize, buffer.Length);
-            contentStream.Write(buffer, 0, buffer.Length);
+        buffer = RecompileStrTable(ndf.Strings);
+        footer.AddEntry("STRG", contentStream.Position + headerSize, buffer.Length);
+        contentStream.Write(buffer, 0, buffer.Length);
 
-            buffer = RecompileStrTable(ndf.Trans);
-            footer.AddEntry("TRAN", contentStream.Position + headerSize, buffer.Length);
-            contentStream.Write(buffer, 0, buffer.Length);
+        buffer = RecompileStrTable(ndf.Trans);
+        footer.AddEntry("TRAN", contentStream.Position + headerSize, buffer.Length);
+        contentStream.Write(buffer, 0, buffer.Length);
 
-            buffer = RecompileUIntList(ndf.Import);
-            footer.AddEntry("IMPR", contentStream.Position + headerSize, buffer.Length);
-            contentStream.Write(buffer, 0, buffer.Length);
+        buffer = RecompileUIntList(ndf.Import);
+        footer.AddEntry("IMPR", contentStream.Position + headerSize, buffer.Length);
+        contentStream.Write(buffer, 0, buffer.Length);
 
-            buffer = RecompileUIntList(ndf.Export);
-            footer.AddEntry("EXPR", contentStream.Position + headerSize, buffer.Length);
-            contentStream.Write(buffer, 0, buffer.Length);
+        buffer = RecompileUIntList(ndf.Export);
+        footer.AddEntry("EXPR", contentStream.Position + headerSize, buffer.Length);
+        contentStream.Write(buffer, 0, buffer.Length);
 
-            buffer = footer.GetBytes();
+        buffer = footer.GetBytes();
 
-            footer.Offset = (ulong)contentStream.Position + NdfbinHeaderSize;
-            contentStream.Write(buffer, 0, buffer.Length);
+        footer.Offset = (ulong)contentStream.Position + NdfbinHeaderSize;
+        contentStream.Write(buffer, 0, buffer.Length);
 
-            ndf.Footer = footer;
+        ndf.Footer = footer;
 
-            return contentStream.ToArray();
-        }
+        return contentStream.ToArray();
     }
 
     protected byte[] RecompileObj(NdfBinary ndf)
@@ -138,7 +136,9 @@ public class NdfbinWriter : INdfWriter
 
                 if (propertyValue.Value.Type is NdfType.ObjectReference or
                     NdfType.TransTableReference)
+                {
                     objectPart.AddRange(BitConverter.GetBytes((uint)NdfType.Reference));
+                }
 
                 objectPart.AddRange(BitConverter.GetBytes((uint)propertyValue.Value.Type));
                 objectPart.AddRange(valueBytes);
@@ -152,43 +152,40 @@ public class NdfbinWriter : INdfWriter
 
     protected byte[] RecompileTopo(NdfBinary ndf)
     {
-        using (MemoryStream ms = new())
+        using MemoryStream ms = new();
+        List<NdfObject> topInsts = ndf.Instances.Where(x => x.IsTopObject).ToList();
+
+        //var writeInsts = new HashSet<NdfObject>();
+
+        //foreach (NdfObject inst in topInsts)
+        //{
+        //    if (writeInsts.Contains(inst))
+        //        continue;
+
+        //    writeInsts.Add(inst);
+
+        //    int nextItemId = topInsts.IndexOf(inst) + 1;
+
+        //    if (topInsts.Count > nextItemId && topInsts[nextItemId].Class != inst.Class)
+        //    {
+        //        IEnumerable<NdfObject> othersOfSameClass =
+        //            topInsts.GetRange(nextItemId, topInsts.Count - nextItemId).Where(
+        //                x => x.Class == inst.Class && !writeInsts.Contains(x));
+
+        //        foreach (NdfObject o in othersOfSameClass)
+        //            writeInsts.Add(o);
+        //    }
+        //}
+
+        IOrderedEnumerable<NdfObject> test = topInsts.OrderBy(x => x.Class.Id);
+
+        foreach (NdfObject instance in test)
         {
-            List<NdfObject> topInsts = ndf.Instances.Where(x => x.IsTopObject).ToList();
-
-
-            //var writeInsts = new HashSet<NdfObject>();
-
-            //foreach (NdfObject inst in topInsts)
-            //{
-            //    if (writeInsts.Contains(inst))
-            //        continue;
-
-            //    writeInsts.Add(inst);
-
-            //    int nextItemId = topInsts.IndexOf(inst) + 1;
-
-            //    if (topInsts.Count > nextItemId && topInsts[nextItemId].Class != inst.Class)
-            //    {
-            //        IEnumerable<NdfObject> othersOfSameClass =
-            //            topInsts.GetRange(nextItemId, topInsts.Count - nextItemId).Where(
-            //                x => x.Class == inst.Class && !writeInsts.Contains(x));
-
-            //        foreach (NdfObject o in othersOfSameClass)
-            //            writeInsts.Add(o);
-            //    }
-            //}
-
-            IOrderedEnumerable<NdfObject> test = topInsts.OrderBy(x => x.Class.Id);
-
-            foreach (NdfObject instance in test)
-            {
-                byte[] buffer = BitConverter.GetBytes(instance.Id);
-                ms.Write(buffer, 0, buffer.Length);
-            }
-
-            return ms.ToArray();
+            byte[] buffer = BitConverter.GetBytes(instance.Id);
+            ms.Write(buffer, 0, buffer.Length);
         }
+
+        return ms.ToArray();
     }
 
     protected byte[] RecompileChnk(NdfBinary ndf)

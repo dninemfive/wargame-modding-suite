@@ -11,14 +11,7 @@ public class NdfInt16 : NdfFlatValueWrapper
 
     }
 
+    public override byte[] GetBytes() => BitConverter.GetBytes(Convert.ToInt16(Value));
 
-    public override byte[] GetBytes()
-    {
-        return BitConverter.GetBytes(Convert.ToInt16(Value));
-    }
-
-    public override byte[] GetNdfText()
-    {
-        return NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
-    }
+    public override byte[] GetNdfText() => NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
 }

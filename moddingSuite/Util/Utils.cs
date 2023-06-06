@@ -16,24 +16,21 @@ public static class Utils
         do
         {
             c = fs.ReadByte();
-            b.Append((char)c);
+            _ = b.Append((char)c);
         } while (c != '\0');
 
         return StripString(b.ToString());
     }
 
-    public static string StripString(string s)
-    {
-        return s.Split('\0')[0].TrimEnd();
-    }
+    public static string StripString(string s) => s.Split('\0')[0].TrimEnd();
 
-    public static string Int32ToBigEndianHexByteString(Int32 i)
+    public static string Int32ToBigEndianHexByteString(int i)
     {
         byte[] bytes = BitConverter.GetBytes(i);
         string format = BitConverter.IsLittleEndian
             ? "{0:X2} {1:X2} {2:X2} {3:X2}"
             : "{3:X2} {2:X2} {1:X2} {0:X2}";
-        return String.Format(format, bytes[0], bytes[1], bytes[2], bytes[3]);
+        return string.Format(format, bytes[0], bytes[1], bytes[2], bytes[3]);
     }
 
     public static string ByteArrayToBigEndianHexByteString(byte[] data)
@@ -43,10 +40,10 @@ public static class Utils
 
         StringBuilder stringBuilderb = new();
 
-        stringBuilderb.Append(string.Empty);
+        _ = stringBuilderb.Append(string.Empty);
 
         foreach (byte b in data)
-            stringBuilderb.Append(string.Format("{0:X2}", b));
+            _ = stringBuilderb.Append(string.Format("{0:X2}", b));
 
         return stringBuilderb.ToString();
     }
@@ -59,14 +56,14 @@ public static class Utils
         byte[] arr = new byte[hex.Length >> 1];
 
         for (int i = 0; i < (hex.Length >> 1); ++i)
-            arr[i] = (byte)((GetHexVal(hex[i << 1]) << 4) + (GetHexVal(hex[(i << 1) + 1])));
+            arr[i] = (byte)((GetHexVal(hex[i << 1]) << 4) + GetHexVal(hex[(i << 1) + 1]));
 
         return arr;
     }
 
     public static int GetHexVal(char hex)
     {
-        int val = (int)hex;
+        int val = hex;
         //For uppercase A-F letters:
         //return val - (val < 58 ? 48 : 55);
         //For lowercase a-f letters:
@@ -78,12 +75,10 @@ public static class Utils
     [DllImport("msvcrt.dll", CallingConvention = CallingConvention.Cdecl)]
     private static extern int memcmp(byte[] b1, byte[] b2, long count);
 
-    public static bool ByteArrayCompare(byte[] b1, byte[] b2)
-    {
+    public static bool ByteArrayCompare(byte[] b1, byte[] b2) =>
         // Validate buffers are the same length.
         // This also ensures that the count does not exceed the length of either buffer.  
-        return b1.Length == b2.Length && memcmp(b1, b2, b1.Length) == 0;
-    }
+        b1.Length == b2.Length && memcmp(b1, b2, b1.Length) == 0;
 
     public static void SaveDebug(string fileName, byte[] contentData)
     {
@@ -91,11 +86,13 @@ public static class Utils
         string file = Path.Combine(path, string.Format("{0}_{1}", DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ff"), fileName));
 
         if (!File.Exists(file))
+        {
             using (File.Create(file))
             { }
+        }
 
-        using (FileStream fs = new(file, FileMode.Truncate))
-            fs.Write(contentData, 0, contentData.Length);
+        using FileStream fs = new(file, FileMode.Truncate);
+        fs.Write(contentData, 0, contentData.Length);
     }
 
     public static string GenerateCoupon(int length, Random random)
@@ -104,7 +101,7 @@ public static class Utils
         StringBuilder result = new(length);
 
         for (int i = 0; i < length; i++)
-            result.Append(characters[random.Next(characters.Length)]);
+            _ = result.Append(characters[random.Next(characters.Length)]);
 
         return result.ToString();
     }
@@ -120,16 +117,13 @@ public static class Utils
             if (chr == 0)
                 break;
 
-            if (chr is >= '0' and <= '9')
-                value = 1 + chr - '0';
-            else if (chr is >= 'A' and <= 'Z')
-                value = 2 + '9' - '0' + chr - 'A';
-            else if (chr == '_')
-                value = 3 + '9' - '0' + 'Z' - 'A';
-            else if (chr is >= 'a' and <= 'z')
-                value = 4 + '9' - '0' + 'Z' - 'A' + chr - 'a';
-            else
-                throw new InvalidDataException("");
+            value = chr is >= '0' and <= '9'
+                ? 1 + chr - '0'
+                : chr is >= 'A' and <= 'Z'
+                ? 2 + '9' - '0' + chr - 'A'
+                : chr == '_'
+                ? 3 + '9' - '0' + 'Z' - 'A'
+                : chr is >= 'a' and <= 'z' ? 4 + '9' - '0' + 'Z' - 'A' + chr - 'a' : throw new InvalidDataException("");
 
             hash = (hash << 6) | value;
         }
@@ -137,10 +131,7 @@ public static class Utils
         return BitConverter.GetBytes(hash);
     }
 
-    public static bool IsValueType(object obj)
-    {
-        return obj != null && obj.GetType().IsValueType;
-    }
+    public static bool IsValueType(object obj) => obj != null && obj.GetType().IsValueType;
 
     public static byte[] StructToBytes(object str)
     {
@@ -175,10 +166,5 @@ public static class Utils
         return number;
     }
 
-    public static void Swap<T>(T a, T b)
-    {
-        T temp = a;
-        a = b;
-        b = temp;
-    }
+    public static void Swap<T>(T a, T b) => (_, _) = (a, b);
 }

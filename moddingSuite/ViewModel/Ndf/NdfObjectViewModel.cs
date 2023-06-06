@@ -33,7 +33,7 @@ public class NdfObjectViewModel : ObjectWrapperViewModel<NdfObject>
 
     public uint Id
     {
-        get { return Object.Id; }
+        get => Object.Id;
         set
         {
             Object.Id = value;
@@ -73,7 +73,6 @@ public class NdfObjectViewModel : ObjectWrapperViewModel<NdfObject>
     {
         System.ComponentModel.ICollectionView cv = CollectionViewSource.GetDefaultView(PropertyValues);
 
-
         if (cv.CurrentItem is not NdfPropertyValue item)
             return;
 
@@ -84,8 +83,10 @@ public class NdfObjectViewModel : ObjectWrapperViewModel<NdfObject>
             foreach (NdfPropertyValue propertyValue in instance.PropertyValues)
             {
                 if (propertyValue.Property.Id == item.Property.Id)
+                {
                     if (propertyValue.Type != NdfType.Unset)
                         type = propertyValue.Type;
+                }
             }
         }
 
@@ -99,17 +100,12 @@ public class NdfObjectViewModel : ObjectWrapperViewModel<NdfObject>
     {
         System.ComponentModel.ICollectionView cv = CollectionViewSource.GetDefaultView(PropertyValues);
 
-
-        if (cv.CurrentItem is not NdfPropertyValue item)
-            return false;
-
-        return item.Type == NdfType.Unset;
+        return cv.CurrentItem is NdfPropertyValue item && item.Type == NdfType.Unset;
     }
 
     private void RemovePropertyExecute(object obj)
     {
         System.ComponentModel.ICollectionView cv = CollectionViewSource.GetDefaultView(PropertyValues);
-
 
         if (cv.CurrentItem is not NdfPropertyValue item || item.Type == NdfType.Unset || item.Type == NdfType.Unknown)
             return;
@@ -125,11 +121,7 @@ public class NdfObjectViewModel : ObjectWrapperViewModel<NdfObject>
     {
         System.ComponentModel.ICollectionView cv = CollectionViewSource.GetDefaultView(PropertyValues);
 
-
-        if (cv.CurrentItem is not NdfPropertyValue item)
-            return false;
-
-        return item.Type != NdfType.Unset;
+        return cv.CurrentItem is NdfPropertyValue item && item.Type != NdfType.Unset;
     }
 
     private void CopyToInstancesExecute(object obj)
@@ -195,7 +187,7 @@ public class NdfObjectViewModel : ObjectWrapperViewModel<NdfObject>
         if (inst == null)
             return;
 
-        vm.InstancesCollectionView.MoveCurrentTo(inst);
+        _ = vm.InstancesCollectionView.MoveCurrentTo(inst);
 
         DialogProvider.ProvideView(vm, ParentVm);
     }

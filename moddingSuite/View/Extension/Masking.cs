@@ -44,15 +44,7 @@ public static class Masking
     /// <returns>
     /// The mask, or <see langword="null"/> if no mask has been set.
     /// </returns>
-    public static string GetMask(TextBox textBox)
-    {
-        if (textBox == null)
-        {
-            throw new ArgumentNullException("textBox");
-        }
-
-        return textBox.GetValue(_maskProperty) as string;
-    }
+    public static string GetMask(TextBox textBox) => textBox == null ? throw new ArgumentNullException("textBox") : textBox.GetValue(_maskProperty) as string;
 
     /// <summary>
     /// Sets the mask for a given <see cref="TextBox"/>.
@@ -85,20 +77,9 @@ public static class Masking
     /// <returns>
     /// The mask expression as an instance of <see cref="Regex"/>, or <see langword="null"/> if no mask has been applied to <paramref name="textBox"/>.
     /// </returns>
-    public static Regex GetMaskExpression(TextBox textBox)
-    {
-        if (textBox == null)
-        {
-            throw new ArgumentNullException("textBox");
-        }
+    public static Regex GetMaskExpression(TextBox textBox) => textBox == null ? throw new ArgumentNullException("textBox") : textBox.GetValue(MaskExpressionProperty) as Regex;
 
-        return textBox.GetValue(MaskExpressionProperty) as Regex;
-    }
-
-    private static void SetMaskExpression(TextBox textBox, Regex regex)
-    {
-        textBox.SetValue(_maskExpressionPropertyKey, regex);
-    }
+    private static void SetMaskExpression(TextBox textBox, Regex regex) => textBox.SetValue(_maskExpressionPropertyKey, regex);
 
     private static void OnMaskChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
     {
@@ -110,7 +91,6 @@ public static class Masking
         DataObject.RemovePastingHandler(textBox, Pasting);
         DataObject.RemoveCopyingHandler(textBox, NoDragCopy);
         CommandManager.RemovePreviewExecutedHandler(textBox, NoCutting);
-
 
         if (e.NewValue is not string mask)
         {

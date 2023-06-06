@@ -4,27 +4,12 @@ namespace moddingSuite.ViewModel.Edata;
 
 public class FileViewModel : FileSystemItemViewModel
 {
-    private FileInfo _fileInfo;
-
     public FileViewModel(FileInfo info)
     {
-        _fileInfo = info;
+        Info = info;
     }
 
-    public FileInfo Info
-    {
-        get { return _fileInfo; }
-        set
-        {
-            _fileInfo = value;
-        }
-    }
+    public FileInfo Info { get; set; }
 
-    public override string Name
-    {
-        get
-        {
-            return Info.Name;
-        }
-    }
+    public override string Name => Info.Name;
 }

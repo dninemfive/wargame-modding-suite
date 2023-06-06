@@ -11,24 +11,18 @@ public class EdataFileTypeToImageConverter : IValueConverter
 {
     #region IValueConverter Members
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => (EdataFileType)value switch
     {
-        return (EdataFileType)value switch
-        {
-            EdataFileType.Ndfbin => Application.Current.Resources["ScriptIcon"] as BitmapImage,
-            EdataFileType.Dictionary => Application.Current.Resources["OpenDictionayIcon"] as BitmapImage,
-            EdataFileType.Package => Application.Current.Resources["PackageFileIcon"] as BitmapImage,
-            EdataFileType.Image => Application.Current.Resources["TextureIcon"] as BitmapImage,
-            EdataFileType.Mesh => Application.Current.Resources["MeshFileIcon"] as BitmapImage,
-            EdataFileType.Scenario => Application.Current.Resources["ScenarioIcon"] as BitmapImage,
-            _ => Application.Current.Resources["UnknownFileIcon"] as BitmapImage,
-        };
-    }
+        EdataFileType.Ndfbin => Application.Current.Resources["ScriptIcon"] as BitmapImage,
+        EdataFileType.Dictionary => Application.Current.Resources["OpenDictionayIcon"] as BitmapImage,
+        EdataFileType.Package => Application.Current.Resources["PackageFileIcon"] as BitmapImage,
+        EdataFileType.Image => Application.Current.Resources["TextureIcon"] as BitmapImage,
+        EdataFileType.Mesh => Application.Current.Resources["MeshFileIcon"] as BitmapImage,
+        EdataFileType.Scenario => Application.Current.Resources["ScenarioIcon"] as BitmapImage,
+        _ => Application.Current.Resources["UnknownFileIcon"] as BitmapImage,
+    };
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
 
     #endregion
 }

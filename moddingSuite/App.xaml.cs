@@ -26,9 +26,9 @@ public partial class App : Application
 
         if (path != null)
         {
-            string file = Path.Combine(path, $"logging_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ff")}.dat");
+            string file = Path.Combine(path, $"logging_{DateTime.Now:dd_MM_yyyy_HH_mm_ff}.dat");
 
-            Trace.Listeners.Add(new TextWriterTraceListener(file));
+            _ = Trace.Listeners.Add(new TextWriterTraceListener(file));
             Trace.AutoFlush = true;
         }
     }
@@ -41,7 +41,6 @@ public partial class App : Application
 
         Model.Settings.Settings settings = SettingsManager.Load();
         EdataManagerView mgr = new();
-
 
         if (settings.InitialSettings)
         {
@@ -56,7 +55,7 @@ public partial class App : Application
                 if (Directory.Exists(settings.SavePath) && Directory.Exists(settings.WargamePath))
                     settings.InitialSettings = false;
 
-                SettingsManager.Save(settings);
+                _ = SettingsManager.Save(settings);
                 startApplication = true;
             }
         }

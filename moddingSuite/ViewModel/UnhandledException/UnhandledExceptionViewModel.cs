@@ -12,7 +12,7 @@ public class UnhandledExceptionViewModel : ViewModelBase
 
     public string Title
     {
-        get { return _title; }
+        get => _title;
         set
         {
             _title = value;
@@ -22,7 +22,7 @@ public class UnhandledExceptionViewModel : ViewModelBase
 
     public string ErrorText
     {
-        get { return _errorText; }
+        get => _errorText;
         set
         {
             _errorText = value;
@@ -44,15 +44,12 @@ public class UnhandledExceptionViewModel : ViewModelBase
 
         while (excep != null)
         {
-            sb.Append(exception);
+            _ = sb.Append(exception);
             excep = excep.InnerException;
         }
 
         ErrorText = sb.ToString();
     }
 
-    private void SendErrorExecute(object obj)
-    {
-        throw new NotImplementedException();
-    }
+    private void SendErrorExecute(object obj) => throw new NotImplementedException();
 }

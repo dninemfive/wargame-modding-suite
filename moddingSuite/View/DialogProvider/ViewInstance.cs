@@ -11,14 +11,7 @@ public class ViewInstance
 
     public ViewInstance(Window view, ViewModelBase vm)
     {
-        if (view == null)
-            throw new ArgumentException("view");
-
-        if (vm == null)
-            throw new ArgumentException("vm");
-
-        View = view;
-        ViewModel = vm;
+        View = view ?? throw new ArgumentException("view");
+        ViewModel = vm ?? throw new ArgumentException("vm");
     }
-
 }

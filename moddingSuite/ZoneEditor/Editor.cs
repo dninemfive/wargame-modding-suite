@@ -5,51 +5,41 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using ZoneEditor;
 
 namespace moddingSuite.ZoneEditor;
 
 public partial class Editor : Form
 {
     public Point LeftClickPoint;
-    System.Drawing.Image image;
-    Redraw redraw
-    {
-        get
-        {
-            return new Redraw(delegate ()
-            {
+    private System.Drawing.Image image;
 
-                foreach (object c in pictureBox1.Controls)
-                {
-                    if (c is Marker)
-                    {
-                        Marker a = c as Marker;
-                        a.UpdateMarker();
-                    }
+    private Redraw redraw => new(delegate ()
+                                      {
 
-                }
-                pictureBox1.Select();
-                pictureBox1.Refresh();
-            });
-        }
-    }
-    ZoneEditorData zoneData;
+                                          foreach (object c in pictureBox1.Controls)
+                                          {
+                                              if (c is Marker)
+                                              {
+                                                  Marker a = c as Marker;
+                                                  a.UpdateMarker();
+                                              }
+                                          }
+                                          pictureBox1.Select();
+                                          pictureBox1.Refresh();
+                                      });
 
+    private readonly ZoneEditorData zoneData;
 
     public Editor(ZoneEditorData ze, string path)
     {
         InitializeComponent();
         zoneData = ze;
         buildImage(path);
-        this.Name = "ZoneDrawer";
-        this.Text = "ZoneDrawer";
+        Name = "ZoneDrawer";
+        Text = "ZoneDrawer";
 
-
-
-
-        Graphics g = this.CreateGraphics();
-        float zoom = ((float)pictureBox1.Width / (float)image.Width) *
+        Graphics g = CreateGraphics();
+        float zoom = pictureBox1.Width / (float)image.Width *
                 (image.HorizontalResolution / g.DpiX);
         PanAndZoom.setZoom(zoom);
 
@@ -73,33 +63,24 @@ public partial class Editor : Form
         positions.DropDown.Items[0].Click += ze.AddCV;
         positions.DropDown.Items[1].Click += ze.AddFOB;
 
-        this.button1.Click += new System.EventHandler(ze.deleteItem);
-
-
-
-
+        button1.Click += new System.EventHandler(ze.deleteItem);
 
         //outline = new Outline(pictureBox1);
         //pictureBox1.Paint += new PaintEventHandler(outline.paint);
-
-
 
     }
     public void addScenarioItem(ScenarioItem item, bool select = false)
     {
         item.attachTo(pictureBox1);
-        listBox1.Items.Add(item.ToString());
+        _ = listBox1.Items.Add(item.ToString());
         if (select)
         {
-            zoneData.setSelectedItem(item.ToString());
+            _ = zoneData.setSelectedItem(item.ToString());
             listBox1.SelectedItem = item.ToString();
         }
         redraw();
     }
-    private void stripClicked(object obj, EventArgs e)
-    {
-        Console.WriteLine("hello");
-    }
+    private void stripClicked(object obj, EventArgs e) => Console.WriteLine("hello");
     private void pictureBox1_Click(object sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Right)
@@ -113,10 +94,7 @@ public partial class Editor : Form
         //Console.WriteLine(e.Location);
     }
 
-    private void menuStrip2_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-    {
-        Console.WriteLine(e.ClickedItem.Name);
-    }
+    private void menuStrip2_ItemClicked(object sender, ToolStripItemClickedEventArgs e) => Console.WriteLine(e.ClickedItem.Name);
 
     private void groupBox1_Enter(object sender, EventArgs e)
     {
@@ -131,7 +109,6 @@ public partial class Editor : Form
             image = new Bitmap(500, 500);
             return;
         }
-
 
         System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
         System.IO.Stream imgStream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".ZoneEditor.Images." + mapName + ".png");
@@ -184,7 +161,7 @@ public partial class Editor : Form
         {
             panel1.Controls.Remove(zoneData.selectedItem.propertypanel);
         }
-        zoneData.setSelectedItem((string)listBox1.SelectedItem);
+        _ = zoneData.setSelectedItem((string)listBox1.SelectedItem);
         panel1.Controls.Add(zoneData.selectedItem.propertypanel);
 
     }

@@ -15,7 +15,7 @@ public class NdfEugFloat2 : NdfFlatValueWrapper
 
     public float Value2
     {
-        get { return _value2; }
+        get => _value2;
         set
         {
             _value2 = value;
@@ -31,13 +31,7 @@ public class NdfEugFloat2 : NdfFlatValueWrapper
         return value.ToArray();
     }
 
-    public override byte[] GetNdfText()
-    {
-        throw new NotImplementedException();
-    }
+    public override byte[] GetNdfText() => throw new NotImplementedException();
 
-    public override string ToString()
-    {
-        return string.Format("Float pair: {0} : {1}", Value, Value2);
-    }
+    public override string ToString() => string.Format("Float pair: {0} : {1}", Value, Value2);
 }

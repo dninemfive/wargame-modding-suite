@@ -31,7 +31,6 @@ public class WorkspaceViewModel : FileSystemOverviewViewModelBase
         _fileSystemWatcher.Deleted += FileSystemChanged;
     }
 
-
     private void FileSystemChanged(object sender, FileSystemEventArgs e)
     {
         try
@@ -81,7 +80,7 @@ public class WorkspaceViewModel : FileSystemOverviewViewModelBase
                 }
                 break;
             case WatcherChangeTypes.Deleted:
-                Application.Current.Dispatcher.Invoke(
+                _ = Application.Current.Dispatcher.Invoke(
                     () => changedDir.Items.Remove(changedDir.Items.Single(x => x.Name.Equals(newVm.Name))));
                 break;
             case WatcherChangeTypes.Renamed:
@@ -106,7 +105,7 @@ public class WorkspaceViewModel : FileSystemOverviewViewModelBase
 
         foreach (DirectoryViewModel r in Root)
         {
-            CheckRecursive(r, info, out changedDir);
+            _ = CheckRecursive(r, info, out changedDir);
         }
 
         return changedDir;
@@ -128,9 +127,7 @@ public class WorkspaceViewModel : FileSystemOverviewViewModelBase
                 return true;
             }
 
-            DirectoryViewModel possibleFind;
-
-            if (CheckRecursive(item, searchedDir, out possibleFind))
+            if (CheckRecursive(item, searchedDir, out DirectoryViewModel possibleFind))
             {
                 find = possibleFind;
                 return true;

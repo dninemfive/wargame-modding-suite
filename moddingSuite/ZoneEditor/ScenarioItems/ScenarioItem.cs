@@ -5,21 +5,17 @@ using System.Windows.Forms;
 
 namespace moddingSuite.ZoneEditor.ScenarioItems;
 
-
 public abstract class ScenarioItem
 {
     protected string Name="default";
     public Control propertypanel;
-    bool selected;
+    private readonly bool selected;
     protected PaintEventHandler paintEvent;
     public ScenarioItem()
     {
         paintEvent = new PaintEventHandler(paint);
     }
-    public override string ToString()
-    {
-        return Name;
-    }
+    public override string ToString() => Name;
     public abstract void attachTo(Control c);
     public abstract void detachFrom(Control c);
     public abstract void setSelected(bool selected);
@@ -33,10 +29,7 @@ public abstract class ScenarioItem
         //classView.Instances.Add(new NdfObjectViewModel(inst, data));
         return inst;
     }
-    protected static NdfPropertyValue getProperty(NdfObject obj, string str)
-    {
-        return obj.PropertyValues.Single(x => x.Property.Name.Equals(str));
-    }
+    protected static NdfPropertyValue getProperty(NdfObject obj, string str) => obj.PropertyValues.Single(x => x.Property.Name.Equals(str));
     protected static NdfFileNameString getAutoName(NdfBinary data, int i)
     {
         string nameStr = string.Format("P0_AutoName_{0}", i);
@@ -48,5 +41,4 @@ public abstract class ScenarioItem
         NdfStringReference nameRef = data.Strings.Single(x => x.Value.Equals(nameStr));
         return new NdfFileNameString(nameRef);
     }
-
 }

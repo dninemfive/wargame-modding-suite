@@ -15,7 +15,6 @@ public class EdataFileViewModel : ViewModelBase
     private ICollectionView _filesCollectionView;
     private string _filterExpression = string.Empty;
     private string _loadedFile = string.Empty;
-    private EdataManagerViewModel _parentVm;
 
     public EdataManager EdataManager { get; protected set; }
 
@@ -23,17 +22,11 @@ public class EdataFileViewModel : ViewModelBase
 
     public ICommand DetailsCommand { get; set; }
 
-    public EdataManagerViewModel ParentVm
-    {
-        get
-        {
-            return _parentVm;
-        }
-    }
+    public EdataManagerViewModel ParentVm { get; }
 
     public EdataFileViewModel(EdataManagerViewModel parentVm)
     {
-        _parentVm = parentVm;
+        ParentVm = parentVm;
 
         CloseCommand = new ActionCommand((x) => ParentVm.CloseFile(this));
         DetailsCommand = new ActionCommand(DetailsExecute);
@@ -66,7 +59,7 @@ public class EdataFileViewModel : ViewModelBase
 
     public string LoadedFile
     {
-        get { return _loadedFile; }
+        get => _loadedFile;
         set
         {
             _loadedFile = value;
@@ -87,7 +80,7 @@ public class EdataFileViewModel : ViewModelBase
 
     public ObservableCollection<EdataContentFile> Files
     {
-        get { return _files; }
+        get => _files;
         set
         {
             _files = value;
@@ -110,7 +103,7 @@ public class EdataFileViewModel : ViewModelBase
 
     public string FilterExpression
     {
-        get { return _filterExpression; }
+        get => _filterExpression;
         set
         {
             _filterExpression = value;
@@ -130,15 +123,8 @@ public class EdataFileViewModel : ViewModelBase
         CreateFilesCollectionView();
     }
 
-    public bool FilterPath(object item)
-    {
-        if (item is not EdataContentFile file || FilterExpression == string.Empty || FilterExpression.Length < 3)
-        {
-            return true;
-        }
-
-        return file.Path.Contains(FilterExpression);
-    }
+    public bool FilterPath(object item) => item is not EdataContentFile file || FilterExpression == string.Empty || FilterExpression.Length < 3
+|| file.Path.Contains(FilterExpression);
 
     private void CreateFilesCollectionView()
     {

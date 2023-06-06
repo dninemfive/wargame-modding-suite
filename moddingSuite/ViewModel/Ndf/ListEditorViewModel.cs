@@ -23,13 +23,13 @@ public class ListEditorViewModel : ViewModelBase
 
     public NdfBinary NdfbinManager
     {
-        get { return _ndfbinManager; }
+        get => _ndfbinManager;
         set { _ndfbinManager = value; OnPropertyChanged(() => NdfbinManager); }
     }
 
     public NdfCollection Value
     {
-        get { return _collection; }
+        get => _collection;
         set { _collection = value; OnPropertyChanged(() => Value); }
     }
 
@@ -40,19 +40,14 @@ public class ListEditorViewModel : ViewModelBase
 
     public bool IsInsertMode
     {
-        get { return _isInsertMode; }
+        get => _isInsertMode;
         set { _isInsertMode = value; OnPropertyChanged(() => IsInsertMode); }
     }
 
     public ListEditorViewModel(NdfCollection collection, NdfBinary mgr)
     {
-        if (collection == null)
-            throw new ArgumentNullException("collection");
-        if (mgr == null)
-            throw new ArgumentNullException("mgr");
-
-        _collection = collection;
-        _ndfbinManager = mgr;
+        _collection = collection ?? throw new ArgumentNullException("collection");
+        _ndfbinManager = mgr ?? throw new ArgumentNullException("mgr");
         DetailsCommand = new ActionCommand(DetailsCommandExecute);
 
         AddRowCommand = new ActionCommand(AddRowExecute);
@@ -60,11 +55,7 @@ public class ListEditorViewModel : ViewModelBase
         DeleteRowCommand = new ActionCommand(DeleteRowExecute, DeleteRowCanExecute);
     }
 
-
-    private bool AddRowOfCommonTypeCanExecute()
-    {
-        return Value != null && Value.Count > 0;
-    }
+    private bool AddRowOfCommonTypeCanExecute() => Value != null && Value.Count > 0;
 
     private bool DeleteRowCanExecute()
     {
@@ -80,11 +71,10 @@ public class ListEditorViewModel : ViewModelBase
         if (cv == null || cv.CurrentItem == null)
             return;
 
-
         if (cv.CurrentItem is not CollectionItemValueHolder val)
             return;
 
-        Value.Remove(val);
+        _ = Value.Remove(val);
     }
 
     private void AddRowOfCommonTypeExecute(object obj)
@@ -106,16 +96,17 @@ public class ListEditorViewModel : ViewModelBase
             if (cv.CurrentItem == null)
                 return;
 
-
             if (cv.CurrentItem is not CollectionItemValueHolder val)
                 return;
 
             Value.Insert(cv.CurrentPosition + 1, wrapper);
         }
         else
+        {
             Value.Add(wrapper);
+        }
 
-        cv.MoveCurrentTo(wrapper);
+        _ = cv.MoveCurrentTo(wrapper);
     }
 
     private void AddRowExecute(object obj)
@@ -135,24 +126,23 @@ public class ListEditorViewModel : ViewModelBase
         if (!ret.HasValue || !ret.Value)
             return;
 
-
         if (IsInsertMode)
         {
             if (cv.CurrentItem == null)
                 return;
 
-
-            if (cv.CurrentItem is not CollectionItemValueHolder val)
+            if (cv.CurrentItem is not CollectionItemValueHolder)
                 return;
 
             Value.Insert(cv.CurrentPosition + 1, vm.Wrapper);
         }
         else
+        {
             Value.Add(vm.Wrapper);
+        }
 
-        cv.MoveCurrentTo(vm.Wrapper);
+        _ = cv.MoveCurrentTo(vm.Wrapper);
     }
-
 
     public void DetailsCommandExecute(object obj)
     {
@@ -203,7 +193,7 @@ public class ListEditorViewModel : ViewModelBase
         if (inst == null)
             return;
 
-        vm.InstancesCollectionView.MoveCurrentTo(inst);
+        _ = vm.InstancesCollectionView.MoveCurrentTo(inst);
 
         DialogProvider.ProvideView(vm);
     }
@@ -217,6 +207,4 @@ public class ListEditorViewModel : ViewModelBase
 
         DialogProvider.ProvideView(editor, this);
     }
-
-
 }

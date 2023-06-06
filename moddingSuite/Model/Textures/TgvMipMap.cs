@@ -22,25 +22,25 @@ public class TgvMipMap : ViewModelBase
 
     public uint Offset
     {
-        get { return _offset; }
+        get => _offset;
         set { _offset = value; OnPropertyChanged(() => Offset); }
     }
 
     public uint Size
     {
-        get { return _size; }
+        get => _size;
         set { _size = value; OnPropertyChanged(() => Size); }
     }
 
     public int MipWidth
     {
-        get { return _mipWidth; }
+        get => _mipWidth;
         set { _mipWidth = value; OnPropertyChanged(() => MipWidth); }
     }
 
     public byte[] Content
     {
-        get { return _content; }
+        get => _content;
         set { _content = value; OnPropertyChanged(() => Content); }
     }
 }

@@ -13,19 +13,17 @@ public class TgvDDSWriter
 {
     public byte[] CreateDDSFile(TgvFile file)
     {
-        using (MemoryStream ms = new())
-        {
-            byte[] buffer = BitConverter.GetBytes(DDS.DDS.MagicHeader);
-            ms.Write(buffer, 0, buffer.Length);
+        using MemoryStream ms = new();
+        byte[] buffer = BitConverter.GetBytes(DDS.DDS.MagicHeader);
+        ms.Write(buffer, 0, buffer.Length);
 
-            buffer = CreateDDSHeader(file);
-            ms.Write(buffer, 0, buffer.Length);
+        buffer = CreateDDSHeader(file);
+        ms.Write(buffer, 0, buffer.Length);
 
-            buffer = file.MipMaps.OrderByDescending(x => x.MipWidth).First().Content;
-            ms.Write(buffer, 0, buffer.Length);
+        buffer = file.MipMaps.OrderByDescending(x => x.MipWidth).First().Content;
+        ms.Write(buffer, 0, buffer.Length);
 
-            return ms.ToArray();
-        }
+        return ms.ToArray();
     }
 
     protected byte[] CreateDDSHeader(TgvFile file)
@@ -43,10 +41,8 @@ public class TgvDDSWriter
 
         DDS.DDS.PixelFormat ddpf = DDS.DDS.PixelFormatFromDXGIFormat(file.Format);
 
-        int rowPitch, slicePitch;
-        int widthCount, heightCount;
-        DDS.DDS.ComputePitch(file.Format, (int)file.ImageWidth, (int)file.ImageHeight, out rowPitch, out slicePitch, out widthCount,
-                     out heightCount);
+        DDS.DDS.ComputePitch(file.Format, (int)file.ImageWidth, (int)file.ImageHeight, out int rowPitch, out int slicePitch, out _,
+                     out _);
 
         if (DDS.DDS.IsCompressedFormat(file.Format))
         {

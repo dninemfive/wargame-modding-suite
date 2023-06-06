@@ -14,7 +14,7 @@ public class EssWriterTest
         uint b2 = (le >> 8) & 0xFF;
         uint b3 = (le >> 16) & 0xFF;
         uint b4 = (le >> 24) & 0xFF;
-        return b1 * 16777216 + b2 * 65536 + b3 * 256 + b4;
+        return (b1 * 16777216) + (b2 * 65536) + (b3 * 256) + b4;
     }
 
     //[TestMethod]
@@ -29,9 +29,9 @@ public class EssWriterTest
         uint id = br.ReadUInt32();
         if (id != 0x46464952)
         { Console.WriteLine("I need WAV file."); return; }
-        br.ReadUInt32();
-        br.ReadUInt32();
-        br.ReadUInt32();
+        _ = br.ReadUInt32();
+        _ = br.ReadUInt32();
+        _ = br.ReadUInt32();
         id = br.ReadUInt32();
         if (id == 16) // old wav
         {
@@ -40,8 +40,8 @@ public class EssWriterTest
             { Console.WriteLine("Unknown WAV format."); return; }
             channels = br.ReadUInt16();
             samplerate = br.ReadInt32();
-            br.ReadUInt32();
-            br.ReadUInt16();
+            _ = br.ReadUInt32();
+            _ = br.ReadUInt16();
             id = br.ReadUInt16();
             if (id != 16)
             { Console.WriteLine("Only 16 bit WAV supported."); return; }
@@ -53,17 +53,17 @@ public class EssWriterTest
             { Console.WriteLine("Unknown WAV format."); return; }
             channels = br.ReadUInt16();
             samplerate = br.ReadInt32();
-            br.ReadUInt32();
-            br.ReadUInt16();
+            _ = br.ReadUInt32();
+            _ = br.ReadUInt16();
             id = br.ReadUInt16();
             if (id != 16)
             { Console.WriteLine("Only 16 bit WAV supported."); return; }
-            br.ReadUInt32();
-            br.ReadUInt32();
-            br.ReadUInt32();
-            br.ReadUInt32();
-            br.ReadUInt32();
-            br.ReadUInt32();
+            _ = br.ReadUInt32();
+            _ = br.ReadUInt32();
+            _ = br.ReadUInt32();
+            _ = br.ReadUInt32();
+            _ = br.ReadUInt32();
+            _ = br.ReadUInt32();
         }
         else
         { Console.WriteLine("Unknown WAV format."); return; }
@@ -76,7 +76,8 @@ public class EssWriterTest
         int nsamples = br.ReadInt32() / channels / 2;
 
         int frsize = 1024;
-        int[] audio = new int[frsize];
+
+        _ = new int[frsize];
         int[] oaudio = new int[frsize];
         int[] k = new int[frsize];
         int[] bb = new int[frsize];
@@ -99,10 +100,10 @@ public class EssWriterTest
         fs.WriteByte((byte)(samplerate >> 8));
         fs.WriteByte((byte)samplerate);
         bw.Write(swap((uint)nsamples));
-        bw.Write((int)0);
+        bw.Write(0);
         bw.Write(swap((uint)nsamples));
         int frn = nsamples / frsize;
-        fs.Seek(frn * 4, SeekOrigin.Current);
+        _ = fs.Seek(frn * 4, SeekOrigin.Current);
 
         long datastart = fs.Position;
 
@@ -139,12 +140,12 @@ public class EssWriterTest
             {
                 v18 = output;
 
-                k2 = 2 * (2 * sample1 - vv10) - 5 * sample2;
-                k1 = 2 * output - vv22;
+                k2 = (2 * ((2 * sample1) - vv10)) - (5 * sample2);
+                k1 = (2 * output) - vv22;
                 sample3 = sample2;
                 sample2 = sample1;
 
-                predict = ((pred2 * k2 + 128) >> 8) + ((pred1 * k1 + 128) >> 8);
+                predict = (((pred2 * k2) + 128) >> 8) + (((pred1 * k1) + 128) >> 8);
 
                 //////////////////////////
                 // phase 2
@@ -163,10 +164,12 @@ public class EssWriterTest
                         {
                             d = (dk - C1 - C2) / C3;
                             Bitvalue = d + 2;
-                            bfrac[i] = (dk - C1 - C2 - C3 * d) * 4 / C3;
+                            bfrac[i] = (dk - C1 - C2 - (C3 * d)) * 4 / C3;
                         }
                         else
+                        {
                             Bitvalue = 3;
+                        }
                     }
                     else if (dk >= C1)
                     {
@@ -175,7 +178,9 @@ public class EssWriterTest
                             bfrac[i] = (dk - C1) * 4 / C2;
                     }
                     else if (C1 > 0)
-                        bfrac[i] = (dk) * 4 / C1;
+                    {
+                        bfrac[i] = dk * 4 / C1;
+                    }
                 }
 
                 Bitvalue <<= 1;
@@ -193,7 +198,7 @@ public class EssWriterTest
                     {
                         if (Bitvalue > 5)
                         {
-                            r1 = C1 + C2 + (C3 + 1) * ((Bitvalue >> 1) - 2);
+                            r1 = C1 + C2 + ((C3 + 1) * ((Bitvalue >> 1) - 2));
                             r2 = C3 + r1;
                             C1 += 6 * ((C1 + 2048) / 2048);
                             C2 += 6 * ((C2 + 1024) / 1024);
@@ -229,21 +234,27 @@ public class EssWriterTest
                     if (Result > C2)
                     {
                         if (Result <= C3)
-                            C3 = C3 - 2 * ((C3 + 510) / 512);
+                            C3 -= 2 * ((C3 + 510) / 512);
                     }
                     else
-                        C2 = C2 - 2 * ((C2 + 1022) / 1024);
+                    {
+                        C2 -= 2 * ((C2 + 1022) / 1024);
+                    }
                 }
                 else
+                {
                     C1 -= 2 * ((C1 + 2046) / 2048);
+                }
 
                 if (r2 - r1 > 0x40)
                 {
-                    diff = (r2 - r1) / 4 + 1;
-                    Result = r1 + diff * bfrac[i];
+                    diff = ((r2 - r1) / 4) + 1;
+                    Result = r1 + (diff * bfrac[i]);
                 }
                 else
+                {
                     bfrac[i] = -1;
+                }
 
                 if ((Bitvalue & 1) > 0)
                     Result = ~Result;  // sign
@@ -254,18 +265,18 @@ public class EssWriterTest
                 input = k[i];
 
                 // phase 1
-                sample1 = input + ((pred2 * k2 + 128) >> 8);
+                sample1 = input + (((pred2 * k2) + 128) >> 8);
                 if ((k2 | input) != 0)
-                    pred2 += ((k2 ^ input) & -0x20000001 | 0x40000000) >> 29;
+                    pred2 += (((k2 ^ input) & -0x20000001) | 0x40000000) >> 29;
 
-                sample = sample1 + ((pred1 * k1 + 128) >> 8);
+                sample = sample1 + (((pred1 * k1) + 128) >> 8);
                 if (sample > 32767)
                     sample = 32767;
                 if (sample < -32768)
                     sample = -32768;
 
                 if ((sample1 | k1) != 0)
-                    pred1 += ((sample1 ^ k1) & -0x20000001 | 0x40000000) >> 29;
+                    pred1 += (((sample1 ^ k1) & -0x20000001) | 0x40000000) >> 29;
 
                 vv22 = v18;
                 //output = (output + 7 * sample) / 8;   // this is for another encoding method
@@ -313,8 +324,10 @@ public class EssWriterTest
                 }
             }
             if ((esstr.Count % 8) != 0)
+            {
                 for (int j = 0; j < 8; j++)
                     esstr.Add(false);
+            }
 
             for (i = 0; i < esstr.Count / 8; i++)
             {
@@ -322,7 +335,7 @@ public class EssWriterTest
                 for (int j = 0; j < 8; j++)
                 {
                     Bitvalue *= 2;
-                    if (esstr[i * 8 + j])
+                    if (esstr[(i * 8) + j])
                         Bitvalue++;
                 }
                 fs.WriteByte((byte)Bitvalue);
@@ -330,7 +343,7 @@ public class EssWriterTest
             frs[f] = (int)(fs.Position - datastart);
         }
 
-        fs.Seek(0x14, SeekOrigin.Begin);
+        _ = fs.Seek(0x14, SeekOrigin.Begin);
         for (int f = 0; f < frn; f++)
             bw.Write(swap((uint)frs[f]));
 

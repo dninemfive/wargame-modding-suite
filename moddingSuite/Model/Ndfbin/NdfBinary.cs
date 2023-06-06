@@ -14,7 +14,7 @@ public class NdfBinary : ViewModelBase
 
     public NdfHeader Header
     {
-        get { return _header; }
+        get => _header;
         set
         {
             _header = value;
@@ -24,7 +24,7 @@ public class NdfBinary : ViewModelBase
 
     public NdfFooter Footer
     {
-        get { return _footer; }
+        get => _footer;
         set
         {
             _footer = value;
@@ -61,7 +61,7 @@ public class NdfBinary : ViewModelBase
 
         if (isTopLevelInstance)
         {
-            TopObjects.Add(inst.Id);
+            _ = TopObjects.Add(inst.Id);
             inst.IsTopObject = true;
         }
 
@@ -70,22 +70,26 @@ public class NdfBinary : ViewModelBase
 
     public void DeleteInstance(NdfObject inst)
     {
-        Instances.Remove(inst);
+        _ = Instances.Remove(inst);
         NdfClass cls = inst.Class;
-        cls.Instances.Remove(inst);
+        _ = cls.Instances.Remove(inst);
 
         if (TopObjects.Contains(inst.Id))
-            TopObjects.Remove(inst.Id);
+            _ = TopObjects.Remove(inst.Id);
     }
 
     public void AddEmptyProperties(NdfObject instance)
     {
         foreach (NdfProperty property in instance.Class.Properties)
+        {
             if (instance.PropertyValues.All(x => x.Property != property))
+            {
                 instance.PropertyValues.Add(new NdfPropertyValue(instance)
                 {
                     Property = property,
                     Value = new NdfNull()
                 });
+            }
+        }
     }
 }

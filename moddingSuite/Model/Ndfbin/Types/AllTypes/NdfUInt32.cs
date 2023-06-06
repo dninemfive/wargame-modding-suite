@@ -10,13 +10,7 @@ public class NdfUInt32 : NdfFlatValueWrapper
     {
     }
 
-    public override byte[] GetBytes()
-    {
-        return BitConverter.GetBytes(Convert.ToUInt32(Value));
-    }
+    public override byte[] GetBytes() => BitConverter.GetBytes(Convert.ToUInt32(Value));
 
-    public override byte[] GetNdfText()
-    {
-        return NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
-    }
+    public override byte[] GetNdfText() => NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
 }

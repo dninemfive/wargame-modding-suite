@@ -37,7 +37,7 @@ public class ObjectCopyResultViewModel : ViewModelBase
         if (inst == null)
             return;
 
-        vm.InstancesCollectionView.MoveCurrentTo(inst);
+        _ = vm.InstancesCollectionView.MoveCurrentTo(inst);
 
         DialogProvider.ProvideView(vm, Editor);
     }

@@ -9,7 +9,6 @@ namespace moddingSuite.ViewModel.Ndf;
 
 public class AddCollectionItemViewModel : ViewModelBase
 {
-    private readonly List<NdfType> _typeSelection = new();
     private NdfType _type = NdfType.Unset;
     private CollectionItemValueHolder _wrapper;
 
@@ -21,7 +20,7 @@ public class AddCollectionItemViewModel : ViewModelBase
         OkCommand = new ActionCommand(OkCommandExecute, () => Type != NdfType.Unset);
         CancelCommand = new ActionCommand(CancelCommandExecute);
 
-        _typeSelection.AddRange(NdfTypeManager.GetTypeSelection());
+        TypeSelection.AddRange(NdfTypeManager.GetTypeSelection());
     }
 
     public ICommand OkCommand { get; protected set; }
@@ -32,7 +31,7 @@ public class AddCollectionItemViewModel : ViewModelBase
 
     public NdfType Type
     {
-        get { return _type; }
+        get => _type;
         set
         {
             _type = value;
@@ -41,14 +40,11 @@ public class AddCollectionItemViewModel : ViewModelBase
         }
     }
 
-    public List<NdfType> TypeSelection
-    {
-        get { return _typeSelection; }
-    }
+    public List<NdfType> TypeSelection { get; } = new();
 
     public CollectionItemValueHolder Wrapper
     {
-        get { return _wrapper; }
+        get => _wrapper;
         set
         {
             _wrapper = value;
@@ -56,15 +52,9 @@ public class AddCollectionItemViewModel : ViewModelBase
         }
     }
 
-    private void GetValueForType()
-    {
-        Wrapper = new CollectionItemValueHolder(NdfTypeManager.GetValue(new byte[NdfTypeManager.SizeofType(Type)], Type, Manager), Manager);
-    }
+    private void GetValueForType() => Wrapper = new CollectionItemValueHolder(NdfTypeManager.GetValue(new byte[NdfTypeManager.SizeofType(Type)], Type, Manager), Manager);
 
-    private void CancelCommandExecute(object obj)
-    {
-        View.DialogResult = false;
-    }
+    private void CancelCommandExecute(object obj) => View.DialogResult = false;
 
     private void OkCommandExecute(object obj)
     {

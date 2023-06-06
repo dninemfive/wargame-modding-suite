@@ -32,33 +32,33 @@ public class SavManager
 
         using (MemoryStream ms = new(data))
         {
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             uint magic = BitConverter.ToUInt32(buffer, 0);
 
             if (magic != SavMagic)
                 throw new InvalidDataException("Wrong sav magic");
 
-            ms.Seek(4, SeekOrigin.Current);
+            _ = ms.Seek(4, SeekOrigin.Current);
 
             buffer = new byte[16];
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             Array.Copy(buffer, ret.Checksum, 16);
 
             buffer = new byte[4];
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             ret.FileSize = BitConverter.ToUInt32(buffer, 0);
 
             if (data.Length != ret.FileSize)
                 throw new InvalidDataException("Header doesn't match to filesize");
 
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             ret.ContentSize1 = BitConverter.ToUInt32(buffer, 0);
 
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
             ret.ContentSize2 = BitConverter.ToUInt32(buffer, 0);
 
             buffer = new byte[8];
-            ms.Read(buffer, 0, buffer.Length);
+            _ = ms.Read(buffer, 0, buffer.Length);
 
             ret.SaveDate = BitConverter.ToUInt64(buffer, 0);
 

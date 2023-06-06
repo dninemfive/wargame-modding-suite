@@ -81,10 +81,10 @@ public class EdataManager : ViewModelBase
         using (FileStream fs = File.Open(FilePath, FileMode.Open))
         {
             long offset = Header.FileOffset + ofFile.Offset;
-            fs.Seek(offset, SeekOrigin.Begin);
+            _ = fs.Seek(offset, SeekOrigin.Begin);
 
             buffer = new byte[ofFile.Size];
-            fs.Read(buffer, 0, buffer.Length);
+            _ = fs.Read(buffer, 0, buffer.Length);
         }
 
         return buffer;
@@ -116,14 +116,13 @@ public class EdataManager : ViewModelBase
         byte[] buffer = new byte[Marshal.SizeOf(typeof(EdataHeader))];
 
         using (FileStream fs = File.Open(FilePath, FileMode.Open))
-            fs.Read(buffer, 0, buffer.Length);
+            _ = fs.Read(buffer, 0, buffer.Length);
 
         header = Utils.ByteArrayToStructure<EdataHeader>(buffer);
 
-        if (header.Version > 2)
-            throw new NotSupportedException(string.Format("Edata version {0} not supported", header.Version));
-
-        return header;
+        return header.Version > 2
+            ? throw new NotSupportedException(string.Format("Edata version {0} not supported", header.Version))
+            : header;
     }
 
     /// <summary>
@@ -138,7 +137,7 @@ public class EdataManager : ViewModelBase
 
         using (FileStream fileStream = File.Open(FilePath, FileMode.Open))
         {
-            fileStream.Seek(Header.DictOffset, SeekOrigin.Begin);
+            _ = fileStream.Seek(Header.DictOffset, SeekOrigin.Begin);
 
             long dirEnd = Header.DictOffset + Header.DictLength;
             uint id = 0;
@@ -146,31 +145,31 @@ public class EdataManager : ViewModelBase
             while (fileStream.Position < dirEnd)
             {
                 byte[] buffer = new byte[4];
-                fileStream.Read(buffer, 0, 4);
+                _ = fileStream.Read(buffer, 0, 4);
                 int fileGroupId = BitConverter.ToInt32(buffer, 0);
 
                 if (fileGroupId == 0)
                 {
                     EdataContentFile file = new();
-                    fileStream.Read(buffer, 0, 4);
+                    _ = fileStream.Read(buffer, 0, 4);
                     file.FileEntrySize = BitConverter.ToInt32(buffer, 0);
 
                     buffer = new byte[8];
-                    fileStream.Read(buffer, 0, buffer.Length);
+                    _ = fileStream.Read(buffer, 0, buffer.Length);
                     file.Offset = BitConverter.ToInt64(buffer, 0);
 
-                    fileStream.Read(buffer, 0, buffer.Length);
+                    _ = fileStream.Read(buffer, 0, buffer.Length);
                     file.Size = BitConverter.ToInt64(buffer, 0);
 
                     byte[] checkSum = new byte[16];
-                    fileStream.Read(checkSum, 0, checkSum.Length);
+                    _ = fileStream.Read(checkSum, 0, checkSum.Length);
                     file.Checksum = checkSum;
 
                     file.Name = Utils.ReadString(fileStream);
                     file.Path = MergePath(dirs, file.Name);
 
                     if (file.Name.Length % 2 == 0)
-                        fileStream.Seek(1, SeekOrigin.Current);
+                        _ = fileStream.Seek(1, SeekOrigin.Current);
 
                     file.Id = id;
                     id++;
@@ -181,15 +180,15 @@ public class EdataManager : ViewModelBase
 
                     while (endings.Count > 0 && fileStream.Position == endings.Last())
                     {
-                        dirs.Remove(dirs.Last());
-                        endings.Remove(endings.Last());
+                        _ = dirs.Remove(dirs.Last());
+                        _ = endings.Remove(endings.Last());
                     }
                 }
                 else if (fileGroupId > 0)
                 {
                     EdataDir dir = new();
 
-                    fileStream.Read(buffer, 0, 4);
+                    _ = fileStream.Read(buffer, 0, 4);
                     dir.FileEntrySize = BitConverter.ToInt32(buffer, 0);
 
                     if (dir.FileEntrySize != 0)
@@ -200,7 +199,7 @@ public class EdataManager : ViewModelBase
                     dir.Name = Utils.ReadString(fileStream);
 
                     if (dir.Name.Length % 2 == 0)
-                        fileStream.Seek(1, SeekOrigin.Current);
+                        _ = fileStream.Seek(1, SeekOrigin.Current);
 
                     dirs.Add(dir);
                 }
@@ -217,7 +216,7 @@ public class EdataManager : ViewModelBase
 
         using (FileStream fileStream = File.Open(FilePath, FileMode.Open))
         {
-            fileStream.Seek(Header.DictOffset, SeekOrigin.Begin);
+            _ = fileStream.Seek(Header.DictOffset, SeekOrigin.Begin);
 
             long dirEnd = Header.DictOffset + Header.DictLength;
             uint id = 0;
@@ -225,32 +224,32 @@ public class EdataManager : ViewModelBase
             while (fileStream.Position < dirEnd)
             {
                 byte[] buffer = new byte[4];
-                fileStream.Read(buffer, 0, 4);
+                _ = fileStream.Read(buffer, 0, 4);
                 int fileGroupId = BitConverter.ToInt32(buffer, 0);
 
                 if (fileGroupId == 0)
                 {
                     EdataContentFile file = new();
-                    fileStream.Read(buffer, 0, 4);
+                    _ = fileStream.Read(buffer, 0, 4);
                     file.FileEntrySize = BitConverter.ToInt32(buffer, 0);
 
                     //buffer = new byte[8];  - it's [4] now, so no need to change
-                    fileStream.Read(buffer, 0, 4);
+                    _ = fileStream.Read(buffer, 0, 4);
                     file.Offset = BitConverter.ToUInt32(buffer, 0);
 
-                    fileStream.Read(buffer, 0, 4);
+                    _ = fileStream.Read(buffer, 0, 4);
                     file.Size = BitConverter.ToUInt32(buffer, 0);
 
                     //var checkSum = new byte[16];
                     //fileStream.Read(checkSum, 0, checkSum.Length);
                     //file.Checksum = checkSum;
-                    fileStream.Seek(1, SeekOrigin.Current);  //instead, skip 1 byte - as in WEE DAT unpacker
+                    _ = fileStream.Seek(1, SeekOrigin.Current);  //instead, skip 1 byte - as in WEE DAT unpacker
 
                     file.Name = Utils.ReadString(fileStream);
                     file.Path = MergePath(dirs, file.Name);
 
                     if ((file.Name.Length + 1) % 2 == 0)
-                        fileStream.Seek(1, SeekOrigin.Current);
+                        _ = fileStream.Seek(1, SeekOrigin.Current);
 
                     file.Id = id;
                     id++;
@@ -261,15 +260,15 @@ public class EdataManager : ViewModelBase
 
                     while (endings.Count > 0 && fileStream.Position == endings.Last())
                     {
-                        dirs.Remove(dirs.Last());
-                        endings.Remove(endings.Last());
+                        _ = dirs.Remove(dirs.Last());
+                        _ = endings.Remove(endings.Last());
                     }
                 }
                 else if (fileGroupId > 0)
                 {
                     EdataDir dir = new();
 
-                    fileStream.Read(buffer, 0, 4);
+                    _ = fileStream.Read(buffer, 0, 4);
                     dir.FileEntrySize = BitConverter.ToInt32(buffer, 0);
 
                     if (dir.FileEntrySize != 0)
@@ -280,7 +279,7 @@ public class EdataManager : ViewModelBase
                     dir.Name = Utils.ReadString(fileStream);
 
                     if ((dir.Name.Length + 1) % 2 == 1)
-                        fileStream.Seek(1, SeekOrigin.Current);
+                        _ = fileStream.Seek(1, SeekOrigin.Current);
 
                     dirs.Add(dir);
                 }
@@ -300,9 +299,9 @@ public class EdataManager : ViewModelBase
         StringBuilder b = new();
 
         foreach (EdataDir dir in dirs)
-            b.Append(dir.Name);
+            _ = b.Append(dir.Name);
 
-        b.Append(fileName);
+        _ = b.Append(fileName);
 
         return b.ToString();
     }
@@ -322,104 +321,102 @@ public class EdataManager : ViewModelBase
         string tmpPath = Path.Combine(tmp.DirectoryName, string.Format("{0}_{1}", tmp.FullName, "temp"));
 
         if (!File.Exists(tmpPath))
+        {
             using (File.Create(tmpPath))
             { }
+        }
 
         using (FileStream fs = new(FilePath, FileMode.Open))
         {
-            using (FileStream newFile = new(tmpPath, FileMode.Truncate))
+            using FileStream newFile = new(tmpPath, FileMode.Truncate);
+            byte[] headerPart = new byte[Header.FileOffset];
+            _ = fs.Read(headerPart, 0, headerPart.Length);
+            newFile.Write(headerPart, 0, headerPart.Length);
+
+            _ = fs.Seek(Header.FileOffset, SeekOrigin.Begin);
+
+            uint filesContentLength = 0;
+            byte[] fileBuffer;
+
+            foreach (EdataContentFile file in Files)
             {
-                byte[] headerPart = new byte[Header.FileOffset];
-                fs.Read(headerPart, 0, headerPart.Length);
-                newFile.Write(headerPart, 0, headerPart.Length);
+                long oldOffset = file.Offset;
+                file.Offset = newFile.Position - Header.FileOffset;
 
-                fs.Seek(Header.FileOffset, SeekOrigin.Begin);
-
-                uint filesContentLength = 0;
-                byte[] fileBuffer;
-
-                foreach (EdataContentFile file in Files)
+                if (file == oldFile)
                 {
-                    long oldOffset = file.Offset;
-                    file.Offset = newFile.Position - Header.FileOffset;
-
-                    if (file == oldFile)
-                    {
-                        fileBuffer = newContent;
-                        file.Size = newContent.Length;
-                        file.Checksum = MD5.Create().ComputeHash(fileBuffer);
-                    }
-                    else
-                    {
-                        fileBuffer = new byte[file.Size];
-                        fs.Seek(oldOffset + Header.FileOffset, SeekOrigin.Begin);
-                        fs.Read(fileBuffer, 0, fileBuffer.Length);
-                    }
-
-
-                    newFile.Write(fileBuffer, 0, fileBuffer.Length);
-                    newFile.Write(reserveBuffer, 0, reserveBuffer.Length);
-
-                    filesContentLength += (uint)fileBuffer.Length + (uint)reserveBuffer.Length;
+                    fileBuffer = newContent;
+                    file.Size = newContent.Length;
+                    file.Checksum = MD5.Create().ComputeHash(fileBuffer);
+                }
+                else
+                {
+                    fileBuffer = new byte[file.Size];
+                    _ = fs.Seek(oldOffset + Header.FileOffset, SeekOrigin.Begin);
+                    _ = fs.Read(fileBuffer, 0, fileBuffer.Length);
                 }
 
-                newFile.Seek(0x25, SeekOrigin.Begin);
-                newFile.Write(BitConverter.GetBytes(filesContentLength), 0, 4);
+                newFile.Write(fileBuffer, 0, fileBuffer.Length);
+                newFile.Write(reserveBuffer, 0, reserveBuffer.Length);
 
-
-                newFile.Seek(Header.DictOffset, SeekOrigin.Begin);
-                long dirEnd = Header.DictOffset + Header.DictLength;
-                uint id = 0;
-
-                while (newFile.Position < dirEnd)
-                {
-                    byte[] buffer = new byte[4];
-                    newFile.Read(buffer, 0, 4);
-                    int fileGroupId = BitConverter.ToInt32(buffer, 0);
-
-                    if (fileGroupId == 0)
-                    {
-                        EdataContentFile curFile = Files[(int)id];
-
-                        // FileEntrySize
-                        newFile.Seek(4, SeekOrigin.Current);
-
-                        buffer = BitConverter.GetBytes(curFile.Offset);
-                        newFile.Write(buffer, 0, buffer.Length);
-
-                        buffer = BitConverter.GetBytes(curFile.Size);
-                        newFile.Write(buffer, 0, buffer.Length);
-
-                        byte[] checkSum = curFile.Checksum;
-                        newFile.Write(checkSum, 0, checkSum.Length);
-
-                        string name = Utils.ReadString(newFile);
-
-                        if ((name.Length + 1) % 2 == 1)
-                            newFile.Seek(1, SeekOrigin.Current);
-
-                        id++;
-                    }
-                    else if (fileGroupId > 0)
-                    {
-                        newFile.Seek(4, SeekOrigin.Current);
-                        string name = Utils.ReadString(newFile);
-
-                        if ((name.Length + 1) % 2 == 1)
-                            newFile.Seek(1, SeekOrigin.Current);
-                    }
-                }
-
-                newFile.Seek(Header.DictOffset, SeekOrigin.Begin);
-                byte[] dirBuffer = new byte[Header.DictLength];
-                newFile.Read(dirBuffer, 0, dirBuffer.Length);
-
-                byte[] dirCheckSum = MD5.Create().ComputeHash(dirBuffer);
-
-                newFile.Seek(0x31, SeekOrigin.Begin);
-
-                newFile.Write(dirCheckSum, 0, dirCheckSum.Length);
+                filesContentLength += (uint)fileBuffer.Length + (uint)reserveBuffer.Length;
             }
+
+            _ = newFile.Seek(0x25, SeekOrigin.Begin);
+            newFile.Write(BitConverter.GetBytes(filesContentLength), 0, 4);
+
+            _ = newFile.Seek(Header.DictOffset, SeekOrigin.Begin);
+            long dirEnd = Header.DictOffset + Header.DictLength;
+            uint id = 0;
+
+            while (newFile.Position < dirEnd)
+            {
+                byte[] buffer = new byte[4];
+                _ = newFile.Read(buffer, 0, 4);
+                int fileGroupId = BitConverter.ToInt32(buffer, 0);
+
+                if (fileGroupId == 0)
+                {
+                    EdataContentFile curFile = Files[(int)id];
+
+                    // FileEntrySize
+                    _ = newFile.Seek(4, SeekOrigin.Current);
+
+                    buffer = BitConverter.GetBytes(curFile.Offset);
+                    newFile.Write(buffer, 0, buffer.Length);
+
+                    buffer = BitConverter.GetBytes(curFile.Size);
+                    newFile.Write(buffer, 0, buffer.Length);
+
+                    byte[] checkSum = curFile.Checksum;
+                    newFile.Write(checkSum, 0, checkSum.Length);
+
+                    string name = Utils.ReadString(newFile);
+
+                    if ((name.Length + 1) % 2 == 1)
+                        _ = newFile.Seek(1, SeekOrigin.Current);
+
+                    id++;
+                }
+                else if (fileGroupId > 0)
+                {
+                    _ = newFile.Seek(4, SeekOrigin.Current);
+                    string name = Utils.ReadString(newFile);
+
+                    if ((name.Length + 1) % 2 == 1)
+                        _ = newFile.Seek(1, SeekOrigin.Current);
+                }
+            }
+
+            _ = newFile.Seek(Header.DictOffset, SeekOrigin.Begin);
+            byte[] dirBuffer = new byte[Header.DictLength];
+            _ = newFile.Read(dirBuffer, 0, dirBuffer.Length);
+
+            byte[] dirCheckSum = MD5.Create().ComputeHash(dirBuffer);
+
+            _ = newFile.Seek(0x31, SeekOrigin.Begin);
+
+            newFile.Write(dirCheckSum, 0, dirCheckSum.Length);
         }
 
         return tmpPath;
@@ -434,98 +431,98 @@ public class EdataManager : ViewModelBase
         string tmpPath = Path.Combine(tmp.DirectoryName, string.Format("{0}_{1}", tmp.FullName, "temp"));
 
         if (!File.Exists(tmpPath))
+        {
             using (File.Create(tmpPath))
             { }
+        }
 
         using (FileStream fs = new(FilePath, FileMode.Open))
         {
-            using (FileStream newFile = new(tmpPath, FileMode.Truncate))
+            using FileStream newFile = new(tmpPath, FileMode.Truncate);
+            byte[] oldHead = new byte[Header.FileOffset];
+            _ = fs.Read(oldHead, 0, (int)Header.FileOffset);
+            newFile.Write(oldHead, 0, oldHead.Length);
+
+            byte[] fileBuffer;
+            uint filesContentLength = 0;
+
+            // Write Filecontent and replace selected file
+            foreach (EdataContentFile file in Files)
             {
-                byte[] oldHead = new byte[Header.FileOffset];
-                fs.Read(oldHead, 0, (int)Header.FileOffset);
-                newFile.Write(oldHead, 0, oldHead.Length);
+                long oldOffset = file.Offset;
+                file.Offset = newFile.Position - Header.FileOffset;
 
-                byte[] fileBuffer;
-                uint filesContentLength = 0;
-
-                // Write Filecontent and replace selected file
-                foreach (EdataContentFile file in Files)
+                if (file == oldFile)
                 {
-                    long oldOffset = file.Offset;
-                    file.Offset = newFile.Position - Header.FileOffset;
-
-                    if (file == oldFile)
-                    {
-                        fileBuffer = newContent;
-                        file.Size = newContent.Length;
-                    }
-                    else
-                    {
-                        fileBuffer = new byte[file.Size];
-                        fs.Seek(oldOffset + Header.FileOffset, SeekOrigin.Begin);
-                        fs.Read(fileBuffer, 0, fileBuffer.Length);
-                    }
-
-                    newFile.Write(fileBuffer, 0, fileBuffer.Length);
-                    //newFile.Write(reserveBuffer, 0, reserveBuffer.Length);
-
-                    filesContentLength += (uint)fileBuffer.Length; // +(uint)reserveBuffer.Length;
+                    fileBuffer = newContent;
+                    file.Size = newContent.Length;
+                }
+                else
+                {
+                    fileBuffer = new byte[file.Size];
+                    _ = fs.Seek(oldOffset + Header.FileOffset, SeekOrigin.Begin);
+                    _ = fs.Read(fileBuffer, 0, fileBuffer.Length);
                 }
 
-                newFile.Seek(Header.DictOffset, SeekOrigin.Begin);
-                long dirEnd = Header.DictOffset + Header.DictLength;
-                uint id = 0;
+                newFile.Write(fileBuffer, 0, fileBuffer.Length);
+                //newFile.Write(reserveBuffer, 0, reserveBuffer.Length);
 
-                byte[] buffer = new byte[4];
-
-                while (newFile.Position < dirEnd)
-                {
-                    newFile.Read(buffer, 0, 4);
-                    int fileGroupId = BitConverter.ToInt32(buffer, 0);
-
-                    if (fileGroupId == 0)
-                    {
-                        EdataContentFile curFile = Files[(int)id];
-
-                        // FileEntrySize
-                        newFile.Seek(4, SeekOrigin.Current);
-
-                        buffer = BitConverter.GetBytes((uint)curFile.Offset);
-                        newFile.Write(buffer, 0, buffer.Length);
-
-                        buffer = BitConverter.GetBytes((uint)curFile.Size);
-                        newFile.Write(buffer, 0, buffer.Length);
-
-                        newFile.Seek(1, SeekOrigin.Current);
-
-                        string name = Utils.ReadString(newFile);
-
-                        if ((name.Length + 1) % 2 == 0)
-                            newFile.Seek(1, SeekOrigin.Current);
-
-                        id++;
-                    }
-                    else if (fileGroupId > 0)
-                    {
-                        newFile.Seek(4, SeekOrigin.Current);
-                        string name = Utils.ReadString(newFile);
-
-                        if ((name.Length + 1) % 2 == 1)
-                            newFile.Seek(1, SeekOrigin.Current);
-                    }
-                }
-
-                newFile.Seek(Header.DictOffset, SeekOrigin.Begin);
-                byte[] dirBuffer = new byte[Header.DictLength];
-                newFile.Read(dirBuffer, 0, dirBuffer.Length);
-                byte[] dirCheckSum = MD5.Create().ComputeHash(dirBuffer);
-
-                newFile.Seek(8, SeekOrigin.Begin);
-                newFile.Write(dirCheckSum, 0, dirCheckSum.Length);
-
-                newFile.Seek(13, SeekOrigin.Current);
-                newFile.Write(BitConverter.GetBytes(filesContentLength), 0, 4);
+                filesContentLength += (uint)fileBuffer.Length; // +(uint)reserveBuffer.Length;
             }
+
+            _ = newFile.Seek(Header.DictOffset, SeekOrigin.Begin);
+            long dirEnd = Header.DictOffset + Header.DictLength;
+            uint id = 0;
+
+            byte[] buffer = new byte[4];
+
+            while (newFile.Position < dirEnd)
+            {
+                _ = newFile.Read(buffer, 0, 4);
+                int fileGroupId = BitConverter.ToInt32(buffer, 0);
+
+                if (fileGroupId == 0)
+                {
+                    EdataContentFile curFile = Files[(int)id];
+
+                    // FileEntrySize
+                    _ = newFile.Seek(4, SeekOrigin.Current);
+
+                    buffer = BitConverter.GetBytes((uint)curFile.Offset);
+                    newFile.Write(buffer, 0, buffer.Length);
+
+                    buffer = BitConverter.GetBytes((uint)curFile.Size);
+                    newFile.Write(buffer, 0, buffer.Length);
+
+                    _ = newFile.Seek(1, SeekOrigin.Current);
+
+                    string name = Utils.ReadString(newFile);
+
+                    if ((name.Length + 1) % 2 == 0)
+                        _ = newFile.Seek(1, SeekOrigin.Current);
+
+                    id++;
+                }
+                else if (fileGroupId > 0)
+                {
+                    _ = newFile.Seek(4, SeekOrigin.Current);
+                    string name = Utils.ReadString(newFile);
+
+                    if ((name.Length + 1) % 2 == 1)
+                        _ = newFile.Seek(1, SeekOrigin.Current);
+                }
+            }
+
+            _ = newFile.Seek(Header.DictOffset, SeekOrigin.Begin);
+            byte[] dirBuffer = new byte[Header.DictLength];
+            _ = newFile.Read(dirBuffer, 0, dirBuffer.Length);
+            byte[] dirCheckSum = MD5.Create().ComputeHash(dirBuffer);
+
+            _ = newFile.Seek(8, SeekOrigin.Begin);
+            newFile.Write(dirCheckSum, 0, dirCheckSum.Length);
+
+            _ = newFile.Seek(13, SeekOrigin.Current);
+            newFile.Write(BitConverter.GetBytes(filesContentLength), 0, 4);
         }
 
         return tmpPath;
@@ -562,26 +559,20 @@ public class EdataManager : ViewModelBase
         // save original offset
         long origOffset = fs.Position;
 
-        fs.Seek(file.Offset + Header.FileOffset, SeekOrigin.Begin);
+        _ = fs.Seek(file.Offset + Header.FileOffset, SeekOrigin.Begin);
 
         byte[] headerBuffer = new byte[12];
-        fs.Read(headerBuffer, 0, headerBuffer.Length);
+        _ = fs.Read(headerBuffer, 0, headerBuffer.Length);
 
         file.FileType = GetFileTypeFromHeaderData(headerBuffer);
 
         // set offset back to original
-        fs.Seek(origOffset, SeekOrigin.Begin);
+        _ = fs.Seek(origOffset, SeekOrigin.Begin);
     }
 
-    private static List<KeyValuePair<EdataFileType, byte[]>> _knownHeaders;
+    private static readonly List<KeyValuePair<EdataFileType, byte[]>> _knownHeaders;
 
-    public static IEnumerable<KeyValuePair<EdataFileType, byte[]>> KnownHeaders
-    {
-        get
-        {
-            return _knownHeaders;
-        }
-    }
+    public static IEnumerable<KeyValuePair<EdataFileType, byte[]>> KnownHeaders => _knownHeaders;
 
     public static EdataFileType GetFileTypeFromHeaderData(byte[] headerData)
     {
@@ -598,7 +589,9 @@ public class EdataManager : ViewModelBase
             }
             else
                 if (Utils.ByteArrayCompare(headerData, knownHeader.Value))
+            {
                 return knownHeader.Key;
+            }
         }
 
         return EdataFileType.Unknown;

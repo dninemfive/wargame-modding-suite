@@ -1,8 +1,6 @@
-﻿using moddingSuite.Geometry;
-using moddingSuite.Model.Ndfbin;
+﻿using moddingSuite.Model.Ndfbin;
 using moddingSuite.Model.Ndfbin.Types.AllTypes;
 using moddingSuite.Model.Scenario;
-using moddingSuite.ZoneEditor;
 using moddingSuite.ZoneEditor.ScenarioItems;
 using System;
 using System.Collections.Generic;
@@ -10,21 +8,21 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Media.Media3D;
 
-
-namespace ZoneEditor;
+namespace moddingSuite.ZoneEditor;
 
 public class ZoneEditorData
 {
-    int spawnNumber = 1;
-    int startPosNumber = 1;
-    int zoneNumber = 0;
+    private int spawnNumber = 1;
+    private int startPosNumber = 1;
+    private int zoneNumber = 0;
+
     //List<Outline> zoneOutlines = new List<Outline>();
-    List<ScenarioItem> scenarioItems = new();
-    List<Zone> zones = new();
+    private readonly List<ScenarioItem> scenarioItems = new();
+    private readonly List<Zone> zones = new();
     public ScenarioItem selectedItem;
-    Editor editor;
-    ScenarioFile scenarioFile;
-    NdfBinary data;
+    private readonly Editor editor;
+    private readonly ScenarioFile scenarioFile;
+    private readonly NdfBinary data;
 
     public ZoneEditorData(ScenarioFile sf, string path)
     {
@@ -127,7 +125,7 @@ public class ZoneEditorData
 
                 viewModel.Manager.DeleteInstance(inst);
 
-                viewModel.Instances.Remove(inst);
+                _ = viewModel.Instances.Remove(inst);
             }
         }
         NdfCollection list = data.Classes.First().Instances.First().PropertyValues.First().Value as NdfCollection;
@@ -171,34 +169,11 @@ public class ZoneEditorData
                 Geometry.isInside(p, x.getRawOutline())
                 );
 
-
             if (addon.Class.Name.Equals("TGameDesignAddOn_CommandPoints") && zone != null)
-            {
-                if (addon.PropertyValues.First(x => x.Property.Name.Equals("Points")).Value is not NdfInt32 pos)
-                {
-                    zone.value = 0;
-                }
-                else
-                {
-                    zone.value = (int)pos.Value;
-                }
-            }
-
+                zone.value = addon.PropertyValues.First(x => x.Property.Name.Equals("Points")).Value is not NdfInt32 pos ? 0 : (int)pos.Value;
 
             if (addon.Class.Name.Equals("TGameDesignAddOn_StartingPoint") && zone != null)
-            {
-                if (addon.PropertyValues.First(x => x.Property.Name.Equals("AllianceNum")).Value is not NdfInt32 pos)
-                {
-                    zone.possession = (Possession)0;
-                }
-                else
-                {
-                    zone.possession = (Possession)pos.Value;
-                }
-
-
-
-            }
+                zone.possession = addon.PropertyValues.First(x => x.Property.Name.Equals("AllianceNum")).Value is not NdfInt32 pos ? 0 : (Possession)pos.Value;
             if (addon.Class.Name.Equals("TGameDesignAddOn_ReinforcementLocation") && zone != null)
             {
 
@@ -226,9 +201,7 @@ public class ZoneEditorData
                 NdfPropertyValue prop = addon.PropertyValues.First(x => x.Property.Name.Equals("AllocationPriority"));
                 int prio = 0;
                 if (prop.Value is not NdfNull)
-                {
                     prio = (int)((NdfInt32)prop.Value).Value;
-                }
                 Icon startPos = new(Geometry.convertPoint(q), startPosNumber++, IconType.CV, prio);
                 editor.addScenarioItem(startPos);
                 scenarioItems.Add(startPos);
@@ -238,45 +211,21 @@ public class ZoneEditorData
                 NdfPropertyValue prop = addon.PropertyValues.First(x => x.Property.Name.Equals("AllocationPriority"));
                 int prio = 0;
                 if (prop.Value is not NdfNull)
-                {
                     prio = (int)((NdfInt32)prop.Value).Value;
-                }
                 Icon startPos = new(Geometry.convertPoint(q), startPosNumber++, IconType.FOB, prio);
                 editor.addScenarioItem(startPos);
                 scenarioItems.Add(startPos);
             }
 
-
-
-
-
             //Console.WriteLine(rotation);
         }
     }
-    public EventHandler AddZone
-    {
-        get { return new EventHandler(addZone); }
-    }
-    public EventHandler AddLandSpawn
-    {
-        get { return new EventHandler(addLandSpawn); }
-    }
-    public EventHandler AddAirSpawn
-    {
-        get { return new EventHandler(addAirSpawn); }
-    }
-    public EventHandler AddSeaSpawn
-    {
-        get { return new EventHandler(addSeaSpawn); }
-    }
-    public EventHandler AddCV
-    {
-        get { return new EventHandler(addCV); }
-    }
-    public EventHandler AddFOB
-    {
-        get { return new EventHandler(addFOB); }
-    }
+    public EventHandler AddZone => new(addZone);
+    public EventHandler AddLandSpawn => new(addLandSpawn);
+    public EventHandler AddAirSpawn => new(addAirSpawn);
+    public EventHandler AddSeaSpawn => new(addSeaSpawn);
+    public EventHandler AddCV => new(addCV);
+    public EventHandler AddFOB => new(addFOB);
     private void addZone(object obj, EventArgs e)
     {
         Zone zone = new(editor, editor.LeftClickPoint, zoneNumber++);
@@ -322,12 +271,9 @@ public class ZoneEditorData
     }
     public void deleteItem(object o, EventArgs e)
     {
-        scenarioItems.Remove(selectedItem);
+        _ = scenarioItems.Remove(selectedItem);
         if (selectedItem is Zone)
-        {
-            zones.Remove((Zone)selectedItem);
-        }
+            _ = zones.Remove((Zone)selectedItem);
         editor.deleteItem(selectedItem);
     }
-
 }

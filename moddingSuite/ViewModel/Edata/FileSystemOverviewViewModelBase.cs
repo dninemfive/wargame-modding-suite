@@ -7,11 +7,10 @@ namespace moddingSuite.ViewModel.Edata;
 public abstract class FileSystemOverviewViewModelBase : ViewModelBase
 {
     private string _rootPath;
-    private readonly ObservableCollection<DirectoryViewModel> _root = new();
 
     public string RootPath
     {
-        get { return _rootPath; }
+        get => _rootPath;
         set
         {
             _rootPath = value;
@@ -19,15 +18,9 @@ public abstract class FileSystemOverviewViewModelBase : ViewModelBase
         }
     }
 
-    public ObservableCollection<DirectoryViewModel> Root
-    {
-        get { return _root; }
-    }
+    public ObservableCollection<DirectoryViewModel> Root { get; } = new();
 
-    protected DirectoryViewModel ParseRoot()
-    {
-        return ParseDirectory(new DirectoryInfo(RootPath));
-    }
+    protected DirectoryViewModel ParseRoot() => ParseDirectory(new DirectoryInfo(RootPath));
 
     protected DirectoryViewModel ParseDirectory(DirectoryInfo info)
     {

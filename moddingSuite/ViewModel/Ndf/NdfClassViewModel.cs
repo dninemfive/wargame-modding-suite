@@ -15,8 +15,6 @@ namespace moddingSuite.ViewModel.Ndf;
 public class NdfClassViewModel : ObjectWrapperViewModel<NdfClass>
 {
     private ICollectionView _instancesCollectionView;
-    private readonly ObservableCollection<NdfObjectViewModel> _instances = new();
-    private readonly ObservableCollection<PropertyFilterExpression> _propertyFilterExpressions = new();
 
     public NdfClassViewModel(NdfClass obj, ViewModelBase parentVm)
         : base(obj, parentVm)
@@ -34,7 +32,7 @@ public class NdfClassViewModel : ObjectWrapperViewModel<NdfClass>
 
     public string Name
     {
-        get { return Object.Name; }
+        get => Object.Name;
         set
         {
             Object.Name = value;
@@ -44,7 +42,7 @@ public class NdfClassViewModel : ObjectWrapperViewModel<NdfClass>
 
     public uint Id
     {
-        get { return Object.Id; }
+        get => Object.Id;
         set
         {
             Object.Id = value;
@@ -52,22 +50,13 @@ public class NdfClassViewModel : ObjectWrapperViewModel<NdfClass>
         }
     }
 
-    public ObservableCollection<NdfProperty> Properties
-    {
-        get { return Object.Properties; }
-    }
+    public ObservableCollection<NdfProperty> Properties => Object.Properties;
 
-    public ObservableCollection<NdfObjectViewModel> Instances
-    {
-        get { return _instances; }
-    }
+    public ObservableCollection<NdfObjectViewModel> Instances { get; } = new();
 
     public ICommand ApplyPropertyFilter { get; set; }
 
-    public ObservableCollection<PropertyFilterExpression> PropertyFilterExpressions
-    {
-        get { return _propertyFilterExpressions; }
-    }
+    public ObservableCollection<PropertyFilterExpression> PropertyFilterExpressions { get; } = new();
 
     public ICollectionView InstancesCollectionView
     {
@@ -111,7 +100,7 @@ public class NdfClassViewModel : ObjectWrapperViewModel<NdfClass>
             throw new KeyNotFoundException("invalid instance");
 
         Object.Manager.DeleteInstance(inst.Object);
-        Instances.Remove(inst);
+        _ = Instances.Remove(inst);
     }
 
     private void RemoveInstanceExecute(object obj)
@@ -121,7 +110,7 @@ public class NdfClassViewModel : ObjectWrapperViewModel<NdfClass>
 
         Object.Manager.DeleteInstance(inst.Object);
 
-        Instances.Remove(inst);
+        _ = Instances.Remove(inst);
     }
 
     private void AddInstanceExecute(object obj)
@@ -154,32 +143,40 @@ public class NdfClassViewModel : ObjectWrapperViewModel<NdfClass>
                     return false;
             }
 
-            int compare = String.Compare(propVal.Value.ToString(), expr.Value);
+            int compare = string.Compare(propVal.Value.ToString(), expr.Value);
 
             if (expr.Discriminator == FilterDiscriminator.Equals)
+            {
                 if (compare == 0)
                     continue;
                 else
                     return false;
-
+            }
             else if (expr.Discriminator == FilterDiscriminator.Smaller)
+            {
                 if (propVal.Value.ToString().Length < expr.Value.Length || (propVal.Value.ToString().Length == expr.Value.Length && compare < 0))
                     continue;
                 else
                     return false;
-
+            }
             else if (expr.Discriminator == FilterDiscriminator.Greater)
+            {
                 if (propVal.Value.ToString().Length > expr.Value.Length || (propVal.Value.ToString().Length == expr.Value.Length && compare > 0))
                     continue;
                 else
                     return false;
+            }
             else if (expr.Discriminator == FilterDiscriminator.Contains)
+            {
                 if (propVal.Value.ToString().Contains(expr.Value))
                     continue;
                 else
                     return false;
+            }
             else
+            {
                 return false;
+            }
         }
 
         return true;
@@ -193,8 +190,5 @@ public class NdfClassViewModel : ObjectWrapperViewModel<NdfClass>
         }
     }
 
-    private void ApplyPropertyFilterExecute(object obj)
-    {
-        InstancesCollectionView.Refresh();
-    }
+    private void ApplyPropertyFilterExecute(object obj) => InstancesCollectionView.Refresh();
 }

@@ -10,13 +10,7 @@ public class NdfBoolean : NdfFlatValueWrapper
     {
     }
 
-    public override byte[] GetBytes()
-    {
-        return BitConverter.GetBytes(Convert.ToBoolean(Value));
-    }
+    public override byte[] GetBytes() => BitConverter.GetBytes(Convert.ToBoolean(Value));
 
-    public override byte[] GetNdfText()
-    {
-        return NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
-    }
+    public override byte[] GetNdfText() => NdfTextWriter.NdfTextEncoding.GetBytes(Value.ToString());
 }

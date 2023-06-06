@@ -3,7 +3,7 @@ using System.IO;
 
 namespace moddingSuite.BL.Ndf;
 
-interface INdfWriter
+internal interface INdfWriter
 {
     void Write(Stream outStrea, NdfBinary ndf, bool compressed);
 }

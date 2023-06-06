@@ -11,8 +11,6 @@ namespace moddingSuite.Model.Edata;
 /// </summary>
 public class EdataDir : EdataEntity
 {
-    private readonly List<EdataDir> _children = new();
-    private readonly List<EdataContentFile> _files = new();
     private EdataDir _parent;
     private int _subTreeSize;
 
@@ -30,7 +28,7 @@ public class EdataDir : EdataEntity
 
     public int SubTreeSize
     {
-        get { return _subTreeSize; }
+        get => _subTreeSize;
         set
         {
             _subTreeSize = value;
@@ -40,7 +38,7 @@ public class EdataDir : EdataEntity
 
     public EdataDir Parent
     {
-        get { return _parent; }
+        get => _parent;
         set
         {
             _parent = value;
@@ -48,13 +46,7 @@ public class EdataDir : EdataEntity
         }
     }
 
-    public List<EdataDir> Children
-    {
-        get { return _children; }
-    }
+    public List<EdataDir> Children { get; } = new();
 
-    public List<EdataContentFile> Files
-    {
-        get { return _files; }
-    }
+    public List<EdataContentFile> Files { get; } = new();
 }

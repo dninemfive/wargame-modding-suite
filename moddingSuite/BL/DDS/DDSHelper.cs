@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace moddingSuite.BL.DDS;
 
-class DDSHelper
+internal class DDSHelper
 {
     [Flags]
     public enum ConversionFlags
@@ -134,7 +134,6 @@ new LegacyMap( PixelFormats.B4G4R4A4_UNorm,     ConversionFlags.Expand
 #endif
                                                          };
 
-
     // Note that many common DDS reader/writers (including D3DX) swap the
     // the RED/BLUE masks for 10:10:10:2 formats. We assume
     // below that the 'backwards' header mask is being used since it is most
@@ -153,7 +152,7 @@ new LegacyMap( PixelFormats.B4G4R4A4_UNorm,     ConversionFlags.Expand
     {
         conversionFlags = ConversionFlags.None;
 
-        int index = 0;
+        int index;
         for (index = 0; index < LegacyMaps.Length; ++index)
         {
             LegacyMap entry = LegacyMaps[index];
@@ -177,7 +176,9 @@ new LegacyMap( PixelFormats.B4G4R4A4_UNorm,     ConversionFlags.Expand
                         && pixelFormat.GBitMask == entry.PixelFormat.GBitMask
                         && pixelFormat.BBitMask == entry.PixelFormat.BBitMask
                         && pixelFormat.ABitMask == entry.PixelFormat.ABitMask)
+                    {
                         break;
+                    }
                 }
             }
         }

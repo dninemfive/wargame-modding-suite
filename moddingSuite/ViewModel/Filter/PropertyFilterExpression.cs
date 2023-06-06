@@ -11,19 +11,19 @@ public class PropertyFilterExpression : ViewModelBase
 
     public string PropertyName
     {
-        get { return _propertyName; }
+        get => _propertyName;
         set { _propertyName = value; OnPropertyChanged(() => PropertyName); }
     }
 
     public string Value
     {
-        get { return _value; }
+        get => _value;
         set { _value = value; OnPropertyChanged(() => Value); }
     }
 
     public FilterDiscriminator Discriminator
     {
-        get { return _discriminator; }
+        get => _discriminator;
         set { _discriminator = value; OnPropertyChanged(() => Discriminator); }
     }
 }

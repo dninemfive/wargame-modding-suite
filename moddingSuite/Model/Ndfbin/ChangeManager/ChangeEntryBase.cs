@@ -13,12 +13,11 @@ public abstract class ChangeEntryBase : ViewModelBase
 
     public NdfPropertyValue AffectedPropertyValue
     {
-        get { return _affectedPropertyValue; }
+        get => _affectedPropertyValue;
         set
         {
             _affectedPropertyValue = value;
             OnPropertyChanged("AffectedPropertyValue");
         }
     }
-
 }

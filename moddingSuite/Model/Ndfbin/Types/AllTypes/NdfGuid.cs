@@ -9,13 +9,7 @@ public class NdfGuid : NdfFlatValueWrapper
     {
     }
 
-    public override byte[] GetBytes()
-    {
-        return Guid.Parse(Value.ToString()).ToByteArray();
-    }
+    public override byte[] GetBytes() => Guid.Parse(Value.ToString()).ToByteArray();
 
-    public override byte[] GetNdfText()
-    {
-        throw new NotImplementedException();
-    }
+    public override byte[] GetNdfText() => throw new NotImplementedException();
 }

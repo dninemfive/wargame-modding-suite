@@ -19,8 +19,5 @@ public class NdfColor32 : NdfFlatValueWrapper
         return colorArray;
     }
 
-    public override byte[] GetNdfText()
-    {
-        throw new NotImplementedException();
-    }
+    public override byte[] GetNdfText() => throw new NotImplementedException();
 }

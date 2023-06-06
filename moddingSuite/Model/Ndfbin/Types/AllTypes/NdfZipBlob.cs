@@ -21,8 +21,5 @@ public class NdfZipBlob : NdfFlatValueWrapper
         return val.ToArray();
     }
 
-    public override byte[] GetNdfText()
-    {
-        throw new NotImplementedException();
-    }
+    public override byte[] GetNdfText() => throw new NotImplementedException();
 }

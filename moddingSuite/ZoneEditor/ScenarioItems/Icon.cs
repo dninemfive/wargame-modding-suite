@@ -1,23 +1,23 @@
 ﻿using moddingSuite.Model.Ndfbin;
 using moddingSuite.Model.Ndfbin.Types.AllTypes;
+using moddingSuite.Util;
 using moddingSuite.ZoneEditor.Markers;
 using moddingSuite.ZoneEditor.ScenarioItems.PropertyPanels;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using ZoneEditor;
 
 namespace moddingSuite.ZoneEditor.ScenarioItems;
 
 public class Icon : ScenarioItem
 {
-    VertexMarker position;
-    Image image;
+    private readonly VertexMarker position;
+    private Image image;
     private IconType _type;
     private int _priority;
     public int priority
     {
-        get { return _priority; }
+        get => _priority;
         set
         {
             _priority = value;
@@ -28,7 +28,7 @@ public class Icon : ScenarioItem
     }
     public IconType type
     {
-        get { return _type; }
+        get => _type;
         set
         {
             _type = value;
@@ -51,12 +51,12 @@ public class Icon : ScenarioItem
         setSelected(false);
         priority = prio;
     }
-    public override void attachTo(System.Windows.Forms.Control c)
+    public override void attachTo(Control c)
     {
         c.Controls.Add(position);
         c.Paint += paintEvent;
     }
-    public override void detachFrom(System.Windows.Forms.Control c)
+    public override void detachFrom(Control c)
     {
         c.Controls.Remove(position);
         c.Paint -= paintEvent;
@@ -79,8 +79,6 @@ public class Icon : ScenarioItem
     }
     protected override void paint(object o, PaintEventArgs e)
     {
-        //PanAndZoom.Transform(e);
-        //var p=position.getPosition();
         e.Graphics.ResetTransform();
         Point p = PanAndZoom.fromGlobalToLocal(position.getPosition());
         int size=20;
@@ -89,35 +87,15 @@ public class Icon : ScenarioItem
 
         e.Graphics.DrawImage(image, new Rectangle(-size / 2, -size / 2, size, size));
     }
-    public override void setSelected(bool selected)
-    {
-        position.Visible = selected;
-    }
+    public override void setSelected(bool selected) => position.Visible = selected;
     public override void buildNdf(NdfBinary data, ref int i)
     {
-        //return;
-
-        string name = "";
-        string ranking = "";
-        switch (type)
+        string name = type switch
         {
-            case IconType.CV:
-                name = "TGameDesignAddOn_StartingCommandUnit";
-                ranking = "StartingCommandUnits";
-
-                break;
-            case IconType.FOB:
-                name = "TGameDesignAddOn_StartingFOB";
-                ranking = "StartingFOB";
-                break;
-        }
+            IconType.CV => "TGameDesignAddOn_StartingCommandUnit",
+            IconType.FOB => "TGameDesignAddOn_StartingFOB"
+        };
         NdfObject spawnPoint = createNdfObject(data, name);
-        /*var nameProperty = getProperty(spawnPoint, "Name");
-        nameProperty.Value = getAutoName(data, i++);
-        var rankingProperty = getProperty(spawnPoint, "Ranking");
-        rankingProperty.Value = getString(data, ranking);
-        var guidProperty = getProperty(spawnPoint, "GUID");
-        rankingProperty.Value = new NdfGuid(Guid.NewGuid());*/
         NdfPropertyValue allocationProperty = getProperty(spawnPoint, "AllocationPriority");
         //NOT RIGHT
         allocationProperty.Value = new NdfInt32(priority);
@@ -129,7 +107,7 @@ public class Icon : ScenarioItem
 
         NdfPropertyValue positionProperty = getProperty(designItem, "Position");
         Point hp = position.getPosition();
-        System.Windows.Media.Media3D.Point3D p = Geometry.Geometry.convertPoint(hp);
+        System.Windows.Media.Media3D.Point3D p = Geometry.convertPoint(hp);
         positionProperty.Value = new NdfVector(p);
 
         NdfPropertyValue rotationProperty = getProperty(designItem, "Rotation");

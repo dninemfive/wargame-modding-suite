@@ -1,4 +1,4 @@
-﻿namespace moddingSuite.View.Enums;
+﻿namespace moddingSuite.View.SpinningWheel.Enums;
 public enum RotateDirection
 {
     CW = 0,

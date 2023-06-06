@@ -19,8 +19,5 @@ public class NdfTime64 : NdfFlatValueWrapper
         return BitConverter.GetBytes(res);
     }
 
-    public override byte[] GetNdfText()
-    {
-        throw new NotImplementedException();
-    }
+    public override byte[] GetNdfText() => throw new NotImplementedException();
 }

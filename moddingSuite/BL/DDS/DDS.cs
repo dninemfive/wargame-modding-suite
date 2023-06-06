@@ -282,60 +282,51 @@ public class DDS
         }
         else
         {
-            int bpp;
-            if ((flags & PitchFlags.Bpp24) != 0)
-                bpp = 24;
-            else if ((flags & PitchFlags.Bpp16) != 0)
-                bpp = 16;
-            else if ((flags & PitchFlags.Bpp8) != 0)
-                bpp = 8;
-            else
-                bpp = GetBitsPerPixel(fmt);
+            int bpp = (flags & PitchFlags.Bpp24) != 0
+                ? 24
+                : (flags & PitchFlags.Bpp16) != 0 ? 16 : (flags & PitchFlags.Bpp8) != 0 ? 8 : GetBitsPerPixel(fmt);
 
             if ((flags & PitchFlags.LegacyDword) != 0)
             {
                 // Special computation for some incorrectly created DDS files based on
                 // legacy DirectDraw assumptions about pitch alignment
-                rowPitch = ((width * bpp + 31) / 32) * sizeof(int);
+                rowPitch = ((width * bpp) + 31) / 32 * sizeof(int);
                 slicePitch = rowPitch * height;
             }
             else
             {
-                rowPitch = (width * bpp + 7) / 8;
+                rowPitch = ((width * bpp) + 7) / 8;
                 slicePitch = rowPitch * height;
             }
         }
     }
     public static bool IsPacked(PixelFormats fmt) => fmt is PixelFormats.R8G8_B8G8_UNORM or PixelFormats.G8R8_G8B8_UNORM;
-    public static bool IsCompressedFormat(PixelFormats format)
+    public static bool IsCompressedFormat(PixelFormats format) => format switch
     {
-        return format switch
-        {
-            PixelFormats.BC1_TYPELESS or
-            PixelFormats.BC1_UNORM or
-            PixelFormats.BC1_UNORM_SRGB or
-            PixelFormats.BC2_TYPELESS or
-            PixelFormats.BC2_UNORM or
-            PixelFormats.BC2_UNORM_SRGB or
-            PixelFormats.BC3_TYPELESS or
-            PixelFormats.BC3_UNORM or
-            PixelFormats.BC3_UNORM_SRGB or
-            PixelFormats.BC4_TYPELESS or
-            PixelFormats.BC4_UNORM or
-            PixelFormats.BC4_SNORM or
-            PixelFormats.BC5_TYPELESS or
-            PixelFormats.BC5_UNORM or
-            PixelFormats.BC5_SNORM or
-            PixelFormats.BC6H_TYPELESS or
-            PixelFormats.BC6H_UF16 or
-            PixelFormats.BC6H_SF16 or
-            PixelFormats.BC7_TYPELESS or
-            PixelFormats.BC7_UNORM or
-            PixelFormats.BC7_UNORM_SRGB
-                => true,
-            _ => false,
-        };
-    }
+        PixelFormats.BC1_TYPELESS or
+        PixelFormats.BC1_UNORM or
+        PixelFormats.BC1_UNORM_SRGB or
+        PixelFormats.BC2_TYPELESS or
+        PixelFormats.BC2_UNORM or
+        PixelFormats.BC2_UNORM_SRGB or
+        PixelFormats.BC3_TYPELESS or
+        PixelFormats.BC3_UNORM or
+        PixelFormats.BC3_UNORM_SRGB or
+        PixelFormats.BC4_TYPELESS or
+        PixelFormats.BC4_UNORM or
+        PixelFormats.BC4_SNORM or
+        PixelFormats.BC5_TYPELESS or
+        PixelFormats.BC5_UNORM or
+        PixelFormats.BC5_SNORM or
+        PixelFormats.BC6H_TYPELESS or
+        PixelFormats.BC6H_UF16 or
+        PixelFormats.BC6H_SF16 or
+        PixelFormats.BC7_TYPELESS or
+        PixelFormats.BC7_UNORM or
+        PixelFormats.BC7_UNORM_SRGB
+            => true,
+        _ => false,
+    };
     public static PixelFormat PixelFormatFromDXGIFormat(PixelFormats format)
     {
         PixelFormat ddpf = default;
